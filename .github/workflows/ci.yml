@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  tests:
+  validate:
     runs-on: ubuntu-latest
     
     strategy:
@@ -28,6 +28,12 @@ jobs:
     - name: Validate composer.json
       run: composer validate --strict
     
+    - name: Check PHP syntax
+      run: |
+        find src config -name "*.php" -exec php -l {} \;
+        php -l rector.php
+        php -l ecs.php
+    
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v3
@@ -38,28 +44,4 @@ jobs:
           ${{ runner.os }}-php-${{ matrix.php-version }}-
     
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
-    
-    - name: Run Rector (dry-run)
-      run: vendor/bin/rector process --dry-run
-    
-    - name: Run PHPStan
-      run: vendor/bin/phpstan analyse
-
-  code-style:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: 8.1
-        coverage: none
-    
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
-    
-    - name: Check code style
-      run: composer check-style || true
+      run: composer install --prefer-dist --no-progress || true

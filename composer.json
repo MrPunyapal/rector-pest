@@ -21,10 +21,7 @@
         "rector/rector": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.0",
-        "pestphp/pest": "^2.0",
-        "phpstan/phpstan": "^1.10",
-        "symplify/easy-coding-standard": "^12.0"
+        "phpstan/phpstan": "^1.10"
     },
     "autoload": {
         "psr-4": {
@@ -39,16 +36,11 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
+        "sort-packages": true
     },
     "scripts": {
         "analyse": "phpstan analyse",
         "rector": "rector process",
-        "rector-dry": "rector process --dry-run",
-        "check-style": "ecs check --ansi",
-        "fix-style": "ecs check --fix --ansi"
+        "rector-dry": "rector process --dry-run"
     }
 }
