@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+    
+    name: PHP ${{ matrix.php-version }}
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        coverage: none
+    
+    - name: Validate composer.json
+      run: composer validate --strict
+    
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-${{ matrix.php-version }}-
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+    
+    - name: Run Rector (dry-run)
+      run: vendor/bin/rector process --dry-run
+    
+    - name: Run PHPStan
+      run: vendor/bin/phpstan analyse
+
+  code-style:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.1
+        coverage: none
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+    
+    - name: Check code style
+      run: composer check-style || true
