@@ -1,6 +1,14 @@
 # Rector Pest
 
+[![CI](https://github.com/MrPunyapal/rector-pest/workflows/CI/badge.svg)](https://github.com/MrPunyapal/rector-pest/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue)](https://www.php.net)
+
 Rector rules for [PestPHP](https://pestphp.com) - Automated refactoring and best practices enforcement for the Pest testing framework.
+
+## 🚀 Quick Start
+
+New to Rector Pest? Check out the [Quick Start Guide](QUICKSTART.md) to get up and running in 5 minutes!
 
 ## Installation
 
