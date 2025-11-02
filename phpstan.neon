@@ -6,6 +6,7 @@ parameters:
         - tests
 
     excludePaths:
+        - tests/Fixture
         - tests/*/Fixture
         - '*/Source/*'
         - '*/Expected/*'
