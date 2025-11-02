@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use MrPunyapal\RectorPest\Rules\ChainExpectCallsRector;
 use Rector\Config\RectorConfig;
 
 /**
@@ -18,7 +19,6 @@ use Rector\Config\RectorConfig;
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->import(__DIR__ . '/../config.php');
 
-    // Rules will be added here
-    // Example: $rectorConfig->rule(UseExpectOverAssertRector::class);
-    // Example: $rectorConfig->rule(SimplifyDatasetRector::class);
+    // Chain multiple expect() calls using and()
+    $rectorConfig->rule(ChainExpectCallsRector::class);
 };

@@ -25,11 +25,10 @@
         "rector/rector": "^1.2"
     },
     "require-dev": {
-        "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^10.0|^11.0",
+        "phpstan/phpstan": "^1.12",
         "phpstan/extension-installer": "^1.4",
-        "rector/type-perfect": "^1.0",
-        "symplify/easy-coding-standard": "^12.3",
-        "symplify/rule-doc-generator": "^12.3"
+        "symplify/easy-coding-standard": "^12.3"
     },
     "autoload": {
         "psr-4": {
@@ -51,6 +50,7 @@
         "platform-check": false
     },
     "scripts": {
+        "test": "phpunit",
         "phpstan": "phpstan analyse --ansi",
         "check-cs": "ecs check --ansi",
         "fix-cs": "ecs check --fix --ansi",
