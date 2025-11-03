@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use MrPunyapal\RectorPest\Rules\ChainExpectCallsRector;
+use MrPunyapal\RectorPest\Rules\SimplifyExpectNotRector;
 use Rector\Config\RectorConfig;
 
 /**
@@ -21,4 +22,7 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Chain multiple expect() calls using and()
     $rectorConfig->rule(ChainExpectCallsRector::class);
+
+    // Simplify negated expectations using not() modifier
+    $rectorConfig->rule(SimplifyExpectNotRector::class);
 };

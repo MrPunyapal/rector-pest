@@ -6,6 +6,7 @@ namespace MrPunyapal\RectorPest\Rules;
 
 use MrPunyapal\RectorPest\AbstractRector;
 use PhpParser\Node;
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
@@ -177,7 +178,7 @@ CODE_SAMPLE
         }
 
         $arg = $expectCall->args[0];
-        if (! $arg instanceof Node\Arg) {
+        if (! $arg instanceof Arg) {
             return null;
         }
 
