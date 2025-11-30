@@ -34,7 +34,7 @@ return RectorConfig::configure()
 
 | Rule | Description |
 |------|-------------|
-| `ChainExpectCallsRector` | Chains multiple `expect()` calls on the same value into a single chained call (e.g. `expect($value)->toBe(10)->toBeInt()`) |
+| `ChainExpectCallsRector` | Chains multiple `expect()` calls on the same value into a single chained call |
 | `SimplifyExpectNotRector` | Converts `expect(!$x)->toBeTrue()` to `expect($x)->toBeFalse()` (flips matcher) |
 | `ToBeTrueNotFalseRector` | Simplifies `->not->toBeFalse()` to `->toBeTrue()` and vice versa |
 | `UseEachModifierRector` | Converts `foreach` loops with `expect()` to `->each` modifier |
@@ -43,7 +43,18 @@ return RectorConfig::configure()
 | `UseToHaveCountRector` | Converts `expect(count($arr))->toBe(5)` to `expect($arr)->toHaveCount(5)` |
 | `UseInstanceOfMatcherRector` | Converts `expect($obj instanceof User)->toBeTrue()` to `expect($obj)->toBeInstanceOf(User::class)` |
 | `SimplifyComparisonExpectationsRector` | Converts `expect($x > 10)->toBeTrue()` to `expect($x)->toBeGreaterThan(10)` |
-| `UseToMatchRector` | Converts `expect(preg_match('/pattern/', $str))->toBe(1)` to `expect($str)->toMatch('/pattern/')` |
+| `UseStrictEqualityMatchersRector` | Converts `expect($a === $b)->toBeTrue()` to `expect($a)->toBe($b)` |
+| `UseToContainRector` | Converts `expect(in_array($x, $arr))->toBeTrue()` to `expect($arr)->toContain($x)` |
+| `UseToHaveKeyRector` | Converts `expect(array_key_exists('k', $arr))->toBeTrue()` to `expect($arr)->toHaveKey('k')` |
+| `UseToStartWithRector` | Converts `expect(str_starts_with($s, 'x'))->toBeTrue()` to `expect($s)->toStartWith('x')` |
+| `UseToEndWithRector` | Converts `expect(str_ends_with($s, 'x'))->toBeTrue()` to `expect($s)->toEndWith('x')` |
+| `UseToHaveLengthRector` | Converts `expect(strlen($s))->toBe(5)` to `expect($s)->toHaveLength(5)` |
+| `UseToMatchRector` | Converts `expect(preg_match('/p/', $s))->toBe(1)` to `expect($s)->toMatch('/p/')` |
+| `UseToBeJsonRector` | Converts `expect(json_decode($s) !== null)->toBeTrue()` to `expect($s)->toBeJson()` |
+| `UseToBeFileRector` | Converts `expect(is_file($p))->toBeTrue()` to `expect($p)->toBeFile()` |
+| `UseToBeDirectoryRector` | Converts `expect(is_dir($p))->toBeTrue()` to `expect($p)->toBeDirectory()` |
+| `UseToBeReadableWritableRector` | Converts `expect(is_readable($p))->toBeTrue()` to `expect($p)->toBeReadable()` |
+| `UseToHavePropertyRector` | Converts `expect(property_exists($o, 'x'))->toBeTrue()` to `expect($o)->toHaveProperty('x')` |
 
 ## Automate Pest Upgrades
 
@@ -253,6 +264,120 @@ expect(preg_match('/pattern/', $string))->toBe(1);
 
 // After
 expect($string)->toMatch('/pattern/');
+```
+
+### UseStrictEqualityMatchersRector
+
+```php
+// Before
+expect($a === $b)->toBeTrue();
+expect($a !== $b)->toBeTrue();
+
+// After
+expect($a)->toBe($b);
+expect($a)->not->toBe($b);
+```
+
+### UseToContainRector
+
+```php
+// Before
+expect(in_array($item, $array))->toBeTrue();
+
+// After
+expect($array)->toContain($item);
+```
+
+### UseToHaveKeyRector
+
+```php
+// Before
+expect(array_key_exists('id', $array))->toBeTrue();
+
+// After
+expect($array)->toHaveKey('id');
+```
+
+### UseToStartWithRector
+
+```php
+// Before
+expect(str_starts_with($string, 'Hello'))->toBeTrue();
+
+// After
+expect($string)->toStartWith('Hello');
+```
+
+### UseToEndWithRector
+
+```php
+// Before
+expect(str_ends_with($filename, '.php'))->toBeTrue();
+
+// After
+expect($filename)->toEndWith('.php');
+```
+
+### UseToHaveLengthRector
+
+```php
+// Before
+expect(strlen($string))->toBe(10);
+
+// After
+expect($string)->toHaveLength(10);
+```
+
+### UseToBeJsonRector
+
+```php
+// Before
+expect(json_decode($string) !== null)->toBeTrue();
+
+// After
+expect($string)->toBeJson();
+```
+
+### UseToBeFileRector
+
+```php
+// Before
+expect(is_file($path))->toBeTrue();
+
+// After
+expect($path)->toBeFile();
+```
+
+### UseToBeDirectoryRector
+
+```php
+// Before
+expect(is_dir($path))->toBeTrue();
+
+// After
+expect($path)->toBeDirectory();
+```
+
+### UseToBeReadableWritableRector
+
+```php
+// Before
+expect(is_readable($path))->toBeTrue();
+expect(is_writable($file))->toBeTrue();
+
+// After
+expect($path)->toBeReadable();
+expect($file)->toBeWritable();
+```
+
+### UseToHavePropertyRector
+
+```php
+// Before
+expect(property_exists($object, 'name'))->toBeTrue();
+
+// After
+expect($object)->toHaveProperty('name');
 ```
 
 ## Running Rector
