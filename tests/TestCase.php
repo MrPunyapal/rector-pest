@@ -6,10 +6,10 @@ use Rector\Testing\PHPUnit\AbstractRectorTestCase;
 
 abstract class TestCase extends AbstractRectorTestCase
 {
-    public string $configFilePath = '';
+    public static string $configFilePath = '';
 
     public function provideConfigFilePath(): string
     {
-        return $this->configFilePath;
+        return self::$configFilePath;
     }
 }
