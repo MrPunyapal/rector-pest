@@ -1,6 +1,8 @@
 # Rector Pest
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/mrpunyapal/rector-pest.svg?style=flat-square)](https://packagist.org/packages/mrpunyapal/rector-pest)
+[![Total Downloads on Packagist](https://img.shields.io/packagist/dt/mrpunyapal/rector-pest.svg?style=flat-square)](https://packagist.org/packages/mrpunyapal/rector-pest)
+[![CI](https://github.com/mrpunyapal/rector-pest/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mrpunyapal/rector-pest/actions/workflows/ci.yml)
 
 Rector rules for [PestPHP](https://pestphp.com/) to improve code quality and help with version upgrades.
 
