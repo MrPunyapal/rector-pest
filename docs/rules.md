@@ -7,11 +7,27 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 - class: [`MrPunyapal\RectorPest\Rules\ChainExpectCallsRector`](../src/Rules/ChainExpectCallsRector.php)
 
 ```diff
--expect($value)->toBe(10);
--expect($value)->toBeInt();
-+expect($value)
-+    ->toBe(10)
-+    ->toBeInt();
+-expect($a)->toBe(10);
+-expect($a)->toBeInt();
++expect($a)->toBe(10)->toBeInt();
+```
+
+<br>
+
+```diff
+-expect($a)->toBe(10);
+-expect($b)->toBe(10);
++expect($a)->toBe(10)->and($b)->toBe(10);
+```
+
+<br>
+
+```diff
+-expect($a)->toBe(10);
+-expect($a)->toBeInt();
+-expect($b)->toBe(10);
+-expect($b)->toBeInt();
++expect($a)->toBe(10)->toBeInt()->and($b)->toBe(10)->toBeInt();
 ```
 
 <br>
