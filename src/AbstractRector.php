@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MrPunyapal\RectorPest;
+namespace RectorPest;
 
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;

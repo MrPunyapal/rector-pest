@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace MrPunyapal\RectorPest\Rules;
+namespace RectorPest\Rules;
 
-use MrPunyapal\RectorPest\AbstractRector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
@@ -12,6 +11,7 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Foreach_;
+use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 

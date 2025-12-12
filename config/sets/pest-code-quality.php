@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-use MrPunyapal\RectorPest\Rules\ChainExpectCallsRector;
-use MrPunyapal\RectorPest\Rules\SimplifyComparisonExpectationsRector;
-use MrPunyapal\RectorPest\Rules\SimplifyExpectNotRector;
-use MrPunyapal\RectorPest\Rules\SimplifyToLiteralBooleanRector;
-use MrPunyapal\RectorPest\Rules\ToBeTrueNotFalseRector;
-use MrPunyapal\RectorPest\Rules\UseEachModifierRector;
-use MrPunyapal\RectorPest\Rules\UseInstanceOfMatcherRector;
-use MrPunyapal\RectorPest\Rules\UseStrictEqualityMatchersRector;
-use MrPunyapal\RectorPest\Rules\UseToBeDirectoryRector;
-use MrPunyapal\RectorPest\Rules\UseToBeFileRector;
-use MrPunyapal\RectorPest\Rules\UseToBeJsonRector;
-use MrPunyapal\RectorPest\Rules\UseToBeReadableWritableRector;
-use MrPunyapal\RectorPest\Rules\UseToContainRector;
-use MrPunyapal\RectorPest\Rules\UseToEndWithRector;
-use MrPunyapal\RectorPest\Rules\UseToHaveCountRector;
-use MrPunyapal\RectorPest\Rules\UseToHaveKeyRector;
-use MrPunyapal\RectorPest\Rules\UseToHaveLengthRector;
-use MrPunyapal\RectorPest\Rules\UseToHavePropertyRector;
-use MrPunyapal\RectorPest\Rules\UseToMatchRector;
-use MrPunyapal\RectorPest\Rules\UseToStartWithRector;
-use MrPunyapal\RectorPest\Rules\UseTypeMatchersRector;
 use Rector\Config\RectorConfig;
+use RectorPest\Rules\ChainExpectCallsRector;
+use RectorPest\Rules\SimplifyComparisonExpectationsRector;
+use RectorPest\Rules\SimplifyExpectNotRector;
+use RectorPest\Rules\SimplifyToLiteralBooleanRector;
+use RectorPest\Rules\ToBeTrueNotFalseRector;
+use RectorPest\Rules\UseEachModifierRector;
+use RectorPest\Rules\UseInstanceOfMatcherRector;
+use RectorPest\Rules\UseStrictEqualityMatchersRector;
+use RectorPest\Rules\UseToBeDirectoryRector;
+use RectorPest\Rules\UseToBeFileRector;
+use RectorPest\Rules\UseToBeJsonRector;
+use RectorPest\Rules\UseToBeReadableWritableRector;
+use RectorPest\Rules\UseToContainRector;
+use RectorPest\Rules\UseToEndWithRector;
+use RectorPest\Rules\UseToHaveCountRector;
+use RectorPest\Rules\UseToHaveKeyRector;
+use RectorPest\Rules\UseToHaveLengthRector;
+use RectorPest\Rules\UseToHavePropertyRector;
+use RectorPest\Rules\UseToMatchRector;
+use RectorPest\Rules\UseToStartWithRector;
+use RectorPest\Rules\UseTypeMatchersRector;
 
 /**
  * Code quality improvements for Pest tests

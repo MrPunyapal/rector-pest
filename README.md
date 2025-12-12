@@ -22,7 +22,7 @@ Improve your Pest tests with better readability and expressiveness.
 
 ```php
 // rector.php
-use MrPunyapal\RectorPest\Set\PestSetList;
+use RectorPest\Set\PestSetList;
 use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
@@ -44,7 +44,7 @@ Use `PestLevelSetList` to automatically upgrade to a specific Pest version. Sets
 
 ```php
 // rector.php
-use MrPunyapal\RectorPest\Set\PestLevelSetList;
+use RectorPest\Set\PestLevelSetList;
 use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
@@ -67,7 +67,7 @@ Use `PestSetList` if you only want changes for a specific version:
 
 ```php
 // rector.php
-use MrPunyapal\RectorPest\Set\PestSetList;
+use RectorPest\Set\PestSetList;
 use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
@@ -90,7 +90,7 @@ You can also use individual rules instead of sets:
 
 ```php
 // rector.php
-use MrPunyapal\RectorPest\Rules\ChainExpectCallsRector;
+use RectorPest\Rules\ChainExpectCallsRector;
 use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()

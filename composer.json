@@ -34,7 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MrPunyapal\\RectorPest\\": "src/"
+            "RectorPest\\": "src/"
         }
     },
     "autoload-dev": {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use MrPunyapal\RectorPest\Rules\Pest2ToPest3\TapToDeferRector;
-use MrPunyapal\RectorPest\Rules\Pest2ToPest3\ToHaveMethodOnClassRector;
 use Rector\Config\RectorConfig;
+use RectorPest\Rules\Pest2ToPest3\TapToDeferRector;
+use RectorPest\Rules\Pest2ToPest3\ToHaveMethodOnClassRector;
 
 /**
  * @see https://pestphp.com/docs/upgrade-guide#content-from-pest-v2-to-pest-v3

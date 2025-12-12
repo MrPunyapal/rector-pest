@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use MrPunyapal\RectorPest\Rules\UseToBeReadableWritableRector;
 use Rector\Config\RectorConfig;
+use RectorPest\Rules\UseToBeReadableWritableRector;
 
 return RectorConfig::configure()
     ->withRules([UseToBeReadableWritableRector::class]);

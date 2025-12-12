@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace MrPunyapal\RectorPest\Rules;
+namespace RectorPest\Rules;
 
-use MrPunyapal\RectorPest\AbstractRector;
 use PhpParser\Node;
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Expression;
 use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\PhpParser\Enum\NodeGroup;
+use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
@@ -248,7 +249,7 @@ CODE_SAMPLE
             return false;
         }
 
-        $andArg = new Node\Arg($targetExpectArg);
+        $andArg = new Arg($targetExpectArg);
         $andCall = new MethodCall($firstMethodCall, 'and', [$andArg]);
 
         $result = $this->rebuildMethodChain($andCall, $allSecondMethods);
