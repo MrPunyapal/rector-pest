@@ -4,7 +4,7 @@
 
 Chains multiple `expect()` calls on the same value into a single chained expectation
 
-- class: [`MrPunyapal\RectorPest\Rules\ChainExpectCallsRector`](../src/Rules/ChainExpectCallsRector.php)
+- class: [`RectorPest\Rules\ChainExpectCallsRector`](../src/Rules/ChainExpectCallsRector.php)
 
 ```diff
 -expect($a)->toBe(10);
@@ -36,7 +36,7 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 
 Removes `only()` from all tests
 
-- class: [`MrPunyapal\RectorPest\Rules\RemoveOnlyRector`](../src/Rules/RemoveOnlyRector.php)
+- class: [`RectorPest\Rules\RemoveOnlyRector`](../src/Rules/RemoveOnlyRector.php)
 
 ```diff
 -test()->only();
@@ -49,7 +49,7 @@ Removes `only()` from all tests
 
 Converts expect($x > `10)->toBeTrue()` to expect($x)->toBeGreaterThan(10)
 
-- class: [`MrPunyapal\RectorPest\Rules\SimplifyComparisonExpectationsRector`](../src/Rules/SimplifyComparisonExpectationsRector.php)
+- class: [`RectorPest\Rules\SimplifyComparisonExpectationsRector`](../src/Rules/SimplifyComparisonExpectationsRector.php)
 
 ```diff
 -expect($value > 10)->toBeTrue();
@@ -68,7 +68,7 @@ Converts expect($x > `10)->toBeTrue()` to expect($x)->toBeGreaterThan(10)
 
 Simplifies negated expectations by flipping the matcher (e.g., `expect(!$x)->toBeTrue()` becomes `expect($x)->toBeFalse())`
 
-- class: [`MrPunyapal\RectorPest\Rules\SimplifyExpectNotRector`](../src/Rules/SimplifyExpectNotRector.php)
+- class: [`RectorPest\Rules\SimplifyExpectNotRector`](../src/Rules/SimplifyExpectNotRector.php)
 
 ```diff
 -expect(!$condition)->toBeTrue();
@@ -83,7 +83,7 @@ Simplifies negated expectations by flipping the matcher (e.g., `expect(!$x)->toB
 
 Simplifies expect($x)->toBe(true) to `expect($x)->toBeTrue()` and similar patterns
 
-- class: [`MrPunyapal\RectorPest\Rules\SimplifyToLiteralBooleanRector`](../src/Rules/SimplifyToLiteralBooleanRector.php)
+- class: [`RectorPest\Rules\SimplifyToLiteralBooleanRector`](../src/Rules/SimplifyToLiteralBooleanRector.php)
 
 ```diff
 -expect($value)->toBe(true);
@@ -104,7 +104,7 @@ Simplifies expect($x)->toBe(true) to `expect($x)->toBeTrue()` and similar patter
 
 Replaces deprecated `->tap()` method with `->defer()` for Pest v3 migration
 
-- class: [`MrPunyapal\RectorPest\Rules\Pest2ToPest3\TapToDeferRector`](../src/Rules/Pest2ToPest3/TapToDeferRector.php)
+- class: [`RectorPest\Rules\Pest2ToPest3\TapToDeferRector`](../src/Rules/Pest2ToPest3/TapToDeferRector.php)
 
 ```diff
 -expect($value)->tap(fn ($value) => dump($value))->toBe(10);
@@ -117,7 +117,7 @@ Replaces deprecated `->tap()` method with `->defer()` for Pest v3 migration
 
 Simplifies double-negative expectations like `->not->toBeFalse()` to `->toBeTrue()`
 
-- class: [`MrPunyapal\RectorPest\Rules\ToBeTrueNotFalseRector`](../src/Rules/ToBeTrueNotFalseRector.php)
+- class: [`RectorPest\Rules\ToBeTrueNotFalseRector`](../src/Rules/ToBeTrueNotFalseRector.php)
 
 ```diff
 -expect($value)->not->toBeFalse();
@@ -132,7 +132,7 @@ Simplifies double-negative expectations like `->not->toBeFalse()` to `->toBeTrue
 
 Changes `expect($object)->toHaveMethod()` to `expect($object::class)->toHaveMethod()` for Pest v3
 
-- class: [`MrPunyapal\RectorPest\Rules\Pest2ToPest3\ToHaveMethodOnClassRector`](../src/Rules/Pest2ToPest3/ToHaveMethodOnClassRector.php)
+- class: [`RectorPest\Rules\Pest2ToPest3\ToHaveMethodOnClassRector`](../src/Rules/Pest2ToPest3/ToHaveMethodOnClassRector.php)
 
 ```diff
 -expect($user)->toHaveMethod('getName');
@@ -147,7 +147,7 @@ Changes `expect($object)->toHaveMethod()` to `expect($object::class)->toHaveMeth
 
 Converts foreach loops with `expect()` calls to use the ->each modifier
 
-- class: [`MrPunyapal\RectorPest\Rules\UseEachModifierRector`](../src/Rules/UseEachModifierRector.php)
+- class: [`RectorPest\Rules\UseEachModifierRector`](../src/Rules/UseEachModifierRector.php)
 
 ```diff
 -foreach ($items as $item) {
@@ -162,7 +162,7 @@ Converts foreach loops with `expect()` calls to use the ->each modifier
 
 Converts expect($obj instanceof `User)->toBeTrue()` to expect($obj)->toBeInstanceOf(User::class)
 
-- class: [`MrPunyapal\RectorPest\Rules\UseInstanceOfMatcherRector`](../src/Rules/UseInstanceOfMatcherRector.php)
+- class: [`RectorPest\Rules\UseInstanceOfMatcherRector`](../src/Rules/UseInstanceOfMatcherRector.php)
 
 ```diff
 -expect($user instanceof User)->toBeTrue();
@@ -177,7 +177,7 @@ Converts expect($obj instanceof `User)->toBeTrue()` to expect($obj)->toBeInstanc
 
 Converts strict equality expressions to `toBe()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseStrictEqualityMatchersRector`](../src/Rules/UseStrictEqualityMatchersRector.php)
+- class: [`RectorPest\Rules\UseStrictEqualityMatchersRector`](../src/Rules/UseStrictEqualityMatchersRector.php)
 
 ```diff
 -expect($a === $b)->toBeTrue();
@@ -194,7 +194,7 @@ Converts strict equality expressions to `toBe()` matcher
 
 Converts `is_dir()` checks to `toBeDirectory()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToBeDirectoryRector`](../src/Rules/UseToBeDirectoryRector.php)
+- class: [`RectorPest\Rules\UseToBeDirectoryRector`](../src/Rules/UseToBeDirectoryRector.php)
 
 ```diff
 -expect(is_dir($path))->toBeTrue();
@@ -209,7 +209,7 @@ Converts `is_dir()` checks to `toBeDirectory()` matcher
 
 Converts `is_file()` checks to `toBeFile()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToBeFileRector`](../src/Rules/UseToBeFileRector.php)
+- class: [`RectorPest\Rules\UseToBeFileRector`](../src/Rules/UseToBeFileRector.php)
 
 ```diff
 -expect(is_file($path))->toBeTrue();
@@ -224,7 +224,7 @@ Converts `is_file()` checks to `toBeFile()` matcher
 
 Converts `json_decode()` null checks to `toBeJson()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToBeJsonRector`](../src/Rules/UseToBeJsonRector.php)
+- class: [`RectorPest\Rules\UseToBeJsonRector`](../src/Rules/UseToBeJsonRector.php)
 
 ```diff
 -expect(json_decode($string) !== null)->toBeTrue();
@@ -239,7 +239,7 @@ Converts `json_decode()` null checks to `toBeJson()` matcher
 
 Converts `is_readable()/is_writable()` checks to `toBeReadable()/toBeWritable()` matchers
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToBeReadableWritableRector`](../src/Rules/UseToBeReadableWritableRector.php)
+- class: [`RectorPest\Rules\UseToBeReadableWritableRector`](../src/Rules/UseToBeReadableWritableRector.php)
 
 ```diff
 -expect(is_readable($path))->toBeTrue();
@@ -254,7 +254,7 @@ Converts `is_readable()/is_writable()` checks to `toBeReadable()/toBeWritable()`
 
 Converts `in_array()` checks to `toContain()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToContainRector`](../src/Rules/UseToContainRector.php)
+- class: [`RectorPest\Rules\UseToContainRector`](../src/Rules/UseToContainRector.php)
 
 ```diff
 -expect(in_array($item, $array))->toBeTrue();
@@ -269,7 +269,7 @@ Converts `in_array()` checks to `toContain()` matcher
 
 Converts `str_ends_with()` checks to `toEndWith()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToEndWithRector`](../src/Rules/UseToEndWithRector.php)
+- class: [`RectorPest\Rules\UseToEndWithRector`](../src/Rules/UseToEndWithRector.php)
 
 ```diff
 -expect(str_ends_with($string, 'World'))->toBeTrue();
@@ -284,7 +284,7 @@ Converts `str_ends_with()` checks to `toEndWith()` matcher
 
 Converts expect(count($arr))->toBe(5) to expect($arr)->toHaveCount(5)
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToHaveCountRector`](../src/Rules/UseToHaveCountRector.php)
+- class: [`RectorPest\Rules\UseToHaveCountRector`](../src/Rules/UseToHaveCountRector.php)
 
 ```diff
 -expect(count($array))->toBe(5);
@@ -299,7 +299,7 @@ Converts expect(count($arr))->toBe(5) to expect($arr)->toHaveCount(5)
 
 Converts `array_key_exists()` checks to `toHaveKey()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToHaveKeyRector`](../src/Rules/UseToHaveKeyRector.php)
+- class: [`RectorPest\Rules\UseToHaveKeyRector`](../src/Rules/UseToHaveKeyRector.php)
 
 ```diff
 -expect(array_key_exists('id', $array))->toBeTrue();
@@ -314,7 +314,7 @@ Converts `array_key_exists()` checks to `toHaveKey()` matcher
 
 Converts `strlen()/mb_strlen()` comparisons to `toHaveLength()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToHaveLengthRector`](../src/Rules/UseToHaveLengthRector.php)
+- class: [`RectorPest\Rules\UseToHaveLengthRector`](../src/Rules/UseToHaveLengthRector.php)
 
 ```diff
 -expect(strlen($string))->toBe(10);
@@ -329,7 +329,7 @@ Converts `strlen()/mb_strlen()` comparisons to `toHaveLength()` matcher
 
 Converts `property_exists()` checks to `toHaveProperty()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToHavePropertyRector`](../src/Rules/UseToHavePropertyRector.php)
+- class: [`RectorPest\Rules\UseToHavePropertyRector`](../src/Rules/UseToHavePropertyRector.php)
 
 ```diff
 -expect(property_exists($object, 'name'))->toBeTrue();
@@ -344,7 +344,7 @@ Converts `property_exists()` checks to `toHaveProperty()` matcher
 
 Converts expect(preg_match("/pattern/", `$str))->toBe(1)` to expect($str)->toMatch("/pattern/")
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToMatchRector`](../src/Rules/UseToMatchRector.php)
+- class: [`RectorPest\Rules\UseToMatchRector`](../src/Rules/UseToMatchRector.php)
 
 ```diff
 -expect(preg_match('/pattern/', $string))->toBe(1);
@@ -359,7 +359,7 @@ Converts expect(preg_match("/pattern/", `$str))->toBe(1)` to expect($str)->toMat
 
 Converts `str_starts_with()` checks to `toStartWith()` matcher
 
-- class: [`MrPunyapal\RectorPest\Rules\UseToStartWithRector`](../src/Rules/UseToStartWithRector.php)
+- class: [`RectorPest\Rules\UseToStartWithRector`](../src/Rules/UseToStartWithRector.php)
 
 ```diff
 -expect(str_starts_with($string, 'Hello'))->toBeTrue();
@@ -374,7 +374,7 @@ Converts `str_starts_with()` checks to `toStartWith()` matcher
 
 Converts `expect(is_array($x))->toBeTrue()` to `expect($x)->toBeArray()`
 
-- class: [`MrPunyapal\RectorPest\Rules\UseTypeMatchersRector`](../src/Rules/UseTypeMatchersRector.php)
+- class: [`RectorPest\Rules\UseTypeMatchersRector`](../src/Rules/UseTypeMatchersRector.php)
 
 ```diff
 -expect(is_array($value))->toBeTrue();
