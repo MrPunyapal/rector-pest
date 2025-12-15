@@ -161,6 +161,7 @@ CODE_SAMPLE
                             $changedInPass = true;
                             break;
                         }
+
                         // fallthrough to default merge if mergeDifferentVariableChains did nothing
                     }
 
@@ -226,13 +227,15 @@ CODE_SAMPLE
         $stmts = array_values($stmts);
 
         if ($collectedComments !== []) {
-            $filtered = array_values(array_filter($collectedComments, function ($c) {
+            $filtered = array_values(array_filter($collectedComments, function ($c): bool {
                 if (! is_object($c)) {
                     return false;
                 }
+
                 if (method_exists($c, 'getText')) {
-                    return trim($c->getText()) !== '';
+                    return trim((string) $c->getText()) !== '';
                 }
+
                 return true;
             }));
 
@@ -322,13 +325,15 @@ CODE_SAMPLE
 
         // attach collected comments to the merged statement (filter out empty ones)
         if ($collectedComments !== []) {
-            $filtered = array_values(array_filter($collectedComments, function ($c) {
+            $filtered = array_values(array_filter($collectedComments, function ($c): bool {
                 if (! is_object($c)) {
                     return false;
                 }
+
                 if (method_exists($c, 'getText')) {
-                    return trim($c->getText()) !== '';
+                    return trim((string) $c->getText()) !== '';
                 }
+
                 return true;
             }));
 
