@@ -226,13 +226,13 @@ CODE_SAMPLE
                 // Place property fetches (e.g. ->not) before type matchers,
                 // then the remaining non-type methods.
                 // treat any `not` (property or method) as a prefix to type matchers
-                $propertyEntries = array_values(array_filter($partitioned['non_type'], function ($m) {
+                $propertyEntries = array_values(array_filter($partitioned['non_type'], function (array $m): bool {
                     $nameValue = $m['name'];
                     $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
                     return $name === 'not';
                 }));
 
-                $otherNonType = array_values(array_filter($partitioned['non_type'], function ($m) {
+                $otherNonType = array_values(array_filter($partitioned['non_type'], function (array $m): bool {
                     $nameValue = $m['name'];
                     $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
                     return $name !== 'not';
@@ -272,31 +272,5 @@ CODE_SAMPLE
         }
 
         return $result;
-    }
-
-    /**
-     * Detect if any method in the collected chain is the `not` method.
-     *
-     * @param array<array{name: Expr|\PhpParser\Node\Identifier|string, args: array<Arg|VariadicPlaceholder>}> $methods
-     */
-    private function containsNotMethod(array $methods): bool
-    {
-        foreach ($methods as $m) {
-            $nameValue = $m['name'];
-            if ($nameValue instanceof Node) {
-                $name = $this->getName($nameValue);
-            } else {
-                $name = $nameValue;
-            }
-
-            // only treat explicit method calls `not()` as a blocker —
-            // property fetches (`->not`) are handled by reordering logic
-            $isProperty = isset($m['is_property']) ? (bool) $m['is_property'] : false;
-            if ($name === 'not' && $isProperty === false) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
