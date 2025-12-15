@@ -233,7 +233,8 @@ CODE_SAMPLE
                 }
 
                 if (method_exists($c, 'getText')) {
-                    return trim((string) $c->getText()) !== '';
+                    $text = $c->getText();
+                    return is_string($text) && trim($text) !== '';
                 }
 
                 return true;
@@ -331,7 +332,8 @@ CODE_SAMPLE
                 }
 
                 if (method_exists($c, 'getText')) {
-                    return trim((string) $c->getText()) !== '';
+                    $text = $c->getText();
+                    return is_string($text) && trim($text) !== '';
                 }
 
                 return true;
