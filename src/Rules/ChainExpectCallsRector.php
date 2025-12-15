@@ -139,8 +139,31 @@ CODE_SAMPLE
                     continue;
                 }
 
-                // same variable: merge methods into a single expect() chain
+                // same variable: normally merge methods into a single expect() chain
                 if ($this->nodeComparator->areNodesEqual($firstExpectArg, $nextExpectArg)) {
+                    // if the current chain already contains an `and` call, prefer
+                    // merging the next statements as different-variable chains
+                    // to avoid appending methods in the wrong order.
+                    $currentMethods = $this->collectChainMethods($methodCall);
+                    $hasAnd = false;
+                    foreach ($currentMethods as $cm) {
+                        $nameValue = $cm['name'];
+                        $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
+                        if ($name === 'and') {
+                            $hasAnd = true;
+                            break;
+                        }
+                    }
+
+                    if ($hasAnd) {
+                        if ($this->mergeDifferentVariableChains($stmts, $key)) {
+                            $hasChanged = true;
+                            $changedInPass = true;
+                            break;
+                        }
+                        // fallthrough to default merge if mergeDifferentVariableChains did nothing
+                    }
+
                     $this->mergeSameVariable($stmts, $key);
 
                     $hasChanged = true;
@@ -203,7 +226,19 @@ CODE_SAMPLE
         $stmts = array_values($stmts);
 
         if ($collectedComments !== []) {
-            $exprStmt->setAttribute('comments', $collectedComments);
+            $filtered = array_values(array_filter($collectedComments, function ($c) {
+                if (! is_object($c)) {
+                    return false;
+                }
+                if (method_exists($c, 'getText')) {
+                    return trim($c->getText()) !== '';
+                }
+                return true;
+            }));
+
+            if ($filtered !== []) {
+                $exprStmt->setAttribute('comments', $filtered);
+            }
         }
     }
 
@@ -285,9 +320,21 @@ CODE_SAMPLE
 
         $exprStmt->expr = $result;
 
-        // attach collected comments to the merged statement
+        // attach collected comments to the merged statement (filter out empty ones)
         if ($collectedComments !== []) {
-            $exprStmt->setAttribute('comments', $collectedComments);
+            $filtered = array_values(array_filter($collectedComments, function ($c) {
+                if (! is_object($c)) {
+                    return false;
+                }
+                if (method_exists($c, 'getText')) {
+                    return trim($c->getText()) !== '';
+                }
+                return true;
+            }));
+
+            if ($filtered !== []) {
+                $exprStmt->setAttribute('comments', $filtered);
+            }
         }
 
         $stmts = array_values($stmts);
