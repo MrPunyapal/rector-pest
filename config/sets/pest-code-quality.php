@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use RectorPest\Rules\ChainExpectCallsRector;
+// use RectorPest\Rules\ChainExpectCallsRector;
 use RectorPest\Rules\EnsureTypeChecksFirstRector;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
 use RectorPest\Rules\SimplifyExpectNotRector;
@@ -40,7 +40,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->import(__DIR__ . '/../config.php');
 
     // Chaining and structure
-    $rectorConfig->rule(ChainExpectCallsRector::class);
+    // $rectorConfig->rule(ChainExpectCallsRector::class); // todo: re-enable once stable
     $rectorConfig->rule(UseEachModifierRector::class);
     $rectorConfig->rule(EnsureTypeChecksFirstRector::class);
 
