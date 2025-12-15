@@ -12,7 +12,8 @@
         "refactoring",
         "static-analysis",
         "ast",
-        "instant-upgrades"
+        "instant-upgrades",
+        "dev"
     ],
     "authors": [
         {
