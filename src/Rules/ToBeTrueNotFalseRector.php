@@ -89,8 +89,16 @@ CODE_SAMPLE
 
         $methods = $this->collectChainMethods($methodCall);
 
-        // remove any property fetch entries (e.g. ->not) before rebuilding
-        $methods = array_values(array_filter($methods, fn (array $m): bool => empty($m['is_property'])));
+        // remove only the `not` property fetch entries (keep other property fetches like ->each)
+        $methods = array_values(array_filter($methods, function (array $m): bool {
+            if (empty($m['is_property'])) {
+                return true;
+            }
+
+            $name = $this->getName($m['name']);
+
+            return $name !== 'not';
+        }));
 
         if ($methods !== []) {
             $lastIndex = count($methods) - 1;

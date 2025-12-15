@@ -30,7 +30,7 @@ final class EnsureTypeChecksFirstRector extends AbstractRector
     /**
      * @var string[]
      */
-    public static array $prefixModifiers = ['not', 'each'];
+    public static array $prefixModifiers = ['not'];
 
     public function getRuleDefinition(): RuleDefinition
     {
@@ -202,6 +202,21 @@ CODE_SAMPLE
         $segment = [];
 
         $flushSegment = function () use (&$segment, &$result): void {
+            // If the segment contains `each`, skip reordering to preserve
+            // the scoping semantics of `each` (e.g. ->each()->toBeNull()).
+            foreach ($segment as $sm) {
+                $nameValue = $sm['name'];
+                $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
+                if ($name === 'each') {
+                    foreach ($segment as $m) {
+                        $result[] = $m;
+                    }
+
+                    $segment = [];
+                    return;
+                }
+            }
+
             // Process the current segment
             $partitioned = $this->partitionTypeAndNonType($segment);
 
@@ -225,25 +240,81 @@ CODE_SAMPLE
                         $foundNonType = true;
                     }
                 }
+
+                // If there is a type -> non-type -> type pattern (interleaved),
+                // reordering could change semantics (e.g. ->toBeInstanceOf(...)->each->toBeInstanceOf(...)).
+                // Detect that pattern and avoid reordering for such segments.
+                if ($needsReorder) {
+                    $foundType = false;
+                    $foundNonAfterType = false;
+                    $foundTypeAfterNonAfterType = false;
+                    foreach ($segment as $m) {
+                        $nameValue = $m['name'];
+                        $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
+
+                        if ($name !== null && $this->isTypeMatcherName($name)) {
+                            if ($foundNonAfterType) {
+                                $foundTypeAfterNonAfterType = true;
+                                break;
+                            }
+
+                            $foundType = true;
+                        } elseif ($foundType) {
+                            $foundNonAfterType = true;
+                        }
+                    }
+
+                    if ($foundTypeAfterNonAfterType) {
+                        $needsReorder = false;
+                    }
+                }
             }
 
             if ($needsReorder) {
-                // Place property fetches (e.g. ->not) before type matchers,
-                // then the remaining non-type methods.
-                // treat any `not` (property or method) as a prefix to type matchers
-                $propertyEntries = array_values(array_filter($partitioned['non_type'], function (array $m): bool {
+                // Place only the prefix modifiers (e.g. ->not) that appear before
+                // the first type matcher in the original segment before type matchers.
+                // This avoids moving `each` that scopes the following matcher(s)
+                // but appears after an initial type matcher.
+                $prefixBeforeType = [];
+                $otherNonType = [];
+
+                // Determine prefix modifiers that come before the first type matcher
+                $foundType = false;
+                foreach ($segment as $m) {
                     $nameValue = $m['name'];
                     $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
-                    return in_array($name, self::$prefixModifiers, true);
-                }));
 
-                $otherNonType = array_values(array_filter($partitioned['non_type'], function (array $m): bool {
+                    if ($name !== null && $this->isTypeMatcherName($name)) {
+                        $foundType = true;
+                        break;
+                    }
+
+                    if (in_array($name, self::$prefixModifiers, true)) {
+                        $prefixBeforeType[] = $m;
+                    }
+                }
+
+                // Build otherNonType as all non_type entries excluding those
+                // that were treated as prefixBeforeType (preserve their original order)
+                foreach ($partitioned['non_type'] as $m) {
                     $nameValue = $m['name'];
                     $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
-                    return ! in_array($name, self::$prefixModifiers, true);
-                }));
+                    $isPrefix = false;
+                    foreach ($prefixBeforeType as $p) {
+                        $pNameValue = $p['name'];
+                        $pName = $pNameValue instanceof Node ? $this->getName($pNameValue) : $pNameValue;
+                        if ($pName === $name) {
+                            $isPrefix = true;
+                            break;
+                        }
+                    }
 
-                foreach (array_merge($propertyEntries, $partitioned['type'], $otherNonType) as $m) {
+                    if (! $isPrefix) {
+                        $otherNonType[] = $m;
+                    }
+                }
+
+                foreach (array_merge($prefixBeforeType, $partitioned['type'], $otherNonType) as $m) {
                     $result[] = $m;
                 }
             } else {

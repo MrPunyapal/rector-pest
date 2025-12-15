@@ -11,3 +11,6 @@ expect($a)->not->toBeNull();
 
 expect($a)->each()->toBeNull();
 expect($a)->each->toBeNull();
+
+expect($user->rooms)->toBeInstanceOf(Collection::class)->each->toBeInstanceOf(Room::class);
+expect($user->rooms)->toBeInstanceOf(Collection::class)->each()->toBeInstanceOf(Room::class);
