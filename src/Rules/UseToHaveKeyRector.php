@@ -6,12 +6,9 @@ namespace RectorPest\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use RectorPest\AbstractRector;
+use RectorPest\Concerns\ExpectChainValidation;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
@@ -23,6 +20,12 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
  */
 final class UseToHaveKeyRector extends AbstractRector
 {
+    use ExpectChainValidation;
+
+    private const FUNCTION_NAME = 'array_key_exists';
+
+    private const MATCHER_NAME = 'toHaveKey';
+
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -56,46 +59,12 @@ CODE_SAMPLE
      */
     public function refactor(Node $node): ?Node
     {
-        if (! $this->isExpectChain($node)) {
+        $extracted = $this->extractFunctionFromExpect($node, [self::FUNCTION_NAME]);
+        if ($extracted === null) {
             return null;
         }
 
-        if (! $node->name instanceof Identifier) {
-            return null;
-        }
-
-        $methodName = $node->name->name;
-
-        if ($methodName !== 'toBeTrue' && $methodName !== 'toBeFalse') {
-            return null;
-        }
-
-        $expectCall = $this->getExpectFuncCall($node);
-        if (! $expectCall instanceof FuncCall) {
-            return null;
-        }
-
-        if (! isset($expectCall->args[0])) {
-            return null;
-        }
-
-        $arg = $expectCall->args[0];
-        if (! $arg instanceof Arg) {
-            return null;
-        }
-
-        if (! $arg->value instanceof FuncCall) {
-            return null;
-        }
-
-        $funcCall = $arg->value;
-        if (! $funcCall->name instanceof Name) {
-            return null;
-        }
-
-        if ($funcCall->name->toString() !== 'array_key_exists') {
-            return null;
-        }
+        $funcCall = $extracted['funcCall'];
 
         // array_key_exists requires 2 arguments: key, array
         if (count($funcCall->args) !== 2) {
@@ -109,22 +78,14 @@ CODE_SAMPLE
             return null;
         }
 
-        // Update expect() to use the array
-        $expectCall->args[0] = new Arg($arrayArg->value);
+        $needsNot = $this->calculateNeedsNot($extracted['methodName'], $node);
 
-        // Check if we need ->not
-        $needsNot = $methodName === 'toBeFalse';
-        if ($this->hasNotModifier($node)) {
-            $needsNot = ! $needsNot;
-        }
-
-        // Build the new method call chain
-        if ($needsNot) {
-            $notProperty = new PropertyFetch($expectCall, 'not');
-
-            return new MethodCall($notProperty, 'toHaveKey', [new Arg($keyArg->value)]);
-        }
-
-        return new MethodCall($expectCall, 'toHaveKey', [new Arg($keyArg->value)]);
+        return $this->buildMatcherCall(
+            $extracted['expectCall'],
+            $arrayArg->value,
+            self::MATCHER_NAME,
+            [new Arg($keyArg->value)],
+            $needsNot
+        );
     }
 }
