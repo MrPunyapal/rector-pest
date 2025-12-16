@@ -6,12 +6,9 @@ namespace RectorPest\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use RectorPest\AbstractRector;
+use RectorPest\Concerns\ExpectChainValidation;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
@@ -23,6 +20,12 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
  */
 final class UseToStartWithRector extends AbstractRector
 {
+    use ExpectChainValidation;
+
+    private const FUNCTION_NAME = 'str_starts_with';
+
+    private const MATCHER_NAME = 'toStartWith';
+
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -56,46 +59,12 @@ CODE_SAMPLE
      */
     public function refactor(Node $node): ?Node
     {
-        if (! $this->isExpectChain($node)) {
+        $extracted = $this->extractFunctionFromExpect($node, [self::FUNCTION_NAME]);
+        if ($extracted === null) {
             return null;
         }
 
-        if (! $node->name instanceof Identifier) {
-            return null;
-        }
-
-        $methodName = $node->name->name;
-
-        if ($methodName !== 'toBeTrue' && $methodName !== 'toBeFalse') {
-            return null;
-        }
-
-        $expectCall = $this->getExpectFuncCall($node);
-        if (! $expectCall instanceof FuncCall) {
-            return null;
-        }
-
-        if (! isset($expectCall->args[0])) {
-            return null;
-        }
-
-        $arg = $expectCall->args[0];
-        if (! $arg instanceof Arg) {
-            return null;
-        }
-
-        if (! $arg->value instanceof FuncCall) {
-            return null;
-        }
-
-        $funcCall = $arg->value;
-        if (! $funcCall->name instanceof Name) {
-            return null;
-        }
-
-        if ($funcCall->name->toString() !== 'str_starts_with') {
-            return null;
-        }
+        $funcCall = $extracted['funcCall'];
 
         // str_starts_with requires 2 arguments: haystack, needle
         if (count($funcCall->args) !== 2) {
@@ -109,21 +78,14 @@ CODE_SAMPLE
             return null;
         }
 
-        // Update expect() to use the string (haystack)
-        $expectCall->args[0] = new Arg($haystackArg->value);
+        $needsNot = $this->calculateNeedsNot($extracted['methodName'], $node);
 
-        // Check if we need ->not
-        $needsNot = $methodName === 'toBeFalse';
-        if ($this->hasNotModifier($node)) {
-            $needsNot = ! $needsNot;
-        }
-
-        if ($needsNot) {
-            $notProperty = new PropertyFetch($expectCall, 'not');
-
-            return new MethodCall($notProperty, 'toStartWith', [new Arg($needleArg->value)]);
-        }
-
-        return new MethodCall($expectCall, 'toStartWith', [new Arg($needleArg->value)]);
+        return $this->buildMatcherCall(
+            $extracted['expectCall'],
+            $haystackArg->value,
+            self::MATCHER_NAME,
+            [new Arg($needleArg->value)],
+            $needsNot
+        );
     }
 }

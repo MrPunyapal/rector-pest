@@ -6,12 +6,9 @@ namespace RectorPest\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use RectorPest\AbstractRector;
+use RectorPest\Concerns\ExpectChainValidation;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
@@ -23,6 +20,12 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
  */
 final class UseToContainRector extends AbstractRector
 {
+    use ExpectChainValidation;
+
+    private const FUNCTION_NAME = 'in_array';
+
+    private const MATCHER_NAME = 'toContain';
+
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -56,48 +59,12 @@ CODE_SAMPLE
      */
     public function refactor(Node $node): ?Node
     {
-        if (! $this->isExpectChain($node)) {
+        $extracted = $this->extractFunctionFromExpect($node, [self::FUNCTION_NAME]);
+        if ($extracted === null) {
             return null;
         }
 
-        if (! $node->name instanceof Identifier) {
-            return null;
-        }
-
-        $methodName = $node->name->name;
-
-        // Handle toBeTrue() and toBeFalse()
-        if ($methodName !== 'toBeTrue' && $methodName !== 'toBeFalse') {
-            return null;
-        }
-
-        $expectCall = $this->getExpectFuncCall($node);
-        if (! $expectCall instanceof FuncCall) {
-            return null;
-        }
-
-        if (! isset($expectCall->args[0])) {
-            return null;
-        }
-
-        $arg = $expectCall->args[0];
-        if (! $arg instanceof Arg) {
-            return null;
-        }
-
-        // Check if the argument is in_array() call
-        if (! $arg->value instanceof FuncCall) {
-            return null;
-        }
-
-        $funcCall = $arg->value;
-        if (! $funcCall->name instanceof Name) {
-            return null;
-        }
-
-        if ($funcCall->name->toString() !== 'in_array') {
-            return null;
-        }
+        $funcCall = $extracted['funcCall'];
 
         // in_array requires at least 2 arguments: needle, haystack
         if (count($funcCall->args) < 2) {
@@ -111,21 +78,14 @@ CODE_SAMPLE
             return null;
         }
 
-        // Update expect() to use the array (haystack)
-        $expectCall->args[0] = new Arg($haystackArg->value);
+        $needsNot = $this->calculateNeedsNot($extracted['methodName'], $node);
 
-        // Check if we need ->not based on toBeFalse or hasNotModifier
-        $needsNot = $methodName === 'toBeFalse';
-        if ($this->hasNotModifier($node)) {
-            $needsNot = ! $needsNot;
-        }
-
-        // Build the new method call chain
-        if ($needsNot) {
-            $notProperty = new PropertyFetch($expectCall, 'not');
-            return new MethodCall($notProperty, 'toContain', [new Arg($needleArg->value)]);
-        }
-
-        return new MethodCall($expectCall, 'toContain', [new Arg($needleArg->value)]);
+        return $this->buildMatcherCall(
+            $extracted['expectCall'],
+            $haystackArg->value,
+            self::MATCHER_NAME,
+            [new Arg($needleArg->value)],
+            $needsNot
+        );
     }
 }

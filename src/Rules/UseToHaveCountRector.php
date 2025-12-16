@@ -18,6 +18,11 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
  */
 final class UseToHaveCountRector extends AbstractRector
 {
+    /**
+     * @var array<string>
+     */
+    private const COUNT_FUNCTIONS = ['count', 'sizeof'];
+
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -73,7 +78,7 @@ CODE_SAMPLE
             return null;
         }
 
-        if (! $this->isNames($expectArg, ['count', 'sizeof'])) {
+        if (! $this->isNames($expectArg, self::COUNT_FUNCTIONS)) {
             return null;
         }
 

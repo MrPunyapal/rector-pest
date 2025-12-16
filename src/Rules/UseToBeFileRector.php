@@ -6,12 +6,9 @@ namespace RectorPest\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use RectorPest\AbstractRector;
+use RectorPest\Concerns\ExpectChainValidation;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
@@ -23,6 +20,12 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
  */
 final class UseToBeFileRector extends AbstractRector
 {
+    use ExpectChainValidation;
+
+    private const FUNCTION_NAME = 'is_file';
+
+    private const MATCHER_NAME = 'toBeFile';
+
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -56,47 +59,12 @@ CODE_SAMPLE
      */
     public function refactor(Node $node): ?Node
     {
-        if (! $this->isExpectChain($node)) {
+        $extracted = $this->extractFunctionFromExpect($node, [self::FUNCTION_NAME]);
+        if ($extracted === null) {
             return null;
         }
 
-        if (! $node->name instanceof Identifier) {
-            return null;
-        }
-
-        $methodName = $node->name->name;
-
-        if ($methodName !== 'toBeTrue' && $methodName !== 'toBeFalse') {
-            return null;
-        }
-
-        $expectCall = $this->getExpectFuncCall($node);
-        if (! $expectCall instanceof FuncCall) {
-            return null;
-        }
-
-        if (! isset($expectCall->args[0])) {
-            return null;
-        }
-
-        $arg = $expectCall->args[0];
-        if (! $arg instanceof Arg) {
-            return null;
-        }
-
-        if (! $arg->value instanceof FuncCall) {
-            return null;
-        }
-
-        $funcCall = $arg->value;
-        if (! $funcCall->name instanceof Name) {
-            return null;
-        }
-
-        if ($funcCall->name->toString() !== 'is_file') {
-            return null;
-        }
-
+        $funcCall = $extracted['funcCall'];
         if (count($funcCall->args) !== 1) {
             return null;
         }
@@ -106,21 +74,14 @@ CODE_SAMPLE
             return null;
         }
 
-        // Update expect() to use the path directly
-        $expectCall->args[0] = new Arg($pathArg->value);
+        $needsNot = $this->calculateNeedsNot($extracted['methodName'], $node);
 
-        // Check if we need ->not
-        $needsNot = $methodName === 'toBeFalse';
-        if ($this->hasNotModifier($node)) {
-            $needsNot = ! $needsNot;
-        }
-
-        if ($needsNot) {
-            $notProperty = new PropertyFetch($expectCall, 'not');
-
-            return new MethodCall($notProperty, 'toBeFile');
-        }
-
-        return new MethodCall($expectCall, 'toBeFile');
+        return $this->buildMatcherCall(
+            $extracted['expectCall'],
+            $pathArg->value,
+            self::MATCHER_NAME,
+            [],
+            $needsNot
+        );
     }
 }
