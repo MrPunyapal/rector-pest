@@ -22,6 +22,11 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
  */
 final class UseToHaveLengthRector extends AbstractRector
 {
+    /**
+     * @var array<string>
+     */
+    private const LENGTH_FUNCTIONS = ['strlen', 'mb_strlen'];
+
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -104,7 +109,7 @@ CODE_SAMPLE
         }
 
         $funcName = $funcCall->name->toString();
-        if ($funcName !== 'strlen' && $funcName !== 'mb_strlen') {
+        if (! in_array($funcName, self::LENGTH_FUNCTIONS, true)) {
             return null;
         }
 
