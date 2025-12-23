@@ -8,3 +8,6 @@ expect(is_dir('/tmp'))->toBeString();
 
 // Skip when arg count is wrong
 expect(is_dir('/tmp', 'extra'))->toBeTrue();
+
+// Skip dynamic method names
+expect($value)->{$method}(5);

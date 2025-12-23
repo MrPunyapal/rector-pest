@@ -14,3 +14,7 @@ expect($a)->each->toBeNull();
 
 expect($user->rooms)->toBeInstanceOf(Collection::class)->each->toBeInstanceOf(Room::class);
 expect($user->rooms)->toBeInstanceOf(Collection::class)->each()->toBeInstanceOf(Room::class);
+
+// Edge cases: expect without args or with multiple args
+expect()->toBeTrue();
+expect($a, $b)->toBe(true);
