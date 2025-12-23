@@ -28,7 +28,7 @@
     },
     "require-dev": {
         "laravel/pint": "^1.18",
-        "pestphp/pest": "^4.1",
+        "pestphp/pest": "^3.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
         "symplify/rule-doc-generator": "^12.2"
@@ -55,12 +55,12 @@
     },
     "scripts": {
         "lint": [
-          "rector",
-          "pint"
+            "rector",
+            "pint --parallel"
         ],
         "test:lint": [
-          "rector --dry-run",
-          "pint --test"
+            "rector --dry-run",
+            "pint --test --parallel"
         ],
         "test:types": "phpstan analyse --ansi",
         "test:unit": "pest --parallel",
