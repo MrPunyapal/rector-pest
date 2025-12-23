@@ -27,6 +27,7 @@ final class UseToHaveLengthRector extends AbstractRector
      */
     private const LENGTH_FUNCTIONS = ['strlen', 'mb_strlen'];
 
+    // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -46,6 +47,7 @@ CODE_SAMPLE
             ]
         );
     }
+    // @codeCoverageIgnoreEnd
 
     /**
      * @return array<class-string<Node>>

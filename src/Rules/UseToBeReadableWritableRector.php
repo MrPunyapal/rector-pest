@@ -33,6 +33,7 @@ final class UseToBeReadableWritableRector extends AbstractRector
         'is_writeable' => 'toBeWritable', // alias
     ];
 
+    // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -52,6 +53,7 @@ CODE_SAMPLE
             ]
         );
     }
+    // @codeCoverageIgnoreEnd
 
     /**
      * @return array<class-string<Node>>

@@ -20,6 +20,7 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
  */
 final class UseEachModifierRector extends AbstractRector
 {
+    // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
@@ -39,6 +40,7 @@ CODE_SAMPLE
             ]
         );
     }
+    // @codeCoverageIgnoreEnd
 
     /**
      * @return array<class-string<Node>>
