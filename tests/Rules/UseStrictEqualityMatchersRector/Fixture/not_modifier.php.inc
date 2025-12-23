@@ -1,6 +1,6 @@
 <?php
 
-// Test: expect($x)->not->toBe() - triggers hasNotModifier and PropertyFetch branches
+// Test: expect($x)->not->toBe()
 expect($value)->not->toBe(5);
 expect($value)->not->toEqual(10);
 
