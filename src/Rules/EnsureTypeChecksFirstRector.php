@@ -11,6 +11,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\VariadicPlaceholder;
+use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\PhpParser\Enum\NodeGroup;
 use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
@@ -72,6 +73,9 @@ CODE_SAMPLE
         return NodeGroup::STMTS_AWARE;
     }
 
+    /**
+     * @param StmtsAwareInterface&Node $node
+     */
     public function refactor(Node $node): ?Node
     {
         if (! property_exists($node, 'stmts') || $node->stmts === null) {
@@ -95,6 +99,7 @@ CODE_SAMPLE
                 continue;
             }
 
+            /** @var MethodCall $methodCall */
             $methodCall = $stmt->expr;
             if (! $this->isExpectChain($methodCall)) {
                 continue;
@@ -126,12 +131,18 @@ CODE_SAMPLE
             // handle consecutive expect statements on same subject: swap so type-only comes first
             if (isset($stmts[$key + 1]) && $stmts[$key + 1] instanceof Expression) {
                 $next = $stmts[$key + 1];
-                if ($next->expr instanceof MethodCall && $this->isExpectChain($next->expr) && ! $this->hasNotModifier($next->expr)) {
+                if (! $next->expr instanceof MethodCall) {
+                    continue;
+                }
+
+                /** @var MethodCall $nextMethodCall */
+                $nextMethodCall = $next->expr;
+                if ($this->isExpectChain($nextMethodCall) && ! $this->hasNotModifier($nextMethodCall)) {
                     $firstArg = $this->getExpectArgument($methodCall);
-                    $secondArg = $this->getExpectArgument($next->expr);
+                    $secondArg = $this->getExpectArgument($nextMethodCall);
                     if ($firstArg instanceof Expr && $secondArg instanceof Expr && $this->nodeComparator->areNodesEqual($firstArg, $secondArg)) {
                         $firstPartition = $this->partitionTypeAndNonType($this->collectChainMethods($methodCall));
-                        $secondPartition = $this->partitionTypeAndNonType($this->collectChainMethods($next->expr));
+                        $secondPartition = $this->partitionTypeAndNonType($this->collectChainMethods($nextMethodCall));
 
                         $firstHasOnlyNonType = $firstPartition['type'] === [] && $firstPartition['non_type'] !== [];
                         $secondHasType = $secondPartition['type'] !== [];

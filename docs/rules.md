@@ -1,4 +1,4 @@
-# 26 Rules Overview
+# 38 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -212,6 +212,47 @@ Converts strict equality expressions to `toBe()` matcher
 
 <br>
 
+## UseToBeAlphaNumericRector
+
+Converts `ctype_alnum()` checks to `toBeAlphaNumeric()` matcher
+
+- class: [`RectorPest\Rules\UseToBeAlphaNumericRector`](../src/Rules/UseToBeAlphaNumericRector.php)
+
+```diff
+-expect(ctype_alnum($value))->toBeTrue();
++expect($value)->toBeAlphaNumeric();
+```
+
+<br>
+
+## UseToBeAlphaRector
+
+Converts `ctype_alpha()` checks to `toBeAlpha()` matcher
+
+- class: [`RectorPest\Rules\UseToBeAlphaRector`](../src/Rules/UseToBeAlphaRector.php)
+
+```diff
+-expect(ctype_alpha($value))->toBeTrue();
++expect($value)->toBeAlpha();
+```
+
+<br>
+
+## UseToBeBetweenRector
+
+Converts expect($value >= `$min` && `$value` <= `$max)->toBeTrue()` to expect($value)->toBeBetween($min, `$max)`
+
+- class: [`RectorPest\Rules\UseToBeBetweenRector`](../src/Rules/UseToBeBetweenRector.php)
+
+```diff
+-expect($value >= 1 && $value <= 10)->toBeTrue();
+-expect($age >= 18 && $age <= 65)->toBeTrue();
++expect($value)->toBeBetween(1, 10);
++expect($age)->toBeBetween(18, 65);
+```
+
+<br>
+
 ## UseToBeDirectoryRector
 
 Converts `is_dir()` checks to `toBeDirectory()` matcher
@@ -257,6 +298,21 @@ Converts `json_decode()` null checks to `toBeJson()` matcher
 
 <br>
 
+## UseToBeLowercaseRector
+
+Converts `strtolower()` equality checks to `toBeLowercase()` matcher
+
+- class: [`RectorPest\Rules\UseToBeLowercaseRector`](../src/Rules/UseToBeLowercaseRector.php)
+
+```diff
+-expect(strtolower($value) === $value)->toBeTrue();
+-expect($value === strtolower($value))->toBeTrue();
++expect($value)->toBeLowercase();
++expect($value)->toBeLowercase();
+```
+
+<br>
+
 ## UseToBeReadableWritableRector
 
 Converts `is_readable()/is_writable()` checks to `toBeReadable()/toBeWritable()` matchers
@@ -268,6 +324,64 @@ Converts `is_readable()/is_writable()` checks to `toBeReadable()/toBeWritable()`
 -expect(is_writable($file))->toBeTrue();
 +expect($path)->toBeReadable();
 +expect($file)->toBeWritable();
+```
+
+<br>
+
+## UseToBeUppercaseRector
+
+Converts `strtoupper()` equality checks to `toBeUppercase()` matcher
+
+- class: [`RectorPest\Rules\UseToBeUppercaseRector`](../src/Rules/UseToBeUppercaseRector.php)
+
+```diff
+-expect(strtoupper($value) === $value)->toBeTrue();
+-expect($value === strtoupper($value))->toBeTrue();
++expect($value)->toBeUppercase();
++expect($value)->toBeUppercase();
+```
+
+<br>
+
+## UseToBeUrlRector
+
+Converts filter_var($url, FILTER_VALIDATE_URL) checks to `toBeUrl()` matcher
+
+- class: [`RectorPest\Rules\UseToBeUrlRector`](../src/Rules/UseToBeUrlRector.php)
+
+```diff
+-expect(filter_var($url, FILTER_VALIDATE_URL))->not->toBeFalse();
+-expect(filter_var($url, FILTER_VALIDATE_URL) !== false)->toBeTrue();
++expect($url)->toBeUrl();
++expect($url)->toBeUrl();
+```
+
+<br>
+
+## UseToBeUuidRector
+
+Converts UUID regex validation to `toBeUuid()` matcher
+
+- class: [`RectorPest\Rules\UseToBeUuidRector`](../src/Rules/UseToBeUuidRector.php)
+
+```diff
+-expect(preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value))->toBe(1);
+-expect(preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid))->toBeGreaterThan(0);
++expect($value)->toBeUuid();
++expect($uuid)->toBeUuid();
+```
+
+<br>
+
+## UseToContainOnlyInstancesOfRector
+
+Converts `->each->toBeInstanceOf()` pattern to `toContainOnlyInstancesOf()` matcher
+
+- class: [`RectorPest\Rules\UseToContainOnlyInstancesOfRector`](../src/Rules/UseToContainOnlyInstancesOfRector.php)
+
+```diff
+-expect($items)->each->toBeInstanceOf(User::class);
++expect($items)->toContainOnlyInstancesOf(User::class);
 ```
 
 <br>
@@ -332,6 +446,21 @@ Converts `array_key_exists()` checks to `toHaveKey()` matcher
 
 <br>
 
+## UseToHaveKeysRector
+
+Converts chained `toHaveKey()` calls to `toHaveKeys()` with array of keys
+
+- class: [`RectorPest\Rules\UseToHaveKeysRector`](../src/Rules/UseToHaveKeysRector.php)
+
+```diff
+-expect($array)->toHaveKey('id')->toHaveKey('name')->toHaveKey('email');
+-expect($data)->toHaveKey('foo')->toHaveKey('bar');
++expect($array)->toHaveKeys(['id', 'name', 'email']);
++expect($data)->toHaveKeys(['foo', 'bar']);
+```
+
+<br>
+
 ## UseToHaveLengthRector
 
 Converts `strlen()/mb_strlen()` comparisons to `toHaveLength()` matcher
@@ -347,6 +476,21 @@ Converts `strlen()/mb_strlen()` comparisons to `toHaveLength()` matcher
 
 <br>
 
+## UseToHavePropertiesRector
+
+Converts chained `toHaveProperty()` calls to `toHaveProperties()` with array of properties
+
+- class: [`RectorPest\Rules\UseToHavePropertiesRector`](../src/Rules/UseToHavePropertiesRector.php)
+
+```diff
+-expect($user)->toHaveProperty('name')->toHaveProperty('email');
+-expect($object)->toHaveProperty('foo')->toHaveProperty('bar')->toHaveProperty('baz');
++expect($user)->toHaveProperties(['name', 'email']);
++expect($object)->toHaveProperties(['foo', 'bar', 'baz']);
+```
+
+<br>
+
 ## UseToHavePropertyRector
 
 Converts `property_exists()` checks to `toHaveProperty()` matcher
@@ -358,6 +502,35 @@ Converts `property_exists()` checks to `toHaveProperty()` matcher
 -expect(property_exists($user, 'email'))->toBeTrue();
 +expect($object)->toHaveProperty('name');
 +expect($user)->toHaveProperty('email');
+```
+
+<br>
+
+## UseToHaveSameSizeRector
+
+Converts expect(count($a))->toBe(count($b)) to expect($a)->toHaveSameSize($b)
+
+- class: [`RectorPest\Rules\UseToHaveSameSizeRector`](../src/Rules/UseToHaveSameSizeRector.php)
+
+```diff
+-expect(count($array1))->toBe(count($array2));
+-expect($items)->toHaveCount(count($other));
++expect($array1)->toHaveSameSize($array2);
++expect($items)->toHaveSameSize($other);
+```
+
+<br>
+
+## UseToMatchArrayRector
+
+Converts multiple array element assertions to `toMatchArray()` matcher
+
+- class: [`RectorPest\Rules\UseToMatchArrayRector`](../src/Rules/UseToMatchArrayRector.php)
+
+```diff
+-expect($array['name'])->toBe('Nuno');
+-expect($array['email'])->toBe('nuno@example.com');
++expect($array)->toMatchArray(['name' => 'Nuno', 'email' => 'nuno@example.com']);
 ```
 
 <br>
