@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.6](https://github.com/MrPunyapal/rector-pest/compare/0.1.5...0.1.6) - 2025-12-29
+
+### What's Changed
+
+* Making sure we have support for php 8.5 by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/16
+* Fix: test coverage by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/17
+* Feat: split the chain expect calls rector rule by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/18
+* Revert "Feat: split the chain expect calls rector rule" by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/19
+* Feat: few new rules by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/20
+* Fix: unwanted ->not removals by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/21
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.1.5...0.1.6
+
 ## [0.1.5](https://github.com/MrPunyapal/rector-pest/compare/0.1.4...0.1.5)
 
 ### Added
