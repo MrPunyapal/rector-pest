@@ -147,7 +147,18 @@ CODE_SAMPLE
                         $firstHasOnlyNonType = $firstPartition['type'] === [] && $firstPartition['non_type'] !== [];
                         $secondHasType = $secondPartition['type'] !== [];
 
-                        if ($firstHasOnlyNonType && $secondHasType) {
+                        // Ensure the first statement does not contain unsafe methods before attempting to swap.
+                        $firstIsSafe = true;
+                        foreach ($firstPartition['non_type'] as $nm) {
+                            $nameValue = $nm['name'];
+                            $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
+                            if ($name !== null && ! $this->isSafeNonTypeMatcher($name)) {
+                                $firstIsSafe = false;
+                                break;
+                            }
+                        }
+
+                        if ($firstHasOnlyNonType && $secondHasType && $firstIsSafe) {
                             // swap statements
                             $stmts[$key] = $next;
                             $stmts[$key + 1] = $stmt;
@@ -203,6 +214,38 @@ CODE_SAMPLE
     }
 
     /**
+     * @see https://pestphp.com/docs/expectations
+     * @see https://pestphp.com/docs/higher-order-testing#content-higher-order-expectations
+     * Detects if a method name is likely a safe Pest assertion that allows reordering.
+     * Unknown methods are treated as `Higher Order Expectations`
+     * and type matchers should not be moved before them.
+     */
+    private function isSafeNonTypeMatcher(string $name): bool
+    {
+        if (
+            str_starts_with($name, 'toBe')
+            || str_starts_with($name, 'toContain')
+            || str_starts_with($name, 'toEndWith')
+            || str_starts_with($name, 'toEqual')
+            || str_starts_with($name, 'toHave')
+            || str_starts_with($name, 'toMatch')
+            || str_starts_with($name, 'toStartWith')
+            || str_starts_with($name, 'toThrow')
+        ) {
+            return true;
+        }
+
+        return in_array(
+            $name,
+            [
+                'and', 'dd', 'ddUnless', 'ddWhen', 'each', 'json',
+                'match', 'not', 'ray', 'sequence', 'unless', 'when',
+            ],
+            true
+        );
+    }
+
+    /**
      * Reorder type matchers inside each segment separated by `and`.
      * Returns the new flattened methods list (root->leaf order).
      *
@@ -233,6 +276,22 @@ CODE_SAMPLE
 
             // Process the current segment
             $partitioned = $this->partitionTypeAndNonType($segment);
+
+            // If the segment contains any non-type matcher that is NOT in the safe list,
+            // we assume it is a `Higher Order Expectations` and abort reordering for this segment to be safe.
+            foreach ($partitioned['non_type'] as $nm) {
+                $nameValue = $nm['name'];
+                $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
+                if ($name !== null && ! $this->isSafeNonTypeMatcher($name)) {
+                    foreach ($segment as $m) {
+                        $result[] = $m;
+                    }
+
+                    $segment = [];
+
+                    return;
+                }
+            }
 
             // Check if we need to reorder: type matcher after non-type matcher
             $needsReorder = false;
