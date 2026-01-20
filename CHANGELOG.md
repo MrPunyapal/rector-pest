@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.9](https://github.com/MrPunyapal/rector-pest/compare/0.1.8...0.1.9) - 2026-01-20
+
+### What's Changed
+
+* fix(EnsureTypeChecksFirstRector): Should not be reordered when it is `higher order expectations` by @guanguans in https://github.com/MrPunyapal/rector-pest/pull/23
+
+### New Contributors
+
+* @guanguans made their first contribution in https://github.com/MrPunyapal/rector-pest/pull/23
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.1.8...0.1.9
+
 ## [0.1.8](https://github.com/MrPunyapal/rector-pest/compare/0.1.7...0.1.8) - 2026-01-01
 
 ### What's Changed
