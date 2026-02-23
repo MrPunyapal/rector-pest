@@ -23,7 +23,4 @@ return static function (RectorConfig $rectorConfig): void {
     // Chain optimization rules (order matters - ChainExpectCallsRector creates chains, EnsureTypeChecksFirstRector optimizes them)
     $rectorConfig->rule(ChainExpectCallsRector::class);      // Merges separate expect() calls
     $rectorConfig->rule(EnsureTypeChecksFirstRector::class); // Reorders type checks within chains
-
-    // Enable formatting for better readability of chained expectations
-    $rectorConfig->newLineOnFluentCall();
 };
