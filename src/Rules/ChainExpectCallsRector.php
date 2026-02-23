@@ -9,13 +9,14 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Expression;
+use Rector\Contract\DependencyInjection\RelatedConfigInterface;
 use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\PhpParser\Enum\NodeGroup;
 use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
-final class ChainExpectCallsRector extends AbstractRector
+final class ChainExpectCallsRector extends AbstractRector implements RelatedConfigInterface
 {
     // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition
@@ -30,7 +31,8 @@ expect($a)->toBeInt();
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($a)->toBe(10)->toBeInt();
+expect($a)->toBe(10)
+    ->toBeInt();
 CODE_SAMPLE
                 ),
                 new CodeSample(
@@ -40,7 +42,9 @@ expect($b)->toBe(10);
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($a)->toBe(10)->and($b)->toBe(10);
+expect($a)->toBe(10)
+    ->and($b)
+    ->toBe(10);
 CODE_SAMPLE
                 ),
                 new CodeSample(
@@ -52,7 +56,11 @@ expect($b)->toBeInt();
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($a)->toBe(10)->toBeInt()->and($b)->toBe(10)->toBeInt();
+expect($a)->toBe(10)
+    ->toBeInt()
+    ->and($b)
+    ->toBe(10)
+    ->toBeInt();
 CODE_SAMPLE
                 ),
             ]
@@ -60,6 +68,11 @@ CODE_SAMPLE
     }
 
     // @codeCoverageIgnoreEnd
+
+    public static function getConfigFile(): string
+    {
+        return __DIR__ . '/../../config/chain-expect-calls.php';
+    }
 
     /**
      * @return array<class-string<Node>>
