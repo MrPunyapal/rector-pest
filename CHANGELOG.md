@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2](https://github.com/MrPunyapal/rector-pest/compare/0.2.1...0.2.2) - 2026-02-23
+
+### What's Changed
+
+* revert `newLineOnFluentCall` stuff by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/27
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.1...0.2.2
+
 ## [0.2.1](https://github.com/MrPunyapal/rector-pest/compare/0.2.0...0.2.1) - 2026-02-23
 
 ### What's Changed
