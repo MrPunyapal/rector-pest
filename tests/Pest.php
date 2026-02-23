@@ -15,7 +15,7 @@ use Tests\TestCase;
 |
 */
 
-pest()->extend(TestCase::class)->in('Rules', 'Sets');
+pest()->extend(TestCase::class)->in('Rules');
 
 /*
 |--------------------------------------------------------------------------

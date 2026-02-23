@@ -20,8 +20,6 @@ use RectorPest\Rules\EnsureTypeChecksFirstRector;
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->import(__DIR__ . '/../config.php');
 
-    // Chain optimization rules (order matters - ChainExpectCallsRector creates chains, EnsureTypeChecksFirstRector optimizes them)
-    // ChainExpectCallsRector automatically enables newline formatting for
     // chained fluent calls only in files where it makes changes.
     $rectorConfig->rule(ChainExpectCallsRector::class);      // Merges separate expect() calls
     $rectorConfig->rule(EnsureTypeChecksFirstRector::class); // Reorders type checks within chains

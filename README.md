@@ -39,7 +39,7 @@ return RectorConfig::configure()
 | Set | Description |
 |-----|-------------|
 | [`PestSetList::PEST_CODE_QUALITY`](config/sets/pest-code-quality.php) | Converts expect() assertions to use Pest's built-in matchers for better readability |
-| [`PestSetList::PEST_CHAIN`](config/sets/pest-chain.php) | Merges multiple expect() calls into chained expectations and optimizes their order. Includes automatic formatting for better readability. |
+| [`PestSetList::PEST_CHAIN`](config/sets/pest-chain.php) | Merges multiple expect() calls into chained expectations and optimizes their order. |
 
 ### Version Upgrade Sets
 
@@ -87,27 +87,9 @@ return RectorConfig::configure()
 | [`PestSetList::PEST_30`](config/sets/pest30.php) | Pest v2 → v3 migration rules |
 | [`PestSetList::PEST_40`](config/sets/pest40.php) | Pest v3 → v4 migration rules |
 
-## Using Individual Rules
+## Chaining Expectations
 
-You can also use individual rules instead of sets:
-
-```php
-// rector.php
-use RectorPest\Rules\ChainExpectCallsRector;
-use Rector\Config\RectorConfig;
-
-return RectorConfig::configure()
-    ->withPaths([
-        __DIR__ . '/tests',
-    ])
-    ->withRules([
-        ChainExpectCallsRector::class,
-    ]);
-```
-
-## Formatting Chained Expectations
-
-The `PEST_CHAIN` set automatically chains multiple `expect()` calls and formats them for better readability. Each chained method call appears on a separate line with proper indentation.
+The `PEST_CHAIN` set automatically merges multiple `expect()` calls into a single chained expression.
 
 ```php
 // rector.php
@@ -133,39 +115,30 @@ expect($value3)->toBe(30);
 
 **After:**
 ```php
-expect($value1)->toBe(10)
-    ->and($value2)
-    ->toBe(20)
-    ->and($value3)
-    ->toBe(30);
+expect($value1)->toBe(10)->and($value2)->toBe(20)->and($value3)->toBe(30);
 ```
 
-### Custom Formatting Configuration
+> **Note on formatting:** Chained output is currently printed inline. Per-node newline control
+> (to produce one method per line) requires an upstream change to `rector/rector`'s printer.
+> See [`RECTOR_PR_PROMPT.md`](RECTOR_PR_PROMPT.md) for the planned upstream contribution.
 
-If you want to use chaining rules but control the formatting yourself, you can configure the individual rules:
+## Using Individual Rules
+
+You can also use individual rules instead of sets:
 
 ```php
 // rector.php
 use RectorPest\Rules\ChainExpectCallsRector;
-use RectorPest\Rules\EnsureTypeChecksFirstRector;
 use Rector\Config\RectorConfig;
 
-return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->paths([
+return RectorConfig::configure()
+    ->withPaths([
         __DIR__ . '/tests',
-    ]);
-    
-    $rectorConfig->rules([
+    ])
+    ->withRules([
         ChainExpectCallsRector::class,
-        EnsureTypeChecksFirstRector::class,
     ]);
-    
-    // Optional: Enable formatting for chained calls
-    $rectorConfig->newLineOnFluentCall();
-};
 ```
-
-**Note:** The `newLineOnFluentCall()` option affects all fluent calls in your codebase, not just Pest expectations. The `PEST_CHAIN` set includes this option by default. If you want to keep this formatting only for your tests, make sure to configure your paths accordingly.
 
 ## Running Rector
 
