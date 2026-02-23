@@ -39,6 +39,7 @@ return RectorConfig::configure()
 | Set | Description |
 |-----|-------------|
 | [`PestSetList::PEST_CODE_QUALITY`](config/sets/pest-code-quality.php) | Converts expect() assertions to use Pest's built-in matchers for better readability |
+| [`PestSetList::PEST_CHAIN`](config/sets/pest-chain.php) | Merges multiple expect() calls into chained expectations and optimizes their order. Includes automatic formatting for better readability. |
 
 ### Version Upgrade Sets
 
@@ -103,6 +104,68 @@ return RectorConfig::configure()
         ChainExpectCallsRector::class,
     ]);
 ```
+
+## Formatting Chained Expectations
+
+The `PEST_CHAIN` set automatically chains multiple `expect()` calls and formats them for better readability. Each chained method call appears on a separate line with proper indentation.
+
+```php
+// rector.php
+use RectorPest\Set\PestSetList;
+use Rector\Config\RectorConfig;
+
+return RectorConfig::configure()
+    ->withPaths([
+        __DIR__ . '/tests',
+    ])
+    ->withSets([
+        PestSetList::PEST_CODE_QUALITY,
+        PestSetList::PEST_CHAIN,
+    ]);
+```
+
+**Before:**
+```php
+expect($value1)->toBe(10);
+expect($value2)->toBe(20);
+expect($value3)->toBe(30);
+```
+
+**After:**
+```php
+expect($value1)->toBe(10)
+    ->and($value2)
+    ->toBe(20)
+    ->and($value3)
+    ->toBe(30);
+```
+
+### Custom Formatting Configuration
+
+If you want to use chaining rules but control the formatting yourself, you can configure the individual rules:
+
+```php
+// rector.php
+use RectorPest\Rules\ChainExpectCallsRector;
+use RectorPest\Rules\EnsureTypeChecksFirstRector;
+use Rector\Config\RectorConfig;
+
+return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->paths([
+        __DIR__ . '/tests',
+    ]);
+    
+    $rectorConfig->rules([
+        ChainExpectCallsRector::class,
+        EnsureTypeChecksFirstRector::class,
+    ]);
+    
+    // Optional: Enable formatting for chained calls
+    $rectorConfig->newLineOnFluentCall();
+};
+```
+
+**Note:** The `newLineOnFluentCall()` option affects all fluent calls in your codebase, not just Pest expectations. The `PEST_CHAIN` set includes this option by default. If you want to keep this formatting only for your tests, make sure to configure your paths accordingly.
 
 ## Running Rector
 
