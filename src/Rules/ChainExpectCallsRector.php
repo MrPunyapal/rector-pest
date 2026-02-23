@@ -9,13 +9,14 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Expression;
+use Rector\Contract\DependencyInjection\RelatedConfigInterface;
 use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\PhpParser\Enum\NodeGroup;
 use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
-final class ChainExpectCallsRector extends AbstractRector
+final class ChainExpectCallsRector extends AbstractRector implements RelatedConfigInterface
 {
     // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition
@@ -60,6 +61,11 @@ CODE_SAMPLE
     }
 
     // @codeCoverageIgnoreEnd
+
+    public static function getConfigFile(): string
+    {
+        return __DIR__ . '/../../config/chain-expect-calls.php';
+    }
 
     /**
      * @return array<class-string<Node>>
