@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1](https://github.com/MrPunyapal/rector-pest/compare/0.2.0...0.2.1) - 2026-02-23
+
+### What's Changed
+
+* Fix: new line stuff in chain by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/25
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.0...0.2.1
+
 ## [0.2.0](https://github.com/MrPunyapal/rector-pest/compare/0.1.9...0.2.0) - 2026-02-23
 
 ### What's Changed
