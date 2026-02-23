@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0](https://github.com/MrPunyapal/rector-pest/compare/0.1.9...0.2.0) - 2026-02-23
+
+### What's Changed
+
+* feat: Add PEST_CHAIN set for chaining expectations by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/24
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.1.9...0.2.0
+
 ## [0.1.9](https://github.com/MrPunyapal/rector-pest/compare/0.1.8...0.1.9) - 2026-01-20
 
 ### What's Changed
