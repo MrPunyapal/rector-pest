@@ -31,7 +31,8 @@ expect($a)->toBeInt();
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($a)->toBe(10)->toBeInt();
+expect($a)->toBe(10)
+    ->toBeInt();
 CODE_SAMPLE
                 ),
                 new CodeSample(
@@ -41,7 +42,9 @@ expect($b)->toBe(10);
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($a)->toBe(10)->and($b)->toBe(10);
+expect($a)->toBe(10)
+    ->and($b)
+    ->toBe(10);
 CODE_SAMPLE
                 ),
                 new CodeSample(
@@ -53,7 +56,11 @@ expect($b)->toBeInt();
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($a)->toBe(10)->toBeInt()->and($b)->toBe(10)->toBeInt();
+expect($a)->toBe(10)
+    ->toBeInt()
+    ->and($b)
+    ->toBe(10)
+    ->toBeInt();
 CODE_SAMPLE
                 ),
             ]
