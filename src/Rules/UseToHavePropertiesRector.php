@@ -105,15 +105,12 @@ CODE_SAMPLE
             return null;
         }
 
-        // Create array of properties
-        $arrayItems = array_map(
+        /** @var MethodCall $firstCall */
+        $propertiesArray = new Array_(array_map(
             fn (String_ $property): ArrayItem => new ArrayItem($property),
             $properties
-        );
+        ));
 
-        $propertiesArray = new Array_($arrayItems);
-
-        // Replace the chain with a single toHaveProperties call
         $firstCall->name = new Identifier('toHaveProperties');
         $firstCall->args = [new Arg($propertiesArray)];
         $firstCall->var = $current;

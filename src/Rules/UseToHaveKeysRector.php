@@ -100,15 +100,12 @@ CODE_SAMPLE
             return null;
         }
 
-        // Create array of keys
-        $arrayItems = array_map(
+        /** @var MethodCall $firstCall */
+        $keysArray = new Array_(array_map(
             fn (String_ $key): ArrayItem => new ArrayItem($key),
             $keys
-        );
+        ));
 
-        $keysArray = new Array_($arrayItems);
-
-        // Replace the chain with a single toHaveKeys call
         $firstCall->name = new Identifier('toHaveKeys');
         $firstCall->args = [new Arg($keysArray)];
         $firstCall->var = $current;
