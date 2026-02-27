@@ -368,16 +368,21 @@ CODE_SAMPLE
                 }
 
                 // Build otherNonType as all non_type entries excluding those
-                // that were treated as prefixBeforeType (preserve their original order)
+                // that were treated as prefixBeforeType (preserve their original order).
+                // Use a consumed-list so that each prefix entry is only matched once,
+                // preventing duplicate modifier names (e.g. a second `->not->` that
+                // appears after the type matcher) from being incorrectly dropped.
+                $remainingPrefixes = $prefixBeforeType;
                 foreach ($partitioned['non_type'] as $m) {
                     $nameValue = $m['name'];
                     $name = $nameValue instanceof Node ? $this->getName($nameValue) : $nameValue;
                     $isPrefix = false;
-                    foreach ($prefixBeforeType as $p) {
+                    foreach ($remainingPrefixes as $idx => $p) {
                         $pNameValue = $p['name'];
                         $pName = $pNameValue instanceof Node ? $this->getName($pNameValue) : $pNameValue;
                         if ($pName === $name) {
                             $isPrefix = true;
+                            unset($remainingPrefixes[$idx]);
                             break;
                         }
                     }
