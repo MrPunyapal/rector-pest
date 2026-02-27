@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.3](https://github.com/MrPunyapal/rector-pest/compare/0.2.2...0.2.3) - 2026-02-27
+
+### What's Changed
+
+* fix: prevent dropping second ->not-> modifier after type matcher by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/28
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.2...0.2.3
+
 ## [0.2.2](https://github.com/MrPunyapal/rector-pest/compare/0.2.1...0.2.2) - 2026-02-23
 
 ### What's Changed
