@@ -120,7 +120,7 @@ expect($value1)->toBe(10)->and($value2)->toBe(20)->and($value3)->toBe(30);
 
 > **Note on formatting:** Chained output is currently printed inline. Per-node newline control
 > (to produce one method per line) requires an upstream change to `rector/rector`'s printer.
-> See [`RECTOR_PR_PROMPT.md`](RECTOR_PR_PROMPT.md) for the planned upstream contribution.
+> See https://github.com/rectorphp/rector-src/pull/7910 for the planned upstream contribution.
 
 ## Using Individual Rules
 
