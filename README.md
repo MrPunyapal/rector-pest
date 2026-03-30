@@ -40,6 +40,7 @@ return RectorConfig::configure()
 |-----|-------------|
 | [`PestSetList::PEST_CODE_QUALITY`](config/sets/pest-code-quality.php) | Converts expect() assertions to use Pest's built-in matchers for better readability |
 | [`PestSetList::PEST_CHAIN`](config/sets/pest-chain.php) | Merges multiple expect() calls into chained expectations and optimizes their order. |
+| [`PestSetList::PEST_LARAVEL`](config/sets/pest-laravel.php) | Laravel-specific rules (requires `illuminate/support`): converts `Str::` equality checks to Pest string case matchers |
 
 ### Version Upgrade Sets
 

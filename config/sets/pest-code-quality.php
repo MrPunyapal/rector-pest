@@ -15,7 +15,6 @@ use RectorPest\Rules\UseStrictEqualityMatchersRector;
 use RectorPest\Rules\UseToBeAlphaNumericRector;
 use RectorPest\Rules\UseToBeAlphaRector;
 use RectorPest\Rules\UseToBeBetweenRector;
-use RectorPest\Rules\UseToBeCamelCaseRector;
 use RectorPest\Rules\UseToBeDigitsRector;
 use RectorPest\Rules\UseToBeDirectoryRector;
 use RectorPest\Rules\UseToBeEmptyRector;
@@ -23,14 +22,10 @@ use RectorPest\Rules\UseToBeFileRector;
 use RectorPest\Rules\UseToBeInfiniteRector;
 use RectorPest\Rules\UseToBeInRector;
 use RectorPest\Rules\UseToBeJsonRector;
-use RectorPest\Rules\UseToBeKebabCaseRector;
 use RectorPest\Rules\UseToBeListRector;
 use RectorPest\Rules\UseToBeLowercaseRector;
 use RectorPest\Rules\UseToBeNanRector;
 use RectorPest\Rules\UseToBeReadableWritableRector;
-use RectorPest\Rules\UseToBeSlugRector;
-use RectorPest\Rules\UseToBeSnakeCaseRector;
-use RectorPest\Rules\UseToBeStudlyCaseRector;
 use RectorPest\Rules\UseToBeUppercaseRector;
 use RectorPest\Rules\UseToBeUrlRector;
 use RectorPest\Rules\UseToBeUuidRector;
@@ -110,13 +105,6 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(UseToBeLowercaseRector::class);
     $rectorConfig->rule(UseToBeAlphaRector::class);
     $rectorConfig->rule(UseToBeAlphaNumericRector::class);
-
-    // String case matchers (requires illuminate/support)
-    $rectorConfig->rule(UseToBeSnakeCaseRector::class);
-    $rectorConfig->rule(UseToBeKebabCaseRector::class);
-    $rectorConfig->rule(UseToBeCamelCaseRector::class);
-    $rectorConfig->rule(UseToBeStudlyCaseRector::class);
-    $rectorConfig->rule(UseToBeSlugRector::class);
 
     // File system matchers
     $rectorConfig->rule(UseToBeFileRector::class);
