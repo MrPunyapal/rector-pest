@@ -211,15 +211,6 @@ CODE_SAMPLE
 
     private function findCombinedFunctionMatcher(string $func1, string $func2): ?string
     {
-        // Try both orderings: is_file + is_readable, or is_readable + is_file
-        if (isset(self::COMBINED_FUNCTION_MATCHERS[$func1][$func2])) {
-            return self::COMBINED_FUNCTION_MATCHERS[$func1][$func2];
-        }
-
-        if (isset(self::COMBINED_FUNCTION_MATCHERS[$func2][$func1])) {
-            return self::COMBINED_FUNCTION_MATCHERS[$func2][$func1];
-        }
-
-        return null;
+        return self::COMBINED_FUNCTION_MATCHERS[$func1][$func2] ?? self::COMBINED_FUNCTION_MATCHERS[$func2][$func1] ?? null;
     }
 }

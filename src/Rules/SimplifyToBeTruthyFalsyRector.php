@@ -6,6 +6,7 @@ namespace RectorPest\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Cast\Bool_;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
@@ -72,7 +73,7 @@ CODE_SAMPLE
         }
 
         $expectArg = $this->getExpectArgument($node);
-        if ($expectArg === null) {
+        if (!$expectArg instanceof Expr) {
             return null;
         }
 
