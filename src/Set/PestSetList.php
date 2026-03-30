@@ -13,4 +13,6 @@ final class PestSetList
     public const PEST_CODE_QUALITY = __DIR__ . '/../../config/sets/pest-code-quality.php';
 
     public const PEST_CHAIN = __DIR__ . '/../../config/sets/pest-chain.php';
+
+    public const PEST_LARAVEL = __DIR__ . '/../../config/sets/pest-laravel.php';
 }

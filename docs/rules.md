@@ -1,4 +1,4 @@
-# 38 Rules Overview
+# 53 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -9,8 +9,7 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 ```diff
 -expect($a)->toBe(10);
 -expect($a)->toBeInt();
-+expect($a)->toBe(10)
-+    ->toBeInt();
++expect($a)->toBe(10)->toBeInt();
 ```
 
 <br>
@@ -18,9 +17,7 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 ```diff
 -expect($a)->toBe(10);
 -expect($b)->toBe(10);
-+expect($a)->toBe(10)
-+    ->and($b)
-+    ->toBe(10);
++expect($a)->toBe(10)->and($b)->toBe(10);
 ```
 
 <br>
@@ -30,11 +27,7 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 -expect($a)->toBeInt();
 -expect($b)->toBe(10);
 -expect($b)->toBeInt();
-+expect($a)->toBe(10)
-+    ->toBeInt()
-+    ->and($b)
-+    ->toBe(10)
-+    ->toBeInt();
++expect($a)->toBe(10)->toBeInt()->and($b)->toBe(10)->toBeInt();
 ```
 
 <br>
@@ -104,6 +97,36 @@ Simplifies negated expectations by flipping the matcher (e.g., `expect(!$x)->toB
 -expect(!$value)->toBeFalse();
 +expect($condition)->toBeFalse();
 +expect($value)->toBeTrue();
+```
+
+<br>
+
+## SimplifyFilesystemMatchersRector
+
+Simplifies combined filesystem checks to single Pest matchers
+
+- class: [`RectorPest\Rules\SimplifyFilesystemMatchersRector`](../src/Rules/SimplifyFilesystemMatchersRector.php)
+
+```diff
+-expect(is_file($path) && is_readable($path))->toBeTrue();
+-expect($path)->toBeFile()->toBeReadable();
++expect($path)->toBeReadableFile();
++expect($path)->toBeReadableFile();
+```
+
+<br>
+
+## SimplifyToBeTruthyFalsyRector
+
+Converts bool cast assertions to `toBeTruthy()/toBeFalsy()` matchers
+
+- class: [`RectorPest\Rules\SimplifyToBeTruthyFalsyRector`](../src/Rules/SimplifyToBeTruthyFalsyRector.php)
+
+```diff
+-expect((bool) $value)->toBeTrue();
+-expect((bool) $value)->toBeFalse();
++expect($value)->toBeTruthy();
++expect($value)->toBeFalsy();
 ```
 
 <br>
@@ -260,6 +283,32 @@ Converts expect($value >= `$min` && `$value` <= `$max)->toBeTrue()` to expect($v
 
 <br>
 
+## UseToBeCamelCaseRector
+
+Converts `Str::camel()` equality checks to `toBeCamelCase()` matcher (requires illuminate/support)
+
+- class: [`RectorPest\Rules\UseToBeCamelCaseRector`](../src/Rules/UseToBeCamelCaseRector.php)
+
+```diff
+-expect(Str::camel($value) === $value)->toBeTrue();
++expect($value)->toBeCamelCase();
+```
+
+<br>
+
+## UseToBeDigitsRector
+
+Converts `ctype_digit()` checks to `toBeDigits()` matcher
+
+- class: [`RectorPest\Rules\UseToBeDigitsRector`](../src/Rules/UseToBeDigitsRector.php)
+
+```diff
+-expect(ctype_digit($value))->toBeTrue();
++expect($value)->toBeDigits();
+```
+
+<br>
+
 ## UseToBeDirectoryRector
 
 Converts `is_dir()` checks to `toBeDirectory()` matcher
@@ -271,6 +320,23 @@ Converts `is_dir()` checks to `toBeDirectory()` matcher
 -expect(is_dir('/tmp'))->toBeTrue();
 +expect($path)->toBeDirectory();
 +expect('/tmp')->toBeDirectory();
+```
+
+<br>
+
+## UseToBeEmptyRector
+
+Converts empty checks and count-zero comparisons to `toBeEmpty()` matcher
+
+- class: [`RectorPest\Rules\UseToBeEmptyRector`](../src/Rules/UseToBeEmptyRector.php)
+
+```diff
+-expect(empty($value))->toBeTrue();
+-expect(count($array))->toBe(0);
+-expect($array)->toHaveCount(0);
++expect($value)->toBeEmpty();
++expect($array)->toBeEmpty();
++expect($array)->toBeEmpty();
 ```
 
 <br>
@@ -290,6 +356,34 @@ Converts `is_file()` checks to `toBeFile()` matcher
 
 <br>
 
+## UseToBeInRector
+
+Converts `in_array()` with value first to `toBeIn()` matcher
+
+- class: [`RectorPest\Rules\UseToBeInRector`](../src/Rules/UseToBeInRector.php)
+
+```diff
+-expect(in_array($value, ['pending', 'active']))->toBeTrue();
+-expect(in_array($status, $allowedStatuses))->toBeTrue();
++expect($value)->toBeIn(['pending', 'active']);
++expect($status)->toBeIn($allowedStatuses);
+```
+
+<br>
+
+## UseToBeInfiniteRector
+
+Converts `is_infinite()` checks to `toBeInfinite()` matcher
+
+- class: [`RectorPest\Rules\UseToBeInfiniteRector`](../src/Rules/UseToBeInfiniteRector.php)
+
+```diff
+-expect(is_infinite($value))->toBeTrue();
++expect($value)->toBeInfinite();
+```
+
+<br>
+
 ## UseToBeJsonRector
 
 Converts `json_decode()` null checks to `toBeJson()` matcher
@@ -301,6 +395,32 @@ Converts `json_decode()` null checks to `toBeJson()` matcher
 -expect(json_decode($json) === null)->toBeFalse();
 +expect($string)->toBeJson();
 +expect($json)->toBeJson();
+```
+
+<br>
+
+## UseToBeKebabCaseRector
+
+Converts `Str::kebab()` equality checks to `toBeKebabCase()` matcher (requires illuminate/support)
+
+- class: [`RectorPest\Rules\UseToBeKebabCaseRector`](../src/Rules/UseToBeKebabCaseRector.php)
+
+```diff
+-expect(Str::kebab($value) === $value)->toBeTrue();
++expect($value)->toBeKebabCase();
+```
+
+<br>
+
+## UseToBeListRector
+
+Converts `array_is_list()` checks to `toBeList()` matcher
+
+- class: [`RectorPest\Rules\UseToBeListRector`](../src/Rules/UseToBeListRector.php)
+
+```diff
+-expect(array_is_list($array))->toBeTrue();
++expect($array)->toBeList();
 ```
 
 <br>
@@ -320,6 +440,19 @@ Converts `strtolower()` equality checks to `toBeLowercase()` matcher
 
 <br>
 
+## UseToBeNanRector
+
+Converts `is_nan()` checks to `toBeNan()` matcher
+
+- class: [`RectorPest\Rules\UseToBeNanRector`](../src/Rules/UseToBeNanRector.php)
+
+```diff
+-expect(is_nan($value))->toBeTrue();
++expect($value)->toBeNan();
+```
+
+<br>
+
 ## UseToBeReadableWritableRector
 
 Converts `is_readable()/is_writable()` checks to `toBeReadable()/toBeWritable()` matchers
@@ -331,6 +464,45 @@ Converts `is_readable()/is_writable()` checks to `toBeReadable()/toBeWritable()`
 -expect(is_writable($file))->toBeTrue();
 +expect($path)->toBeReadable();
 +expect($file)->toBeWritable();
+```
+
+<br>
+
+## UseToBeSlugRector
+
+Converts `Str::slug()` equality checks to `toBeSlug()` matcher (requires illuminate/support)
+
+- class: [`RectorPest\Rules\UseToBeSlugRector`](../src/Rules/UseToBeSlugRector.php)
+
+```diff
+-expect(Str::slug($value) === $value)->toBeTrue();
++expect($value)->toBeSlug();
+```
+
+<br>
+
+## UseToBeSnakeCaseRector
+
+Converts `Str::snake()` equality checks to `toBeSnakeCase()` matcher (requires illuminate/support)
+
+- class: [`RectorPest\Rules\UseToBeSnakeCaseRector`](../src/Rules/UseToBeSnakeCaseRector.php)
+
+```diff
+-expect(Str::snake($value) === $value)->toBeTrue();
++expect($value)->toBeSnakeCase();
+```
+
+<br>
+
+## UseToBeStudlyCaseRector
+
+Converts `Str::studly()` equality checks to `toBeStudlyCase()` matcher (requires illuminate/support)
+
+- class: [`RectorPest\Rules\UseToBeStudlyCaseRector`](../src/Rules/UseToBeStudlyCaseRector.php)
+
+```diff
+-expect(Str::studly($value) === $value)->toBeTrue();
++expect($value)->toBeStudlyCase();
 ```
 
 <br>
@@ -419,6 +591,21 @@ Converts `str_ends_with()` checks to `toEndWith()` matcher
 -expect(str_ends_with($text, $suffix))->toBeTrue();
 +expect($string)->toEndWith('World');
 +expect($text)->toEndWith($suffix);
+```
+
+<br>
+
+## UseToEqualCanonicalizingRector
+
+Converts sort-then-compare to `toEqualCanonicalizing()` matcher
+
+- class: [`RectorPest\Rules\UseToEqualCanonicalizingRector`](../src/Rules/UseToEqualCanonicalizingRector.php)
+
+```diff
+-expect(sort($a))->toEqual(sort($b));
+-expect(sort($a))->toBe(sort($b));
++expect($a)->toEqualCanonicalizing($b);
++expect($a)->toEqualCanonicalizing($b);
 ```
 
 <br>
@@ -538,6 +725,20 @@ Converts multiple array element assertions to `toMatchArray()` matcher
 -expect($array['name'])->toBe('Nuno');
 -expect($array['email'])->toBe('nuno@example.com');
 +expect($array)->toMatchArray(['name' => 'Nuno', 'email' => 'nuno@example.com']);
+```
+
+<br>
+
+## UseToMatchObjectRector
+
+Converts consecutive `toHaveProperty()` with values to `toMatchObject()` matcher
+
+- class: [`RectorPest\Rules\UseToMatchObjectRector`](../src/Rules/UseToMatchObjectRector.php)
+
+```diff
+-expect($user)->toHaveProperty('name', 'Nuno');
+-expect($user)->toHaveProperty('email', 'nuno@example.com');
++expect($user)->toMatchObject(['name' => 'Nuno', 'email' => 'nuno@example.com']);
 ```
 
 <br>
