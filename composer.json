@@ -28,8 +28,8 @@
     },
     "require-dev": {
         "laravel/pint": "^1.18",
+        "mrpunyapal/peststan": "^0.1.5",
         "pestphp/pest": "^3.0 || ^4.0",
-        "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
         "symplify/rule-doc-generator": "^12.2"
     },
@@ -47,8 +47,7 @@
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
+            "pestphp/pest-plugin": true
         },
         "sort-packages": true,
         "platform-check": false

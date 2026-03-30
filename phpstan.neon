@@ -1,4 +1,8 @@
+includes:
+    - vendor/mrpunyapal/peststan/extension.neon
+
 parameters:
+
     level: max
     paths:
         - src
