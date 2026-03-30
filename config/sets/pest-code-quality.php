@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
 use RectorPest\Rules\SimplifyExpectNotRector;
+use RectorPest\Rules\SimplifyFilesystemMatchersRector;
+use RectorPest\Rules\SimplifyToBeTruthyFalsyRector;
 use RectorPest\Rules\SimplifyToLiteralBooleanRector;
 use RectorPest\Rules\ToBeTrueNotFalseRector;
 use RectorPest\Rules\UseEachModifierRector;
@@ -13,17 +15,29 @@ use RectorPest\Rules\UseStrictEqualityMatchersRector;
 use RectorPest\Rules\UseToBeAlphaNumericRector;
 use RectorPest\Rules\UseToBeAlphaRector;
 use RectorPest\Rules\UseToBeBetweenRector;
+use RectorPest\Rules\UseToBeCamelCaseRector;
+use RectorPest\Rules\UseToBeDigitsRector;
 use RectorPest\Rules\UseToBeDirectoryRector;
+use RectorPest\Rules\UseToBeEmptyRector;
 use RectorPest\Rules\UseToBeFileRector;
+use RectorPest\Rules\UseToBeInfiniteRector;
+use RectorPest\Rules\UseToBeInRector;
 use RectorPest\Rules\UseToBeJsonRector;
+use RectorPest\Rules\UseToBeKebabCaseRector;
+use RectorPest\Rules\UseToBeListRector;
 use RectorPest\Rules\UseToBeLowercaseRector;
+use RectorPest\Rules\UseToBeNanRector;
 use RectorPest\Rules\UseToBeReadableWritableRector;
+use RectorPest\Rules\UseToBeSlugRector;
+use RectorPest\Rules\UseToBeSnakeCaseRector;
+use RectorPest\Rules\UseToBeStudlyCaseRector;
 use RectorPest\Rules\UseToBeUppercaseRector;
 use RectorPest\Rules\UseToBeUrlRector;
 use RectorPest\Rules\UseToBeUuidRector;
 use RectorPest\Rules\UseToContainOnlyInstancesOfRector;
 use RectorPest\Rules\UseToContainRector;
 use RectorPest\Rules\UseToEndWithRector;
+use RectorPest\Rules\UseToEqualCanonicalizingRector;
 use RectorPest\Rules\UseToHaveCountRector;
 use RectorPest\Rules\UseToHaveKeyRector;
 use RectorPest\Rules\UseToHaveKeysRector;
@@ -32,6 +46,7 @@ use RectorPest\Rules\UseToHavePropertiesRector;
 use RectorPest\Rules\UseToHavePropertyRector;
 use RectorPest\Rules\UseToHaveSameSizeRector;
 use RectorPest\Rules\UseToMatchArrayRector;
+use RectorPest\Rules\UseToMatchObjectRector;
 use RectorPest\Rules\UseToMatchRector;
 use RectorPest\Rules\UseToStartWithRector;
 use RectorPest\Rules\UseTypeMatchersRector;
@@ -56,15 +71,23 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(SimplifyExpectNotRector::class);
     $rectorConfig->rule(ToBeTrueNotFalseRector::class);
     $rectorConfig->rule(SimplifyToLiteralBooleanRector::class);
+    $rectorConfig->rule(SimplifyToBeTruthyFalsyRector::class);
 
     // Type matchers
     $rectorConfig->rule(UseTypeMatchersRector::class);
     $rectorConfig->rule(UseInstanceOfMatcherRector::class);
+    $rectorConfig->rule(UseToBeDigitsRector::class);
+    $rectorConfig->rule(UseToBeListRector::class);
+    $rectorConfig->rule(UseToBeNanRector::class);
+    $rectorConfig->rule(UseToBeInfiniteRector::class);
 
     // Comparison matchers
     $rectorConfig->rule(SimplifyComparisonExpectationsRector::class);
     $rectorConfig->rule(UseStrictEqualityMatchersRector::class);
     $rectorConfig->rule(UseToBeBetweenRector::class);
+    $rectorConfig->rule(UseToBeInRector::class);
+    $rectorConfig->rule(UseToBeEmptyRector::class);
+    $rectorConfig->rule(UseToEqualCanonicalizingRector::class);
 
     // Array matchers
     $rectorConfig->rule(UseToContainRector::class);
@@ -87,13 +110,20 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(UseToBeLowercaseRector::class);
     $rectorConfig->rule(UseToBeAlphaRector::class);
     $rectorConfig->rule(UseToBeAlphaNumericRector::class);
+    $rectorConfig->rule(UseToBeSnakeCaseRector::class);
+    $rectorConfig->rule(UseToBeKebabCaseRector::class);
+    $rectorConfig->rule(UseToBeCamelCaseRector::class);
+    $rectorConfig->rule(UseToBeStudlyCaseRector::class);
+    $rectorConfig->rule(UseToBeSlugRector::class);
 
     // File system matchers
     $rectorConfig->rule(UseToBeFileRector::class);
     $rectorConfig->rule(UseToBeDirectoryRector::class);
     $rectorConfig->rule(UseToBeReadableWritableRector::class);
+    $rectorConfig->rule(SimplifyFilesystemMatchersRector::class);
 
     // Object matchers
     $rectorConfig->rule(UseToHavePropertyRector::class);
     $rectorConfig->rule(UseToHavePropertiesRector::class);
+    $rectorConfig->rule(UseToMatchObjectRector::class);
 };
