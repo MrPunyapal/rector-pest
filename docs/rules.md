@@ -285,7 +285,7 @@ Converts expect($value >= `$min` && `$value` <= `$max)->toBeTrue()` to expect($v
 
 ## UseToBeCamelCaseRector
 
-Converts `Str::camel()` equality checks to `toBeCamelCase()` matcher
+Converts `Str::camel()` equality checks to `toBeCamelCase()` matcher (requires illuminate/support)
 
 - class: [`RectorPest\Rules\UseToBeCamelCaseRector`](../src/Rules/UseToBeCamelCaseRector.php)
 
@@ -401,7 +401,7 @@ Converts `json_decode()` null checks to `toBeJson()` matcher
 
 ## UseToBeKebabCaseRector
 
-Converts `Str::kebab()` equality checks to `toBeKebabCase()` matcher
+Converts `Str::kebab()` equality checks to `toBeKebabCase()` matcher (requires illuminate/support)
 
 - class: [`RectorPest\Rules\UseToBeKebabCaseRector`](../src/Rules/UseToBeKebabCaseRector.php)
 
@@ -470,7 +470,7 @@ Converts `is_readable()/is_writable()` checks to `toBeReadable()/toBeWritable()`
 
 ## UseToBeSlugRector
 
-Converts `Str::slug()` equality checks to `toBeSlug()` matcher
+Converts `Str::slug()` equality checks to `toBeSlug()` matcher (requires illuminate/support)
 
 - class: [`RectorPest\Rules\UseToBeSlugRector`](../src/Rules/UseToBeSlugRector.php)
 
@@ -483,7 +483,7 @@ Converts `Str::slug()` equality checks to `toBeSlug()` matcher
 
 ## UseToBeSnakeCaseRector
 
-Converts `Str::snake()` equality checks to `toBeSnakeCase()` matcher
+Converts `Str::snake()` equality checks to `toBeSnakeCase()` matcher (requires illuminate/support)
 
 - class: [`RectorPest\Rules\UseToBeSnakeCaseRector`](../src/Rules/UseToBeSnakeCaseRector.php)
 
@@ -496,7 +496,7 @@ Converts `Str::snake()` equality checks to `toBeSnakeCase()` matcher
 
 ## UseToBeStudlyCaseRector
 
-Converts `Str::studly()` equality checks to `toBeStudlyCase()` matcher
+Converts `Str::studly()` equality checks to `toBeStudlyCase()` matcher (requires illuminate/support)
 
 - class: [`RectorPest\Rules\UseToBeStudlyCaseRector`](../src/Rules/UseToBeStudlyCaseRector.php)
 

@@ -16,7 +16,8 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 /**
- * Converts Str::kebab() equality checks to toBeKebabCase() matcher
+ * Converts Str::kebab() equality checks to toBeKebabCase() matcher.
+ * Requires illuminate/support (Laravel).
  */
 final class UseToBeKebabCaseRector extends AbstractRector
 {
@@ -24,7 +25,7 @@ final class UseToBeKebabCaseRector extends AbstractRector
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
-            'Converts Str::kebab() equality checks to toBeKebabCase() matcher',
+            'Converts Str::kebab() equality checks to toBeKebabCase() matcher (requires illuminate/support)',
             [
                 new CodeSample(
                     <<<'CODE_SAMPLE'

@@ -16,7 +16,8 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 /**
- * Converts Str::camel() equality checks to toBeCamelCase() matcher
+ * Converts Str::camel() equality checks to toBeCamelCase() matcher.
+ * Requires illuminate/support (Laravel).
  */
 final class UseToBeCamelCaseRector extends AbstractRector
 {
@@ -24,7 +25,7 @@ final class UseToBeCamelCaseRector extends AbstractRector
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
-            'Converts Str::camel() equality checks to toBeCamelCase() matcher',
+            'Converts Str::camel() equality checks to toBeCamelCase() matcher (requires illuminate/support)',
             [
                 new CodeSample(
                     <<<'CODE_SAMPLE'

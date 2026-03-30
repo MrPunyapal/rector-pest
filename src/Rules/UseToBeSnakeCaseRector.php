@@ -16,7 +16,8 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 /**
- * Converts Str::snake() equality checks to toBeSnakeCase() matcher
+ * Converts Str::snake() equality checks to toBeSnakeCase() matcher.
+ * Requires illuminate/support (Laravel).
  */
 final class UseToBeSnakeCaseRector extends AbstractRector
 {
@@ -24,7 +25,7 @@ final class UseToBeSnakeCaseRector extends AbstractRector
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
-            'Converts Str::snake() equality checks to toBeSnakeCase() matcher',
+            'Converts Str::snake() equality checks to toBeSnakeCase() matcher (requires illuminate/support)',
             [
                 new CodeSample(
                     <<<'CODE_SAMPLE'

@@ -16,7 +16,8 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 /**
- * Converts Str::slug() equality checks to toBeSlug() matcher
+ * Converts Str::slug() equality checks to toBeSlug() matcher.
+ * Requires illuminate/support (Laravel).
  */
 final class UseToBeSlugRector extends AbstractRector
 {
@@ -24,7 +25,7 @@ final class UseToBeSlugRector extends AbstractRector
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
-            'Converts Str::slug() equality checks to toBeSlug() matcher',
+            'Converts Str::slug() equality checks to toBeSlug() matcher (requires illuminate/support)',
             [
                 new CodeSample(
                     <<<'CODE_SAMPLE'

@@ -110,6 +110,8 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(UseToBeLowercaseRector::class);
     $rectorConfig->rule(UseToBeAlphaRector::class);
     $rectorConfig->rule(UseToBeAlphaNumericRector::class);
+
+    // String case matchers (requires illuminate/support)
     $rectorConfig->rule(UseToBeSnakeCaseRector::class);
     $rectorConfig->rule(UseToBeKebabCaseRector::class);
     $rectorConfig->rule(UseToBeCamelCaseRector::class);
