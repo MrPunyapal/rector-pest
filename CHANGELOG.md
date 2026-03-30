@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.4](https://github.com/MrPunyapal/rector-pest/compare/0.2.3...0.2.4) - 2026-03-30
+
+### What's Changed
+
+* Feat: add peststan by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/29
+* Feat: few more new rules by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/30
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.3...0.2.4
+
 ## [0.2.3](https://github.com/MrPunyapal/rector-pest/compare/0.2.2...0.2.3) - 2026-02-27
 
 ### What's Changed
