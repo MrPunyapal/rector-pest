@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use RectorPest\Rules\RemoveDebugExpectationsRector;
 use RectorPest\Rules\RemoveOnlyRector;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
 use RectorPest\Rules\SimplifyExpectNotRector;
@@ -65,6 +66,7 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Test cleanup
     $rectorConfig->rule(RemoveOnlyRector::class);
+    $rectorConfig->rule(RemoveDebugExpectationsRector::class);
 
     // Boolean and negation simplification
     $rectorConfig->rule(SimplifyExpectNotRector::class);
