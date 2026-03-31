@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.5](https://github.com/MrPunyapal/rector-pest/compare/0.2.4...0.2.5) - 2026-03-31
+
+### What's Changed
+
+* feat: add 6 new rules and pest-migration set by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/31
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.4...0.2.5
+
 ## [0.2.4](https://github.com/MrPunyapal/rector-pest/compare/0.2.3...0.2.4) - 2026-03-30
 
 ### What's Changed
