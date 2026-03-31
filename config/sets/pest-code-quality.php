@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use RectorPest\Rules\RemoveOnlyRector;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
 use RectorPest\Rules\SimplifyExpectNotRector;
 use RectorPest\Rules\SimplifyFilesystemMatchersRector;
@@ -61,6 +62,9 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Iteration
     $rectorConfig->rule(UseEachModifierRector::class);
+
+    // Test cleanup
+    $rectorConfig->rule(RemoveOnlyRector::class);
 
     // Boolean and negation simplification
     $rectorConfig->rule(SimplifyExpectNotRector::class);
