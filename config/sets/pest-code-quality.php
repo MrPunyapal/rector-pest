@@ -12,6 +12,7 @@ use RectorPest\Rules\SimplifyToBeTruthyFalsyRector;
 use RectorPest\Rules\SimplifyToLiteralBooleanRector;
 use RectorPest\Rules\ToBeTrueNotFalseRector;
 use RectorPest\Rules\UseArrowFunctionInTestRector;
+use RectorPest\Rules\UseArrowFunctionInTestRector;
 use RectorPest\Rules\UseEachModifierRector;
 use RectorPest\Rules\UseInstanceOfMatcherRector;
 use RectorPest\Rules\UseStrictEqualityMatchersRector;
@@ -47,6 +48,7 @@ use RectorPest\Rules\UseToMatchArrayRector;
 use RectorPest\Rules\UseToMatchObjectRector;
 use RectorPest\Rules\UseToMatchRector;
 use RectorPest\Rules\UseToStartWithRector;
+use RectorPest\Rules\UseToThrowRector;
 use RectorPest\Rules\UseTypeMatchersRector;
 
 /**
@@ -124,4 +126,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(UseToHavePropertyRector::class);
     $rectorConfig->rule(UseToHavePropertiesRector::class);
     $rectorConfig->rule(UseToMatchObjectRector::class);
+
+    // Exception matchers
+    $rectorConfig->rule(UseToThrowRector::class);
 };
