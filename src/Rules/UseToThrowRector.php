@@ -6,15 +6,17 @@ namespace RectorPest\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\ArrowFunction;
+use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\Finally_;
 use PhpParser\Node\Stmt\TryCatch;
 use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\PhpParser\Enum\NodeGroup;
@@ -69,10 +71,12 @@ CODE_SAMPLE
             return null;
         }
 
+        /** @var array<Node\Stmt> $stmts */
+        $stmts = $node->stmts;
         $hasChanged = false;
         $newStmts = [];
 
-        foreach ($node->stmts as $stmt) {
+        foreach ($stmts as $stmt) {
             if (! $stmt instanceof TryCatch) {
                 $newStmts[] = $stmt;
 
@@ -80,7 +84,7 @@ CODE_SAMPLE
             }
 
             $result = $this->convertTryCatch($stmt);
-            if ($result === null) {
+            if (!$result instanceof MethodCall) {
                 $newStmts[] = $stmt;
 
                 continue;
@@ -105,7 +109,7 @@ CODE_SAMPLE
             return null;
         }
 
-        if ($tryCatch->finally !== null) {
+        if ($tryCatch->finally instanceof Finally_) {
             return null;
         }
 
@@ -123,7 +127,7 @@ CODE_SAMPLE
         $exceptionClass = $catch->types[0];
         $message = $this->extractMessageAssertion($catch);
 
-        if ($catch->stmts !== [] && $message === null) {
+        if ($catch->stmts !== [] && !$message instanceof Expr) {
             return null;
         }
 
@@ -133,8 +137,8 @@ CODE_SAMPLE
 
         $expectCall = new FuncCall(new Name('expect'), [new Arg($arrowFunction)]);
 
-        $toThrowArgs = [new Arg(new Node\Expr\ClassConstFetch($exceptionClass, 'class'))];
-        if ($message !== null) {
+        $toThrowArgs = [new Arg(new ClassConstFetch($exceptionClass, 'class'))];
+        if ($message instanceof Expr) {
             $toThrowArgs[] = new Arg($message);
         }
 
@@ -144,7 +148,10 @@ CODE_SAMPLE
     /**
      * Build the expression for the try block body
      */
-    private function buildTryExpression(array $stmts): Node\Expr
+    /**
+     * @param array<Node\Stmt> $stmts
+     */
+    private function buildTryExpression(array $stmts): Expr
     {
         if (count($stmts) === 1 && $stmts[0] instanceof Expression) {
             return $stmts[0]->expr;
@@ -154,7 +161,7 @@ CODE_SAMPLE
             new ArrowFunction([
                 'expr' => count($stmts) === 1 && $stmts[0] instanceof Expression
                     ? $stmts[0]->expr
-                    : new Node\Scalar\Int_(0),
+                    : new Int_(0),
             ])
         );
     }
@@ -162,7 +169,7 @@ CODE_SAMPLE
     /**
      * Extract message from expect($e->getMessage())->toBe('...')
      */
-    private function extractMessageAssertion(Catch_ $catch): ?Node\Expr
+    private function extractMessageAssertion(Catch_ $catch): ?Expr
     {
         if ($catch->stmts === []) {
             return null;
@@ -208,15 +215,16 @@ CODE_SAMPLE
             return null;
         }
 
-        if ($catch->var === null) {
+        if (!$catch->var instanceof Variable) {
             return null;
         }
 
-        if (! $catch->var instanceof Variable) {
+        $catchVarName = $this->getName($catch->var);
+        if ($catchVarName === null) {
             return null;
         }
 
-        if (! $this->isName($expectArg->var, $this->getName($catch->var))) {
+        if (! $this->isName($expectArg->var, $catchVarName)) {
             return null;
         }
 

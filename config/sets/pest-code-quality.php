@@ -12,7 +12,6 @@ use RectorPest\Rules\SimplifyToBeTruthyFalsyRector;
 use RectorPest\Rules\SimplifyToLiteralBooleanRector;
 use RectorPest\Rules\ToBeTrueNotFalseRector;
 use RectorPest\Rules\UseArrowFunctionInTestRector;
-use RectorPest\Rules\UseArrowFunctionInTestRector;
 use RectorPest\Rules\UseEachModifierRector;
 use RectorPest\Rules\UseInstanceOfMatcherRector;
 use RectorPest\Rules\UseStrictEqualityMatchersRector;

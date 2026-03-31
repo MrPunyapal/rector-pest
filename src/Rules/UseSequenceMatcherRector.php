@@ -11,6 +11,7 @@ use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
@@ -70,9 +71,10 @@ CODE_SAMPLE
             return null;
         }
 
+        /** @var array<Node\Stmt> $stmts */
+        $stmts = $node->stmts;
         $hasChanged = false;
         $newStmts = [];
-        $stmts = $node->stmts;
         $count = count($stmts);
         $i = 0;
 
@@ -87,7 +89,7 @@ CODE_SAMPLE
             }
 
             $sequenceCall = $this->buildSequenceCall($group['variable'], $group['chains']);
-            if ($sequenceCall === null) {
+            if (!$sequenceCall instanceof MethodCall) {
                 $newStmts[] = $stmts[$i];
                 $i++;
 
@@ -119,8 +121,9 @@ CODE_SAMPLE
         $chains = [];
         $baseVariable = null;
         $expectedIndex = 0;
+        $counter = count($stmts);
 
-        for ($i = $startPos; $i < count($stmts); $i++) {
+        for ($i = $startPos; $i < $counter; $i++) {
             $stmt = $stmts[$i];
 
             if (! $stmt instanceof Expression) {
@@ -164,7 +167,7 @@ CODE_SAMPLE
             $variable = $expectArg->var;
 
             // All statements must reference the same variable
-            if ($baseVariable === null) {
+            if (!$baseVariable instanceof Expr) {
                 $baseVariable = $variable;
             } elseif (! $this->nodeComparator->areNodesEqual($baseVariable, $variable)) {
                 break;
@@ -175,7 +178,7 @@ CODE_SAMPLE
         }
 
         // Need at least 2 consecutive indexed expects to form a sequence
-        if (count($chains) < 2 || $baseVariable === null) {
+        if (count($chains) < 2 || !$baseVariable instanceof Expr) {
             return null;
         }
 
@@ -196,7 +199,7 @@ CODE_SAMPLE
 
         foreach ($chains as $chain) {
             $arrowBody = $this->rebuildChainOnParam($chain);
-            if ($arrowBody === null) {
+            if (!$arrowBody instanceof Expr) {
                 return null;
             }
 
@@ -240,10 +243,10 @@ CODE_SAMPLE
         $paramVar = new Variable(self::SEQUENCE_PARAM_NAME);
 
         // Skip ->not PropertyFetch handling for now — sequence with ->not is unusual
-        if ($current instanceof Node\Expr\PropertyFetch) {
+        if ($current instanceof PropertyFetch) {
             // This is expect($var[$i])->not->toBe(...)
             // We want $e->not->toBe(...)
-            $base = new Node\Expr\PropertyFetch($paramVar, new Identifier('not'));
+            $base = new PropertyFetch($paramVar, new Identifier('not'));
         } elseif ($current instanceof FuncCall) {
             $base = $paramVar;
         } else {

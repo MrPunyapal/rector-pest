@@ -8,14 +8,11 @@ use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Expr\ArrayItem;
-use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
-use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Return_;
 use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\PhpParser\Enum\NodeGroup;
@@ -84,7 +81,9 @@ CODE_SAMPLE
             return null;
         }
 
-        $providerMap = $this->collectProviderFunctions($node->stmts);
+        /** @var array<Node\Stmt> $stmts */
+        $stmts = $node->stmts;
+        $providerMap = $this->collectProviderFunctions($stmts);
         if ($providerMap === []) {
             return null;
         }
@@ -93,7 +92,7 @@ CODE_SAMPLE
         $removableProviders = [];
         $newStmts = [];
 
-        foreach ($node->stmts as $stmt) {
+        foreach ($stmts as $stmt) {
             if (! $stmt instanceof Expression) {
                 $newStmts[] = $stmt;
 
@@ -101,7 +100,7 @@ CODE_SAMPLE
             }
 
             $result = $this->processTestStatement($stmt, $providerMap, $removableProviders);
-            if ($result !== null) {
+            if ($result instanceof Expression) {
                 $newStmts[] = $result;
                 $hasChanged = true;
 
@@ -131,7 +130,7 @@ CODE_SAMPLE
         $providers = [];
 
         foreach ($stmts as $stmt) {
-            if (! $stmt instanceof Node\Stmt\Function_) {
+            if (! $stmt instanceof Function_) {
                 continue;
             }
 
@@ -141,7 +140,7 @@ CODE_SAMPLE
             }
 
             $returnArray = $this->extractReturnArray($stmt);
-            if ($returnArray === null) {
+            if (!$returnArray instanceof Array_) {
                 continue;
             }
 
@@ -151,7 +150,7 @@ CODE_SAMPLE
         return $providers;
     }
 
-    private function extractReturnArray(Node\Stmt\Function_ $function): ?Array_
+    private function extractReturnArray(Function_ $function): ?Array_
     {
         if (count($function->stmts) !== 1) {
             return null;
@@ -190,7 +189,7 @@ CODE_SAMPLE
             return null;
         }
 
-        if ($rootFuncCall === null) {
+        if (!$rootFuncCall instanceof FuncCall) {
             return null;
         }
 
@@ -235,7 +234,7 @@ CODE_SAMPLE
     private function extractDataProviderFromDocBlock(Expression $stmt): ?string
     {
         $docComment = $stmt->getDocComment();
-        if ($docComment === null) {
+        if (!$docComment instanceof Doc) {
             return null;
         }
 
@@ -255,14 +254,14 @@ CODE_SAMPLE
     /**
      * Remove provider functions that were inlined
      *
-     * @param array<Node\Stmt> $stmts
+     * @param list<Node\Stmt> $stmts
      * @param array<string> $providerNames
-     * @return array<Node\Stmt>
+     * @return list<Node\Stmt>
      */
     private function removeProviderFunctions(array $stmts, array $providerNames): array
     {
-        return array_values(array_filter($stmts, function (Node\Stmt $stmt) use ($providerNames): bool {
-            if (! $stmt instanceof Node\Stmt\Function_) {
+        return array_values(array_filter($stmts, function (Stmt $stmt) use ($providerNames): bool {
+            if (! $stmt instanceof Function_) {
                 return true;
             }
 

@@ -69,7 +69,7 @@ CODE_SAMPLE
         }
 
         $expectArg = $this->getExpectArgument($node);
-        if ($expectArg === null) {
+        if (!$expectArg instanceof Expr) {
             return null;
         }
 
@@ -114,7 +114,7 @@ CODE_SAMPLE
         $expected = $minus->right;
 
         $expectCall = $this->getExpectFuncCall($node);
-        if ($expectCall === null) {
+        if (!$expectCall instanceof FuncCall) {
             return null;
         }
 
