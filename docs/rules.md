@@ -1,4 +1,4 @@
-# 61 Rules Overview
+# 60 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -32,6 +32,54 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 
 <br>
 
+## ConvertAssertToExpectRector
+
+Converts PHPUnit assertion method calls to Pest `expect()` chains
+
+- class: [`RectorPest\Rules\ConvertAssertToExpectRector`](../src/Rules/ConvertAssertToExpectRector.php)
+
+```diff
+-$this->assertEquals('expected', $result);
+-$this->assertTrue($value);
+-$this->assertCount(3, $items);
+-$this->assertNotNull($user);
++expect($result)->toEqual('expected');
++expect($value)->toBeTrue();
++expect($items)->toHaveCount(3);
++expect($user)->not->toBeNull();
+```
+
+<br>
+
+## ConvertDataProviderToDatasetRector
+
+Converts PHPUnit `@dataProvider` annotations to Pest `with()` datasets
+
+- class: [`RectorPest\Rules\ConvertDataProviderToDatasetRector`](../src/Rules/ConvertDataProviderToDatasetRector.php)
+
+```diff
+-/**
+- * @dataProvider emailProvider
+- */
+ test('validates email', function (string $email, bool $valid) {
+     expect(filter_var($email, FILTER_VALIDATE_EMAIL) !== false)->toBe($valid);
+-});
+-
+-function emailProvider(): array
+-{
+-    return [
+-        ['test@test.com', true],
+-        ['invalid', false],
+-    ];
+-}
++})->with([
++    ['test@test.com', true],
++    ['invalid', false],
++]);
+```
+
+<br>
+
 ## EnsureTypeChecksFirstRector
 
 Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value assertions in `expect()` chains and consecutive expects
@@ -50,6 +98,21 @@ Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value as
 -expect($a)->toBeInt();
 +expect($a)->toBeInt();
 +expect($a)->toBe(10);
+```
+
+<br>
+
+## RemoveDebugExpectationsRector
+
+Removes debug method calls (dump, dd, ray) from expect chains
+
+- class: [`RectorPest\Rules\RemoveDebugExpectationsRector`](../src/Rules/RemoveDebugExpectationsRector.php)
+
+```diff
+-expect($user)->dump()->toBeInstanceOf(User::class);
+-expect($value)->ray()->toBe(42);
++expect($user)->toBeInstanceOf(User::class);
++expect($value)->toBe(42);
 ```
 
 <br>
@@ -195,6 +258,21 @@ Changes `expect($object)->toHaveMethod()` to `expect($object::class)->toHaveMeth
 
 <br>
 
+## UseArrowFunctionInTestRector
+
+Converts single-expression test closures to arrow functions
+
+- class: [`RectorPest\Rules\UseArrowFunctionInTestRector`](../src/Rules/UseArrowFunctionInTestRector.php)
+
+```diff
+-test('example', function () {
+-    expect(true)->toBeTrue();
+-});
++test('example', fn () => expect(true)->toBeTrue());
+```
+
+<br>
+
 ## UseEachModifierRector
 
 Converts foreach loops with `expect()` calls to use the ->each modifier
@@ -221,6 +299,21 @@ Converts expect($obj instanceof `User)->toBeTrue()` to expect($obj)->toBeInstanc
 -expect($object instanceof DateTime)->toBeTrue();
 +expect($user)->toBeInstanceOf(User::class);
 +expect($object)->toBeInstanceOf(DateTime::class);
+```
+
+<br>
+
+## UseSequenceMatcherRector
+
+Converts consecutive indexed `expect()` calls to `sequence()`
+
+- class: [`RectorPest\Rules\UseSequenceMatcherRector`](../src/Rules/UseSequenceMatcherRector.php)
+
+```diff
+-expect($items[0])->toBe('a');
+-expect($items[1])->toBe('b');
+-expect($items[2])->toBe('c');
++expect($items)->sequence(fn ($e) => $e->toBe('a'), fn ($e) => $e->toBe('b'), fn ($e) => $e->toBe('c'));
 ```
 
 <br>
@@ -537,126 +630,6 @@ Converts filter_var($url, FILTER_VALIDATE_URL) checks to `toBeUrl()` matcher
 
 <br>
 
-## ConvertAssertToExpectRector
-
-Converts PHPUnit `$this->assert*()` calls to Pest `expect()` chains
-
-- class: [`RectorPest\Rules\ConvertAssertToExpectRector`](../src/Rules/ConvertAssertToExpectRector.php)
-
-```diff
--$this->assertEquals('foo', $result);
--$this->assertCount(3, $items);
--$this->assertInstanceOf(User::class, $result);
-+expect($result)->toEqual('foo');
-+expect($items)->toHaveCount(3);
-+expect($result)->toBeInstanceOf(User::class);
-```
-
-<br>
-
-## ConvertDataProviderToDatasetRector
-
-Converts PHPUnit `@dataProvider` annotations to Pest `->with()` datasets, inlining the provider array
-
-- class: [`RectorPest\Rules\ConvertDataProviderToDatasetRector`](../src/Rules/ConvertDataProviderToDatasetRector.php)
-
-```diff
--/**
-- * @dataProvider emailProvider
-- */
--test('validates email', function (string $email, bool $valid) {
-+test('validates email', function (string $email, bool $valid) {
-     expect(filter_var($email, FILTER_VALIDATE_EMAIL) !== false)->toBe($valid);
--});
--
--function emailProvider(): array
--{
--    return [
--        ['test@test.com', true],
--        ['invalid', false],
--    ];
--}
-+})->with([
-+    ['test@test.com', true],
-+    ['invalid', false],
-+]);
-```
-
-<br>
-
-## RemoveDebugExpectationsRector
-
-Removes debug calls (`dump()`, `dd()`, `ray()`) from `expect()` chains
-
-- class: [`RectorPest\Rules\RemoveDebugExpectationsRector`](../src/Rules/RemoveDebugExpectationsRector.php)
-
-```diff
--expect($result)->dump()->toBe('foo');
-+expect($result)->toBe('foo');
-```
-
-<br>
-
-## UseArrowFunctionInTestRector
-
-Converts single-expression Pest test closures to arrow functions
-
-- class: [`RectorPest\Rules\UseArrowFunctionInTestRector`](../src/Rules/UseArrowFunctionInTestRector.php)
-
-```diff
--test('is true', function () {
--    expect(true)->toBeTrue();
--});
-+test('is true', fn() => expect(true)->toBeTrue());
-```
-
-<br>
-
-## UseSequenceMatcherRector
-
-Converts consecutive indexed `expect()` calls to Pest 4's `sequence()` matcher
-
-- class: [`RectorPest\Rules\UseSequenceMatcherRector`](../src/Rules/UseSequenceMatcherRector.php)
-
-```diff
--expect($items[0])->toBe('a');
--expect($items[1])->toBe('b');
--expect($items[2])->toBe('c');
-+expect($items)->sequence(fn($e) => $e->toBe('a'), fn($e) => $e->toBe('b'), fn($e) => $e->toBe('c'));
-```
-
-<br>
-
-## UseToEqualWithDeltaRector
-
-Converts `abs($a - $b) < $delta` patterns to `toEqualWithDelta()`
-
-- class: [`RectorPest\Rules\UseToEqualWithDeltaRector`](../src/Rules/UseToEqualWithDeltaRector.php)
-
-```diff
--expect(abs($a - $b) < 0.001)->toBeTrue();
-+expect($a)->toEqualWithDelta($b, 0.001);
-```
-
-<br>
-
-## UseToThrowRector
-
-Converts try/catch patterns in tests to Pest's `toThrow()` matcher
-
-- class: [`RectorPest\Rules\UseToThrowRector`](../src/Rules/UseToThrowRector.php)
-
-```diff
--try {
--    doSomething();
--} catch (RuntimeException $e) {
--    expect($e->getMessage())->toBe('error');
--}
-+expect(fn() => doSomething())->toThrow(RuntimeException::class, 'error');
-```
-
-<br>
-
 ## UseToBeUuidRector
 
 Converts UUID regex validation to `toBeUuid()` matcher
@@ -726,6 +699,19 @@ Converts sort-then-compare to `toEqualCanonicalizing()` matcher
 -expect(sort($a))->toBe(sort($b));
 +expect($a)->toEqualCanonicalizing($b);
 +expect($a)->toEqualCanonicalizing($b);
+```
+
+<br>
+
+## UseToEqualWithDeltaRector
+
+Converts expect(abs($a - `$b)` < `$delta)->toBeTrue()` to expect($a)->toEqualWithDelta($b, `$delta)`
+
+- class: [`RectorPest\Rules\UseToEqualWithDeltaRector`](../src/Rules/UseToEqualWithDeltaRector.php)
+
+```diff
+-expect(abs($a - $b) < 0.001)->toBeTrue();
++expect($a)->toEqualWithDelta($b, 0.001);
 ```
 
 <br>
@@ -889,6 +875,23 @@ Converts `str_starts_with()` checks to `toStartWith()` matcher
 -expect(str_starts_with($text, $prefix))->toBeTrue();
 +expect($string)->toStartWith('Hello');
 +expect($text)->toStartWith($prefix);
+```
+
+<br>
+
+## UseToThrowRector
+
+Converts try/catch patterns to `expect()->toThrow()`
+
+- class: [`RectorPest\Rules\UseToThrowRector`](../src/Rules/UseToThrowRector.php)
+
+```diff
+-try {
+-    doSomething();
+-} catch (RuntimeException $e) {
+-    expect($e->getMessage())->toBe('error');
+-}
++expect(fn() => doSomething())->toThrow(RuntimeException::class, 'error');
 ```
 
 <br>
