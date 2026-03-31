@@ -15,4 +15,6 @@ final class PestSetList
     public const PEST_CHAIN = __DIR__ . '/../../config/sets/pest-chain.php';
 
     public const PEST_LARAVEL = __DIR__ . '/../../config/sets/pest-laravel.php';
+
+    public const PEST_MIGRATION = __DIR__ . '/../../config/sets/pest-migration.php';
 }
