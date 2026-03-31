@@ -1,4 +1,4 @@
-# 60 Rules Overview
+# 59 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -47,35 +47,6 @@ Converts PHPUnit assertion method calls to Pest `expect()` chains
 +expect($value)->toBeTrue();
 +expect($items)->toHaveCount(3);
 +expect($user)->not->toBeNull();
-```
-
-<br>
-
-## ConvertDataProviderToDatasetRector
-
-Converts PHPUnit `@dataProvider` annotations to Pest `with()` datasets
-
-- class: [`RectorPest\Rules\ConvertDataProviderToDatasetRector`](../src/Rules/ConvertDataProviderToDatasetRector.php)
-
-```diff
--/**
-- * @dataProvider emailProvider
-- */
- test('validates email', function (string $email, bool $valid) {
-     expect(filter_var($email, FILTER_VALIDATE_EMAIL) !== false)->toBe($valid);
--});
--
--function emailProvider(): array
--{
--    return [
--        ['test@test.com', true],
--        ['invalid', false],
--    ];
--}
-+})->with([
-+    ['test@test.com', true],
-+    ['invalid', false],
-+]);
 ```
 
 <br>

@@ -147,7 +147,6 @@ return RectorConfig::configure()
 | Rule | Description |
 |------|-------------|
 | `ConvertAssertToExpectRector` | Converts `$this->assert*()` calls to `expect()->` chains |
-| `ConvertDataProviderToDatasetRector` | Converts `@dataProvider` annotations to `->with()` datasets |
 
 ## Using Individual Rules
 
