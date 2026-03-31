@@ -1,4 +1,4 @@
-# 59 Rules Overview
+# 58 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -225,21 +225,6 @@ Changes `expect($object)->toHaveMethod()` to `expect($object::class)->toHaveMeth
 -expect($user)->toHaveMethods(['getName', 'getEmail']);
 +expect($user::class)->toHaveMethod('getName');
 +expect($user::class)->toHaveMethods(['getName', 'getEmail']);
-```
-
-<br>
-
-## UseArrowFunctionInTestRector
-
-Converts single-expression test closures to arrow functions
-
-- class: [`RectorPest\Rules\UseArrowFunctionInTestRector`](../src/Rules/UseArrowFunctionInTestRector.php)
-
-```diff
--test('example', function () {
--    expect(true)->toBeTrue();
--});
-+test('example', fn () => expect(true)->toBeTrue());
 ```
 
 <br>
