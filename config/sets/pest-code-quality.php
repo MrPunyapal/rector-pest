@@ -11,6 +11,7 @@ use RectorPest\Rules\SimplifyFilesystemMatchersRector;
 use RectorPest\Rules\SimplifyToBeTruthyFalsyRector;
 use RectorPest\Rules\SimplifyToLiteralBooleanRector;
 use RectorPest\Rules\ToBeTrueNotFalseRector;
+use RectorPest\Rules\UseArrowFunctionInTestRector;
 use RectorPest\Rules\UseEachModifierRector;
 use RectorPest\Rules\UseInstanceOfMatcherRector;
 use RectorPest\Rules\UseStrictEqualityMatchersRector;
@@ -67,6 +68,7 @@ return static function (RectorConfig $rectorConfig): void {
     // Test cleanup
     $rectorConfig->rule(RemoveOnlyRector::class);
     $rectorConfig->rule(RemoveDebugExpectationsRector::class);
+    $rectorConfig->rule(UseArrowFunctionInTestRector::class);
 
     // Boolean and negation simplification
     $rectorConfig->rule(SimplifyExpectNotRector::class);
