@@ -1,4 +1,4 @@
-# 53 Rules Overview
+# 58 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -32,6 +32,25 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 
 <br>
 
+## ConvertAssertToExpectRector
+
+Converts PHPUnit assertion method calls to Pest `expect()` chains
+
+- class: [`RectorPest\Rules\ConvertAssertToExpectRector`](../src/Rules/ConvertAssertToExpectRector.php)
+
+```diff
+-$this->assertEquals('expected', $result);
+-$this->assertTrue($value);
+-$this->assertCount(3, $items);
+-$this->assertNotNull($user);
++expect($result)->toEqual('expected');
++expect($value)->toBeTrue();
++expect($items)->toHaveCount(3);
++expect($user)->not->toBeNull();
+```
+
+<br>
+
 ## EnsureTypeChecksFirstRector
 
 Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value assertions in `expect()` chains and consecutive expects
@@ -50,6 +69,21 @@ Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value as
 -expect($a)->toBeInt();
 +expect($a)->toBeInt();
 +expect($a)->toBe(10);
+```
+
+<br>
+
+## RemoveDebugExpectationsRector
+
+Removes debug method calls (dump, dd, ray) from expect chains
+
+- class: [`RectorPest\Rules\RemoveDebugExpectationsRector`](../src/Rules/RemoveDebugExpectationsRector.php)
+
+```diff
+-expect($user)->dump()->toBeInstanceOf(User::class);
+-expect($value)->ray()->toBe(42);
++expect($user)->toBeInstanceOf(User::class);
++expect($value)->toBe(42);
 ```
 
 <br>
@@ -221,6 +255,21 @@ Converts expect($obj instanceof `User)->toBeTrue()` to expect($obj)->toBeInstanc
 -expect($object instanceof DateTime)->toBeTrue();
 +expect($user)->toBeInstanceOf(User::class);
 +expect($object)->toBeInstanceOf(DateTime::class);
+```
+
+<br>
+
+## UseSequenceMatcherRector
+
+Converts consecutive indexed `expect()` calls to `sequence()`
+
+- class: [`RectorPest\Rules\UseSequenceMatcherRector`](../src/Rules/UseSequenceMatcherRector.php)
+
+```diff
+-expect($items[0])->toBe('a');
+-expect($items[1])->toBe('b');
+-expect($items[2])->toBe('c');
++expect($items)->sequence(fn ($e) => $e->toBe('a'), fn ($e) => $e->toBe('b'), fn ($e) => $e->toBe('c'));
 ```
 
 <br>
@@ -610,6 +659,19 @@ Converts sort-then-compare to `toEqualCanonicalizing()` matcher
 
 <br>
 
+## UseToEqualWithDeltaRector
+
+Converts expect(abs($a - `$b)` < `$delta)->toBeTrue()` to expect($a)->toEqualWithDelta($b, `$delta)`
+
+- class: [`RectorPest\Rules\UseToEqualWithDeltaRector`](../src/Rules/UseToEqualWithDeltaRector.php)
+
+```diff
+-expect(abs($a - $b) < 0.001)->toBeTrue();
++expect($a)->toEqualWithDelta($b, 0.001);
+```
+
+<br>
+
 ## UseToHaveCountRector
 
 Converts expect(count($arr))->toBe(5) to expect($arr)->toHaveCount(5)
@@ -769,6 +831,23 @@ Converts `str_starts_with()` checks to `toStartWith()` matcher
 -expect(str_starts_with($text, $prefix))->toBeTrue();
 +expect($string)->toStartWith('Hello');
 +expect($text)->toStartWith($prefix);
+```
+
+<br>
+
+## UseToThrowRector
+
+Converts try/catch patterns to `expect()->toThrow()`
+
+- class: [`RectorPest\Rules\UseToThrowRector`](../src/Rules/UseToThrowRector.php)
+
+```diff
+-try {
+-    doSomething();
+-} catch (RuntimeException $e) {
+-    expect($e->getMessage())->toBe('error');
+-}
++expect(fn() => doSomething())->toThrow(RuntimeException::class, 'error');
 ```
 
 <br>

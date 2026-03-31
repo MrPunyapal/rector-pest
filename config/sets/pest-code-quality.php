@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use RectorPest\Rules\RemoveDebugExpectationsRector;
+use RectorPest\Rules\RemoveOnlyRector;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
 use RectorPest\Rules\SimplifyExpectNotRector;
 use RectorPest\Rules\SimplifyFilesystemMatchersRector;
@@ -33,6 +35,7 @@ use RectorPest\Rules\UseToContainOnlyInstancesOfRector;
 use RectorPest\Rules\UseToContainRector;
 use RectorPest\Rules\UseToEndWithRector;
 use RectorPest\Rules\UseToEqualCanonicalizingRector;
+use RectorPest\Rules\UseToEqualWithDeltaRector;
 use RectorPest\Rules\UseToHaveCountRector;
 use RectorPest\Rules\UseToHaveKeyRector;
 use RectorPest\Rules\UseToHaveKeysRector;
@@ -44,6 +47,7 @@ use RectorPest\Rules\UseToMatchArrayRector;
 use RectorPest\Rules\UseToMatchObjectRector;
 use RectorPest\Rules\UseToMatchRector;
 use RectorPest\Rules\UseToStartWithRector;
+use RectorPest\Rules\UseToThrowRector;
 use RectorPest\Rules\UseTypeMatchersRector;
 
 /**
@@ -61,6 +65,10 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Iteration
     $rectorConfig->rule(UseEachModifierRector::class);
+
+    // Test cleanup
+    $rectorConfig->rule(RemoveOnlyRector::class);
+    $rectorConfig->rule(RemoveDebugExpectationsRector::class);
 
     // Boolean and negation simplification
     $rectorConfig->rule(SimplifyExpectNotRector::class);
@@ -83,6 +91,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(UseToBeInRector::class);
     $rectorConfig->rule(UseToBeEmptyRector::class);
     $rectorConfig->rule(UseToEqualCanonicalizingRector::class);
+    $rectorConfig->rule(UseToEqualWithDeltaRector::class);
 
     // Array matchers
     $rectorConfig->rule(UseToContainRector::class);
@@ -116,4 +125,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(UseToHavePropertyRector::class);
     $rectorConfig->rule(UseToHavePropertiesRector::class);
     $rectorConfig->rule(UseToMatchObjectRector::class);
+
+    // Exception matchers
+    $rectorConfig->rule(UseToThrowRector::class);
 };
