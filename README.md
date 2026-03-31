@@ -41,6 +41,7 @@ return RectorConfig::configure()
 | [`PestSetList::PEST_CODE_QUALITY`](config/sets/pest-code-quality.php) | Converts expect() assertions to use Pest's built-in matchers for better readability |
 | [`PestSetList::PEST_CHAIN`](config/sets/pest-chain.php) | Merges multiple expect() calls into chained expectations and optimizes their order. |
 | [`PestSetList::PEST_LARAVEL`](config/sets/pest-laravel.php) | Laravel-specific rules (requires `illuminate/support`): converts `Str::` equality checks to Pest string case matchers |
+| [`PestSetList::PEST_MIGRATION`](config/sets/pest-migration.php) | PHPUnit → Pest migration rules (opt-in): converts assertions, data providers, and test structure |
 
 ### Version Upgrade Sets
 
@@ -122,6 +123,31 @@ expect($value1)->toBe(10)->and($value2)->toBe(20)->and($value3)->toBe(30);
 > **Note on formatting:** Chained output is currently printed inline. Per-node newline control
 > (to produce one method per line) requires an upstream change to `rector/rector`'s printer.
 > See https://github.com/rectorphp/rector-src/pull/7910 for the planned upstream contribution.
+
+## PHPUnit to Pest Migration
+
+The `PEST_MIGRATION` set helps convert PHPUnit test patterns to Pest equivalents. This is an opt-in set — review changes carefully after applying.
+
+```php
+// rector.php
+use RectorPest\Set\PestSetList;
+use Rector\Config\RectorConfig;
+
+return RectorConfig::configure()
+    ->withPaths([
+        __DIR__ . '/tests',
+    ])
+    ->withSets([
+        PestSetList::PEST_MIGRATION,
+    ]);
+```
+
+**Included rules:**
+
+| Rule | Description |
+|------|-------------|
+| `ConvertAssertToExpectRector` | Converts `$this->assert*()` calls to `expect()->` chains |
+| `ConvertDataProviderToDatasetRector` | Converts `@dataProvider` annotations to `->with()` datasets |
 
 ## Using Individual Rules
 

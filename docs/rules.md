@@ -1,4 +1,4 @@
-# 53 Rules Overview
+# 61 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -533,6 +533,126 @@ Converts filter_var($url, FILTER_VALIDATE_URL) checks to `toBeUrl()` matcher
 -expect(filter_var($url, FILTER_VALIDATE_URL) !== false)->toBeTrue();
 +expect($url)->toBeUrl();
 +expect($url)->toBeUrl();
+```
+
+<br>
+
+## ConvertAssertToExpectRector
+
+Converts PHPUnit `$this->assert*()` calls to Pest `expect()` chains
+
+- class: [`RectorPest\Rules\ConvertAssertToExpectRector`](../src/Rules/ConvertAssertToExpectRector.php)
+
+```diff
+-$this->assertEquals('foo', $result);
+-$this->assertCount(3, $items);
+-$this->assertInstanceOf(User::class, $result);
++expect($result)->toEqual('foo');
++expect($items)->toHaveCount(3);
++expect($result)->toBeInstanceOf(User::class);
+```
+
+<br>
+
+## ConvertDataProviderToDatasetRector
+
+Converts PHPUnit `@dataProvider` annotations to Pest `->with()` datasets, inlining the provider array
+
+- class: [`RectorPest\Rules\ConvertDataProviderToDatasetRector`](../src/Rules/ConvertDataProviderToDatasetRector.php)
+
+```diff
+-/**
+- * @dataProvider emailProvider
+- */
+-test('validates email', function (string $email, bool $valid) {
++test('validates email', function (string $email, bool $valid) {
+     expect(filter_var($email, FILTER_VALIDATE_EMAIL) !== false)->toBe($valid);
+-});
+-
+-function emailProvider(): array
+-{
+-    return [
+-        ['test@test.com', true],
+-        ['invalid', false],
+-    ];
+-}
++})->with([
++    ['test@test.com', true],
++    ['invalid', false],
++]);
+```
+
+<br>
+
+## RemoveDebugExpectationsRector
+
+Removes debug calls (`dump()`, `dd()`, `ray()`) from `expect()` chains
+
+- class: [`RectorPest\Rules\RemoveDebugExpectationsRector`](../src/Rules/RemoveDebugExpectationsRector.php)
+
+```diff
+-expect($result)->dump()->toBe('foo');
++expect($result)->toBe('foo');
+```
+
+<br>
+
+## UseArrowFunctionInTestRector
+
+Converts single-expression Pest test closures to arrow functions
+
+- class: [`RectorPest\Rules\UseArrowFunctionInTestRector`](../src/Rules/UseArrowFunctionInTestRector.php)
+
+```diff
+-test('is true', function () {
+-    expect(true)->toBeTrue();
+-});
++test('is true', fn() => expect(true)->toBeTrue());
+```
+
+<br>
+
+## UseSequenceMatcherRector
+
+Converts consecutive indexed `expect()` calls to Pest 4's `sequence()` matcher
+
+- class: [`RectorPest\Rules\UseSequenceMatcherRector`](../src/Rules/UseSequenceMatcherRector.php)
+
+```diff
+-expect($items[0])->toBe('a');
+-expect($items[1])->toBe('b');
+-expect($items[2])->toBe('c');
++expect($items)->sequence(fn($e) => $e->toBe('a'), fn($e) => $e->toBe('b'), fn($e) => $e->toBe('c'));
+```
+
+<br>
+
+## UseToEqualWithDeltaRector
+
+Converts `abs($a - $b) < $delta` patterns to `toEqualWithDelta()`
+
+- class: [`RectorPest\Rules\UseToEqualWithDeltaRector`](../src/Rules/UseToEqualWithDeltaRector.php)
+
+```diff
+-expect(abs($a - $b) < 0.001)->toBeTrue();
++expect($a)->toEqualWithDelta($b, 0.001);
+```
+
+<br>
+
+## UseToThrowRector
+
+Converts try/catch patterns in tests to Pest's `toThrow()` matcher
+
+- class: [`RectorPest\Rules\UseToThrowRector`](../src/Rules/UseToThrowRector.php)
+
+```diff
+-try {
+-    doSomething();
+-} catch (RuntimeException $e) {
+-    expect($e->getMessage())->toBe('error');
+-}
++expect(fn() => doSomething())->toThrow(RuntimeException::class, 'error');
 ```
 
 <br>
