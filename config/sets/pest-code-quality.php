@@ -37,6 +37,7 @@ use RectorPest\Rules\UseToContainOnlyInstancesOfRector;
 use RectorPest\Rules\UseToContainRector;
 use RectorPest\Rules\UseToEndWithRector;
 use RectorPest\Rules\UseToEqualCanonicalizingRector;
+use RectorPest\Rules\UseToEqualWithDeltaRector;
 use RectorPest\Rules\UseToHaveCountRector;
 use RectorPest\Rules\UseToHaveKeyRector;
 use RectorPest\Rules\UseToHaveKeysRector;
@@ -93,6 +94,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(UseToBeInRector::class);
     $rectorConfig->rule(UseToBeEmptyRector::class);
     $rectorConfig->rule(UseToEqualCanonicalizingRector::class);
+    $rectorConfig->rule(UseToEqualWithDeltaRector::class);
 
     // Array matchers
     $rectorConfig->rule(UseToContainRector::class);
