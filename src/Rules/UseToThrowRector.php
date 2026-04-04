@@ -9,6 +9,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
@@ -71,6 +72,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if (! $this->isInsidePestTestClosure($node)) {
+            return null;
+        }
+
         /** @var array<Node\Stmt> $stmts */
         $stmts = $node->stmts;
         $hasChanged = false;
@@ -101,6 +106,27 @@ CODE_SAMPLE
         $node->stmts = $newStmts;
 
         return $node;
+    }
+
+    private function isInsidePestTestClosure(Node $node): bool
+    {
+        $current = $node;
+
+        while ($current !== null) {
+            if ($current instanceof Closure) {
+                $parent = $current->getAttribute('parent');
+                if ($parent instanceof Arg) {
+                    $funcCall = $parent->getAttribute('parent');
+                    if ($funcCall instanceof FuncCall && $this->isNames($funcCall, ['test', 'it', 'describe', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'])) {
+                        return true;
+                    }
+                }
+            }
+
+            $current = $current->getAttribute('parent');
+        }
+
+        return false;
     }
 
     private function convertTryCatch(TryCatch $tryCatch): ?MethodCall
