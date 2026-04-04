@@ -837,17 +837,19 @@ Converts `str_starts_with()` checks to `toStartWith()` matcher
 
 ## UseToThrowRector
 
-Converts try/catch patterns to `expect()->toThrow()`
+Converts try/catch patterns in Pest tests to `expect()->toThrow()`
 
 - class: [`RectorPest\Rules\UseToThrowRector`](../src/Rules/UseToThrowRector.php)
 
 ```diff
--try {
--    doSomething();
--} catch (RuntimeException $e) {
--    expect($e->getMessage())->toBe('error');
--}
-+expect(fn() => doSomething())->toThrow(RuntimeException::class, 'error');
+ test('it throws an error', function () {
+-    try {
+-        doSomething();
+-    } catch (RuntimeException $e) {
+-        expect($e->getMessage())->toBe('error');
+-    }
++    expect(fn() => doSomething())->toThrow(RuntimeException::class, 'error');
+ });
 ```
 
 <br>
