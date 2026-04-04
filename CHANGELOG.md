@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.6](https://github.com/MrPunyapal/rector-pest/compare/0.2.5...0.2.6) - 2026-04-04
+
+### What's Changed
+
+* Fix: use to throw rector rule by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/33
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.5...0.2.6
+
 ## [0.2.5](https://github.com/MrPunyapal/rector-pest/compare/0.2.4...0.2.5) - 2026-03-31
 
 ### What's Changed
