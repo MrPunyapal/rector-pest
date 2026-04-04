@@ -1,14 +1,18 @@
 <?php
 
-try {
-    riskyOperation();
-} catch (\InvalidArgumentException $e) {
-}
+test('it throws', function () {
+    try {
+        riskyOperation();
+    } catch (\InvalidArgumentException $e) {
+    }
+});
 
 ?>
 -----
 <?php
 
-expect(fn() => riskyOperation())->toThrow(\InvalidArgumentException::class);
+test('it throws', function () {
+    expect(fn() => riskyOperation())->toThrow(\InvalidArgumentException::class);
+});
 
 ?>

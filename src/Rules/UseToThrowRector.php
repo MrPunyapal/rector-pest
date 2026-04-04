@@ -9,6 +9,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
@@ -18,8 +19,7 @@ use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Finally_;
 use PhpParser\Node\Stmt\TryCatch;
-use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
-use Rector\PhpParser\Enum\NodeGroup;
+use PhpParser\NodeVisitor;
 use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
@@ -33,19 +33,23 @@ final class UseToThrowRector extends AbstractRector
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
-            'Converts try/catch patterns to expect()->toThrow()',
+            'Converts try/catch patterns in Pest tests to expect()->toThrow()',
             [
                 new CodeSample(
                     <<<'CODE_SAMPLE'
-try {
-    doSomething();
-} catch (RuntimeException $e) {
-    expect($e->getMessage())->toBe('error');
-}
+test('it throws an error', function () {
+    try {
+        doSomething();
+    } catch (RuntimeException $e) {
+        expect($e->getMessage())->toBe('error');
+    }
+});
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect(fn() => doSomething())->toThrow(RuntimeException::class, 'error');
+test('it throws an error', function () {
+    expect(fn() => doSomething())->toThrow(RuntimeException::class, 'error');
+});
 CODE_SAMPLE
                 ),
             ]
@@ -59,48 +63,61 @@ CODE_SAMPLE
      */
     public function getNodeTypes(): array
     {
-        return NodeGroup::STMTS_AWARE;
+        return [FuncCall::class];
     }
 
     /**
-     * @param StmtsAwareInterface&Node $node
+     * @param FuncCall $node
      */
     public function refactor(Node $node): ?Node
     {
-        if (! property_exists($node, 'stmts') || $node->stmts === null) {
+        if (! $this->isNames($node, ['test', 'it', 'describe', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'])) {
             return null;
         }
 
-        /** @var array<Node\Stmt> $stmts */
-        $stmts = $node->stmts;
         $hasChanged = false;
-        $newStmts = [];
 
-        foreach ($stmts as $stmt) {
-            if (! $stmt instanceof TryCatch) {
-                $newStmts[] = $stmt;
-
+        foreach ($node->args as $arg) {
+            if (! $arg instanceof Arg) {
                 continue;
             }
 
-            $result = $this->convertTryCatch($stmt);
-            if (!$result instanceof MethodCall) {
-                $newStmts[] = $stmt;
-
+            if (! $arg->value instanceof Closure) {
                 continue;
             }
 
-            $newStmts[] = new Expression($result);
+            if ($this->transformTestClosure($arg->value)) {
+                $hasChanged = true;
+            }
+        }
+
+        return $hasChanged ? $node : null;
+    }
+
+    private function transformTestClosure(Closure $closure): bool
+    {
+        $hasChanged = false;
+
+        $this->traverseNodesWithCallable([$closure], function (Node $node) use (&$hasChanged, $closure): int|Node|null {
+            if ($node instanceof Closure && $node !== $closure) {
+                return NodeVisitor::DONT_TRAVERSE_CHILDREN;
+            }
+
+            if (! $node instanceof TryCatch) {
+                return null;
+            }
+
+            $result = $this->convertTryCatch($node);
+            if (! $result instanceof MethodCall) {
+                return null;
+            }
+
             $hasChanged = true;
-        }
 
-        if (! $hasChanged) {
-            return null;
-        }
+            return new Expression($result);
+        });
 
-        $node->stmts = $newStmts;
-
-        return $node;
+        return $hasChanged;
     }
 
     private function convertTryCatch(TryCatch $tryCatch): ?MethodCall
