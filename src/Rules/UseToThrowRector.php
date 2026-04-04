@@ -78,7 +78,11 @@ CODE_SAMPLE
         $hasChanged = false;
 
         foreach ($node->args as $arg) {
-            if (! $arg instanceof Arg || ! $arg->value instanceof Closure) {
+            if (! $arg instanceof Arg) {
+                continue;
+            }
+
+            if (! $arg->value instanceof Closure) {
                 continue;
             }
 
