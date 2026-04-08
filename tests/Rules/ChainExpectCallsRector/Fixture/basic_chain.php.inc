@@ -7,5 +7,7 @@ expect($value)->toBeGreaterThan(5);
 -----
 <?php
 
-expect($value)->toBe(10)->toBeInt()->toBeGreaterThan(5);
+expect($value)->toBe(10)
+    ->toBeInt()
+    ->toBeGreaterThan(5);
 

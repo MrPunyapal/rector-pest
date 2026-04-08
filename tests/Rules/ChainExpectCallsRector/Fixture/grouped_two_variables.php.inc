@@ -15,7 +15,9 @@ expect($b)->toBeInt();
 $a = 10;
 $b = 20;
 
-expect($a)->toBe(10)->toBeInt()
-    ->and($b)->toBe(10)->toBeInt();
+expect($a)->toBe(10)
+    ->toBeInt()
+    ->and($b)->toBe(10)
+    ->toBeInt();
 
 ?>
