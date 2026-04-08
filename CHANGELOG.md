@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.7](https://github.com/MrPunyapal/rector-pest/compare/0.2.6...0.2.7) - 2026-04-08
+
+### What's Changed
+
+* Feat: better chain refactoring by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/34
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.6...0.2.7
+
 ## [0.2.6](https://github.com/MrPunyapal/rector-pest/compare/0.2.5...0.2.6) - 2026-04-04
 
 ### What's Changed
