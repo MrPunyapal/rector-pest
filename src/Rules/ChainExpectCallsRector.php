@@ -219,7 +219,6 @@ CODE_SAMPLE
         $second = $nextExprStmt->expr;
 
         /** @var MethodCall $first */
-        /** @var MethodCall $second */
         $exprStmt->expr = $this->buildChainedCall($first, $second);
 
         // preserve comments from the removed statement(s)

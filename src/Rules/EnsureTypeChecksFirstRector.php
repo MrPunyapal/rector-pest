@@ -99,7 +99,6 @@ CODE_SAMPLE
                 continue;
             }
 
-            /** @var MethodCall $methodCall */
             $methodCall = $stmt->expr;
             if (! $this->isExpectChain($methodCall)) {
                 continue;
@@ -135,7 +134,6 @@ CODE_SAMPLE
                     continue;
                 }
 
-                /** @var MethodCall $nextMethodCall */
                 $nextMethodCall = $next->expr;
                 if ($this->isExpectChain($nextMethodCall) && ! $this->hasNotModifier($nextMethodCall)) {
                     $firstArg = $this->getExpectArgument($methodCall);
