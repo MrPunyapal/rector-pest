@@ -7,7 +7,9 @@ namespace RectorPest\Rules;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Stmt\Expression;
 use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\NodeTypeResolver\Node\AttributeKey;
@@ -31,7 +33,8 @@ expect($a)->toBeInt();
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($a)->toBe(10)->toBeInt();
+expect($a)->toBe(10)
+    ->toBeInt();
 CODE_SAMPLE
                 ),
                 new CodeSample(
@@ -54,8 +57,10 @@ expect($b)->toBeInt();
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($a)->toBe(10)->toBeInt()
-    ->and($b)->toBe(10)->toBeInt();
+expect($a)->toBe(10)
+    ->toBeInt()
+    ->and($b)->toBe(10)
+    ->toBeInt();
 CODE_SAMPLE
                 ),
             ]
@@ -226,6 +231,8 @@ CODE_SAMPLE
 
         $exprStmt->expr = $this->buildChainedCall($first, $second);
 
+        $this->applyNewlineAttributes($exprStmt->expr);
+
         // preserve comments from the removed statement(s)
         $collectedComments = (array) $exprStmt->getAttribute('comments', []);
         $collectedComments = array_merge($collectedComments, (array) $nextExprStmt->getAttribute('comments', []));
@@ -327,13 +334,11 @@ CODE_SAMPLE
         $andArg = new Arg($targetExpectArg);
         $andCall = new MethodCall($firstMethodCall, 'and', [$andArg]);
 
-        if (defined(AttributeKey::class . '::NEWLINE_ON_FLUENT_CALL')) {
-            $andCall->setAttribute(AttributeKey::NEWLINE_ON_FLUENT_CALL, true);
-        }
-
         $result = $this->rebuildMethodChain($andCall, $allSecondMethods);
 
         $exprStmt->expr = $result;
+
+        $this->applyNewlineAttributes($exprStmt->expr);
 
         // attach collected comments to the merged statement (filter out empty ones)
         if ($collectedComments !== []) {
@@ -358,5 +363,45 @@ CODE_SAMPLE
         $stmts = array_values($stmts);
 
         return true;
+    }
+
+    private function applyNewlineAttributes(Expr $chain): void
+    {
+        if (! defined(AttributeKey::class . '::NEWLINE_ON_FLUENT_CALL')) {
+            return;
+        }
+
+        $current = $chain;
+
+        while ($current instanceof MethodCall) {
+            $var = $current->var;
+
+            if ($var instanceof FuncCall) {
+                // First call directly after expect(): keep on same line
+                break;
+            }
+
+            if ($var instanceof PropertyFetch) {
+                // ->not->toBeX() unit: printer can't add newline here; skip through ->not
+                $current = $var->var;
+                continue;
+            }
+
+            if (! $var instanceof MethodCall) {
+                break;
+            }
+
+            if ($this->isName($var->name, 'and')) {
+                // Current is the first call after ->and(): keep on same line as ->and()
+                // The ->and() call itself needs a newline
+                $var->setAttribute(AttributeKey::NEWLINE_ON_FLUENT_CALL, true);
+                $current = $var->var;
+                continue;
+            }
+
+            // Not first after expect() or ->and(): put on new line
+            $current->setAttribute(AttributeKey::NEWLINE_ON_FLUENT_CALL, true);
+            $current = $var;
+        }
     }
 }
