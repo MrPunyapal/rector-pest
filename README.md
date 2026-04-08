@@ -117,12 +117,10 @@ expect($value3)->toBe(30);
 
 **After:**
 ```php
-expect($value1)->toBe(10)->and($value2)->toBe(20)->and($value3)->toBe(30);
+expect($value1)->toBe(10)
+    ->and($value2)->toBe(20)
+    ->and($value3)->toBe(30);
 ```
-
-> **Note on formatting:** Chained output is currently printed inline. Per-node newline control
-> (to produce one method per line) requires an upstream change to `rector/rector`'s printer.
-> See https://github.com/rectorphp/rector-src/pull/7910 for the planned upstream contribution.
 
 ## PHPUnit to Pest Migration
 
@@ -179,7 +177,7 @@ vendor/bin/rector process
 ## Requirements
 
 - PHP 8.2+
-- Rector 2.0+
+- Rector 2.4.1+
 
 ## Contributing
 

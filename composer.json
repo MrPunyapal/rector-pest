@@ -23,7 +23,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "rector/rector": "^2.0",
+        "rector/rector": "^2.4.1",
         "symplify/rule-doc-generator-contracts": "^11.2"
     },
     "require-dev": {
