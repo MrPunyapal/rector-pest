@@ -111,18 +111,29 @@ return RectorConfig::configure()
 **Before:**
 ```php
 expect($value1)->toBe(10);
+expect($value1)->toBeInt();
 expect($value2)->toBe(20);
+expect($value2)->toBeString();
 expect($value3)->toBe(30);
 ```
 
 **After:**
 ```php
-expect($value1)->toBe(10)->and($value2)->toBe(20)->and($value3)->toBe(30);
+expect($value1)->toBe(10)
+    ->toBeInt()
+    ->and($value2)->toBe(20)
+    ->toBeString()
+    ->and($value3)->toBe(30);
 ```
 
-> **Note on formatting:** Chained output is currently printed inline. Per-node newline control
-> (to produce one method per line) requires an upstream change to `rector/rector`'s printer.
-> See https://github.com/rectorphp/rector-src/pull/7910 for the planned upstream contribution.
+**Formatting rules** (requires `rector/rector` 2.4.1+):
+
+- The **first matcher after `expect()`** stays on the same line as `expect()`
+- The **first matcher after `->and()`** stays on the same line as `->and()`
+- Every **additional matcher** in a segment goes on its own indented line
+- `->not->toBeX()` is treated as a single unit and stays inline
+
+> **Note:** On `rector/rector` versions older than 2.4.1, chaining still works but all method calls are printed inline on a single line.
 
 ## PHPUnit to Pest Migration
 
