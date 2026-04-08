@@ -219,6 +219,9 @@ CODE_SAMPLE
         $first = $exprStmt->expr;
         $second = $nextExprStmt->expr;
 
+        assert($first instanceof MethodCall);
+        assert($second instanceof MethodCall);
+
         $exprStmt->expr = $this->buildChainedCall($first, $second);
 
         // preserve comments from the removed statement(s)
