@@ -10,6 +10,7 @@ use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Stmt\Expression;
 use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
+use Rector\NodeTypeResolver\Node\AttributeKey;
 use Rector\PhpParser\Enum\NodeGroup;
 use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
@@ -321,6 +322,10 @@ CODE_SAMPLE
 
         $andArg = new Arg($targetExpectArg);
         $andCall = new MethodCall($firstMethodCall, 'and', [$andArg]);
+
+        if (defined(AttributeKey::class . '::NEWLINE_ON_FLUENT_CALL')) {
+            $andCall->setAttribute(AttributeKey::NEWLINE_ON_FLUENT_CALL, true);
+        }
 
         $result = $this->rebuildMethodChain($andCall, $allSecondMethods);
 
