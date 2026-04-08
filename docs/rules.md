@@ -9,7 +9,8 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 ```diff
 -expect($a)->toBe(10);
 -expect($a)->toBeInt();
-+expect($a)->toBe(10)->toBeInt();
++expect($a)->toBe(10)
++    ->toBeInt();
 ```
 
 <br>
@@ -28,8 +29,10 @@ Chains multiple `expect()` calls on the same value into a single chained expecta
 -expect($a)->toBeInt();
 -expect($b)->toBe(10);
 -expect($b)->toBeInt();
-+expect($a)->toBe(10)->toBeInt()
-+    ->and($b)->toBe(10)->toBeInt();
++expect($a)->toBe(10)
++    ->toBeInt()
++    ->and($b)->toBe(10)
++    ->toBeInt();
 ```
 
 <br>
