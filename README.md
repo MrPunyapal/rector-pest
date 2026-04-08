@@ -122,6 +122,8 @@ expect($value1)->toBe(10)
     ->and($value3)->toBe(30);
 ```
 
+> **Note:** The `PEST_CHAIN` set formats chained `->and()` calls with one call per line. This requires `rector/rector` 2.4.1+. On older versions, chaining still works but the output will be printed inline.
+
 ## PHPUnit to Pest Migration
 
 The `PEST_MIGRATION` set helps convert PHPUnit test patterns to Pest equivalents. This is an opt-in set — review changes carefully after applying.
@@ -177,7 +179,7 @@ vendor/bin/rector process
 ## Requirements
 
 - PHP 8.2+
-- Rector 2.4.1+
+- Rector 2.0+
 
 ## Contributing
 
