@@ -47,8 +47,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        if [ "${{ matrix.php }}" == "8.2" ]; then
-          composer install --no-interaction --prefer-dist --ignore-platform-req=nunomaduro/pao
+        if [ "${{ matrix.php-version }}" == "8.2" ]; then
+          composer install --no-interaction --prefer-dist --ignore-platform-req=php
         else
           composer install --no-interaction --prefer-dist
         fi
