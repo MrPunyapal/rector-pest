@@ -45,13 +45,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-${{ matrix.php-version }}-
 
-    - name: Install dependencies
+    - name: Prepare dependencies
       run: |
         if [ "${{ matrix.php-version }}" == "8.2" ]; then
-          composer remove nunomaduro/pao --dev --no-interaction
-        else
-          composer install --no-interaction --prefer-dist
+          composer remove nunomaduro/pao --dev --no-interaction --no-update
         fi
+
+    - name: Install dependencies
+      run: composer install --no-interaction --prefer-dist
 
     - name: Run tests
       run: composer test
