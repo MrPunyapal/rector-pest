@@ -48,7 +48,7 @@ jobs:
     - name: Install dependencies
       run: |
         if [ "${{ matrix.php-version }}" == "8.2" ]; then
-          composer remove nunomaduro/pao --dev --no-interaction --prefer-dist
+          composer remove nunomaduro/pao --dev --no-interaction
         else
           composer install --no-interaction --prefer-dist
         fi
