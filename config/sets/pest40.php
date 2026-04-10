@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use RectorPest\Rules\UseSequenceMatcherRector;
 
 /**
  * @see https://pestphp.com/docs/upgrade-guide
@@ -13,7 +12,4 @@ use RectorPest\Rules\UseSequenceMatcherRector;
  */
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->import(__DIR__ . '/../config.php');
-
-    // Pest 4 sequence() matcher for indexed array assertions
-    $rectorConfig->rule(UseSequenceMatcherRector::class);
 };
