@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace RectorPest\Rules;
 
 use PhpParser\Node;
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Foreach_;
+use PhpParser\NodeFinder;
 use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
@@ -92,6 +94,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->loopVariableUsedInChain($methodCall, $node->valueVar)) {
+            return null;
+        }
+
         $expectCall->args[0] = $this->nodeFactory->createArg($node->expr);
 
         $methods = $this->collectChainMethods($methodCall);
@@ -100,5 +106,33 @@ CODE_SAMPLE
         $result = $this->rebuildMethodChain($eachProperty, $methods);
 
         return new Expression($result);
+    }
+
+    /**
+     * Check if the loop variable is referenced anywhere in the method chain
+     * beyond the initial expect() argument (e.g. in ->and() arguments)
+     */
+    private function loopVariableUsedInChain(MethodCall $methodCall, Variable $loopVar): bool
+    {
+        $nodeFinder = new NodeFinder();
+        $methods = $this->collectChainMethods($methodCall);
+
+        foreach ($methods as $method) {
+            foreach ($method['args'] as $arg) {
+                if (! $arg instanceof Arg) {
+                    continue;
+                }
+
+                $variables = $nodeFinder->findInstanceOf($arg->value, Variable::class);
+
+                foreach ($variables as $variable) {
+                    if ($this->nodeComparator->areNodesEqual($variable, $loopVar)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
