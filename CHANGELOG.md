@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.10](https://github.com/MrPunyapal/rector-pest/compare/0.2.9...0.2.10) - 2026-04-10
+
+### What's Changed
+
+* Fix: conflict by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/37
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.9...0.2.10
+
 ## [0.2.9](https://github.com/MrPunyapal/rector-pest/compare/0.2.8...0.2.9) - 2026-04-10
 
 **Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.8...0.2.9
