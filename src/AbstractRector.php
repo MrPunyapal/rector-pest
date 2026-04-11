@@ -12,8 +12,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\VariadicPlaceholder;
-use PHPStan\Type\Generic\GenericObjectType;
-use PHPStan\Type\MixedType;
 use Rector\Rector\AbstractRector as BaseAbstractRector;
 use Symplify\RuleDocGenerator\Contract\DocumentedRuleInterface;
 
@@ -91,10 +89,7 @@ abstract class AbstractRector extends BaseAbstractRector implements DocumentedRu
             return false;
         }
 
-        $expectCallType = $this->getType($expectCall);
-        $valueType = $expectCallType instanceof GenericObjectType && $expectCallType->getClassName() === Expectation::class
-            ? ($expectCallType->getTypes()[0] ?? new MixedType())
-            : new MixedType();
+        $valueType = $this->getType($expectCall)->getTemplateType(Expectation::class, 'TValue');
 
         return match ($typeCheck) {
             'boolean' => ! $valueType->isBoolean()->no(),
