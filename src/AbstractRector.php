@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RectorPest;
 
+use Pest\Expectation;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
@@ -11,6 +12,8 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\VariadicPlaceholder;
+use PHPStan\Type\Generic\GenericObjectType;
+use PHPStan\Type\MixedType;
 use Rector\Rector\AbstractRector as BaseAbstractRector;
 use Symplify\RuleDocGenerator\Contract\DocumentedRuleInterface;
 
@@ -77,29 +80,34 @@ abstract class AbstractRector extends BaseAbstractRector implements DocumentedRu
     }
 
     /**
-     * Check if the expect() argument matches a specific type category
+     * Check if the expect() argument matches a specific type category.
+     * Unwraps the Expectation<T> generic (resolved by PestStan's PHPStan extension)
+     * to extract T, then checks the type against the given category.
      */
     protected function isExpectValueOfType(MethodCall $methodCall, string $typeCheck): bool
     {
-        $expectArgument = $this->getExpectArgument($methodCall);
-        if (!$expectArgument instanceof Expr) {
+        $expectCall = $this->getExpectFuncCall($methodCall);
+        if (! $expectCall instanceof FuncCall) {
             return false;
         }
 
-        $type = $this->getType($expectArgument);
+        $expectCallType = $this->getType($expectCall);
+        $valueType = $expectCallType instanceof GenericObjectType && $expectCallType->getClassName() === Expectation::class
+            ? ($expectCallType->getTypes()[0] ?? new MixedType())
+            : new MixedType();
 
         return match ($typeCheck) {
-            'boolean' => ! $type->isBoolean()->no(),
-            'string' => ! $type->isString()->no(),
-            'integer' => ! $type->isInteger()->no(),
-            'float' => ! $type->isFloat()->no(),
-            'numeric' => ! $type->isInteger()->no() || ! $type->isFloat()->no(),
-            'array' => ! $type->isArray()->no(),
-            'object' => ! $type->isObject()->no(),
-            'iterable' => ! $type->isIterable()->no(),
-            'null' => ! $type->isNull()->no(),
-            'scalar' => ! $type->isScalar()->no(),
-            'callable' => ! $type->isCallable()->no(),
+            'boolean' => ! $valueType->isBoolean()->no(),
+            'string' => ! $valueType->isString()->no(),
+            'integer' => ! $valueType->isInteger()->no(),
+            'float' => ! $valueType->isFloat()->no(),
+            'numeric' => ! $valueType->isInteger()->no() || ! $valueType->isFloat()->no(),
+            'array' => ! $valueType->isArray()->no(),
+            'object' => ! $valueType->isObject()->no(),
+            'iterable' => ! $valueType->isIterable()->no(),
+            'null' => ! $valueType->isNull()->no(),
+            'scalar' => ! $valueType->isScalar()->no(),
+            'callable' => ! $valueType->isCallable()->no(),
             default => false,
         };
     }
