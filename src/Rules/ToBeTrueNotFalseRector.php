@@ -78,6 +78,15 @@ CODE_SAMPLE
             return null;
         }
 
+        $expectArgument = $this->getExpectArgument($node);
+        if ($expectArgument === null) {
+            return null;
+        }
+
+        if (! $this->getType($expectArgument)->isBoolean()->yes()) {
+            return null;
+        }
+
         $oppositeMatcher = self::OPPOSITE_MATCHERS[$methodName];
 
         return $this->removeNotAndReplaceMatcher($node, $oppositeMatcher);
