@@ -83,7 +83,7 @@ CODE_SAMPLE
             return null;
         }
 
-        if (! $this->getType($expectArgument)->isBoolean()->yes()) {
+        if (! $this->isExpectValueOfType($node, 'boolean')) {
             return null;
         }
 

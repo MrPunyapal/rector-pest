@@ -77,6 +77,34 @@ abstract class AbstractRector extends BaseAbstractRector implements DocumentedRu
     }
 
     /**
+     * Check if the expect() argument matches a specific type category
+     */
+    protected function isExpectValueOfType(MethodCall $methodCall, string $typeCheck): bool
+    {
+        $expectArgument = $this->getExpectArgument($methodCall);
+        if ($expectArgument === null) {
+            return false;
+        }
+
+        $type = $this->getType($expectArgument);
+
+        return match ($typeCheck) {
+            'boolean' => $type->isBoolean()->yes(),
+            'string' => $type->isString()->yes(),
+            'integer' => $type->isInteger()->yes(),
+            'float' => $type->isFloat()->yes(),
+            'numeric' => $type->isInteger()->yes() || $type->isFloat()->yes(),
+            'array' => $type->isArray()->yes(),
+            'object' => $type->isObject()->yes(),
+            'iterable' => $type->isIterable()->yes(),
+            'null' => $type->isNull()->yes(),
+            'scalar' => $type->isScalar()->yes(),
+            'callable' => $type->isCallable()->yes(),
+            default => false,
+        };
+    }
+
+    /**
      * Get the root of an expect chain (either FuncCall or PropertyFetch for ->not)
      */
     protected function getExpectChainRoot(MethodCall $methodCall): FuncCall|PropertyFetch|null
