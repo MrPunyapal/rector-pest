@@ -82,7 +82,7 @@ abstract class AbstractRector extends BaseAbstractRector implements DocumentedRu
     protected function isExpectValueOfType(MethodCall $methodCall, string $typeCheck): bool
     {
         $expectArgument = $this->getExpectArgument($methodCall);
-        if ($expectArgument === null) {
+        if (!$expectArgument instanceof Expr) {
             return false;
         }
 

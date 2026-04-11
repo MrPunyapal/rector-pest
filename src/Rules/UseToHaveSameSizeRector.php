@@ -133,7 +133,7 @@ CODE_SAMPLE
             }
 
             $expectArgument = $this->getExpectArgument($node);
-            if ($expectArgument !== null) {
+            if ($expectArgument instanceof Expr) {
                 $expectArgType = $this->getType($expectArgument);
                 if ($expectArgType->isArray()->no() && $expectArgType->isIterable()->no()) {
                     return null;

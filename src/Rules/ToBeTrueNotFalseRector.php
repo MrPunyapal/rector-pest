@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RectorPest\Rules;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
@@ -79,7 +80,7 @@ CODE_SAMPLE
         }
 
         $expectArgument = $this->getExpectArgument($node);
-        if ($expectArgument === null) {
+        if (!$expectArgument instanceof Expr) {
             return null;
         }
 
