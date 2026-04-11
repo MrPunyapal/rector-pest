@@ -111,6 +111,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($subjectArg->value)->isString()->no()) {
+            return null;
+        }
+
         // Verify the assertion matches what we expect for a successful regex match
         if ($this->isName($node->name, 'toBe')) {
             if (count($node->args) !== 1) {

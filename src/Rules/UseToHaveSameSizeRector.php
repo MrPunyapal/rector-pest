@@ -97,6 +97,11 @@ CODE_SAMPLE
                 return null;
             }
 
+            $firstArrayType = $this->getType($firstArray);
+            if ($firstArrayType->isArray()->no() && $firstArrayType->isIterable()->no()) {
+                return null;
+            }
+
             // Replace expect(count($a)) with expect($a)
             $expectCall->args = [new Arg($firstArray)];
 
@@ -125,6 +130,14 @@ CODE_SAMPLE
             $secondArray = $this->getCountedValue($countArg->value);
             if (!$secondArray instanceof Expr) {
                 return null;
+            }
+
+            $expectArgument = $this->getExpectArgument($node);
+            if ($expectArgument !== null) {
+                $expectArgType = $this->getType($expectArgument);
+                if ($expectArgType->isArray()->no() && $expectArgType->isIterable()->no()) {
+                    return null;
+                }
             }
 
             // Replace toHaveCount(count($b)) with toHaveSameSize($b)

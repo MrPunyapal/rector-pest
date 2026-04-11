@@ -114,6 +114,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($stringArg->value)->isString()->no()) {
+            return null;
+        }
+
         // Determine if result should be positive (toBeJson) or negative (not->toBeJson)
         // json_decode($x) !== null + toBeTrue = valid JSON = toBeJson
         // json_decode($x) !== null + toBeFalse = invalid JSON = not->toBeJson

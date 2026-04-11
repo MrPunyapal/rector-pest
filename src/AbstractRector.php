@@ -89,17 +89,17 @@ abstract class AbstractRector extends BaseAbstractRector implements DocumentedRu
         $type = $this->getType($expectArgument);
 
         return match ($typeCheck) {
-            'boolean' => $type->isBoolean()->yes(),
-            'string' => $type->isString()->yes(),
-            'integer' => $type->isInteger()->yes(),
-            'float' => $type->isFloat()->yes(),
-            'numeric' => $type->isInteger()->yes() || $type->isFloat()->yes(),
-            'array' => $type->isArray()->yes(),
-            'object' => $type->isObject()->yes(),
-            'iterable' => $type->isIterable()->yes(),
-            'null' => $type->isNull()->yes(),
-            'scalar' => $type->isScalar()->yes(),
-            'callable' => $type->isCallable()->yes(),
+            'boolean' => ! $type->isBoolean()->no(),
+            'string' => ! $type->isString()->no(),
+            'integer' => ! $type->isInteger()->no(),
+            'float' => ! $type->isFloat()->no(),
+            'numeric' => ! $type->isInteger()->no() || ! $type->isFloat()->no(),
+            'array' => ! $type->isArray()->no(),
+            'object' => ! $type->isObject()->no(),
+            'iterable' => ! $type->isIterable()->no(),
+            'null' => ! $type->isNull()->no(),
+            'scalar' => ! $type->isScalar()->no(),
+            'callable' => ! $type->isCallable()->no(),
             default => false,
         };
     }

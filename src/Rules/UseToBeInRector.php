@@ -77,6 +77,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($haystackArg->value)->isArray()->no() && $this->getType($haystackArg->value)->isIterable()->no()) {
+            return null;
+        }
+
         $needsNot = $this->calculateNeedsNot($extracted['methodName'], $node);
 
         return $this->buildMatcherCall(
