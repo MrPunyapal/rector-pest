@@ -8,6 +8,7 @@
 CHANGELOG.md export-ignore
 docs/ export-ignore
 LICENSE export-ignore
+phpstan.neon export-ignore
 phpunit.xml.dist export-ignore
 pint.json export-ignore
 README.md export-ignore
