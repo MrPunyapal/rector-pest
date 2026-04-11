@@ -10,7 +10,7 @@ use RectorPest\Rules\SimplifyExpectNotRector;
 use RectorPest\Rules\SimplifyFilesystemMatchersRector;
 use RectorPest\Rules\SimplifyToBeTruthyFalsyRector;
 use RectorPest\Rules\SimplifyToLiteralBooleanRector;
-// use RectorPest\Rules\ToBeTrueNotFalseRector;
+use RectorPest\Rules\ToBeTrueNotFalseRector;
 use RectorPest\Rules\UseEachModifierRector;
 use RectorPest\Rules\UseInstanceOfMatcherRector;
 use RectorPest\Rules\UseStrictEqualityMatchersRector;
@@ -72,7 +72,7 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Boolean and negation simplification
     $rectorConfig->rule(SimplifyExpectNotRector::class);
-    // $rectorConfig->rule(ToBeTrueNotFalseRector::class);
+    $rectorConfig->rule(ToBeTrueNotFalseRector::class);
     $rectorConfig->rule(SimplifyToLiteralBooleanRector::class);
     $rectorConfig->rule(SimplifyToBeTruthyFalsyRector::class);
 

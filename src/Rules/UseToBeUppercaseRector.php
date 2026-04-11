@@ -77,6 +77,10 @@ CODE_SAMPLE
         if ($this->isStrtoupper($expectArg->left)) {
             $strtoUpperCall = $expectArg->left;
             if ($this->nodeComparator->areNodesEqual($this->getFirstArg($strtoUpperCall), $expectArg->right)) {
+                if ($this->getType($expectArg->right)->isString()->no()) {
+                    return null;
+                }
+
                 $expectCall->args = [new Arg($expectArg->right)];
                 $node->name = new Identifier('toBeUppercase');
                 return $node;
@@ -87,6 +91,10 @@ CODE_SAMPLE
         if ($this->isStrtoupper($expectArg->right)) {
             $strtoUpperCall = $expectArg->right;
             if ($this->nodeComparator->areNodesEqual($expectArg->left, $this->getFirstArg($strtoUpperCall))) {
+                if ($this->getType($expectArg->left)->isString()->no()) {
+                    return null;
+                }
+
                 $expectCall->args = [new Arg($expectArg->left)];
                 $node->name = new Identifier('toBeUppercase');
                 return $node;

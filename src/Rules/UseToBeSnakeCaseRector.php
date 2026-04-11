@@ -77,6 +77,10 @@ CODE_SAMPLE
         if ($this->isStrMethod($expectArg->left, 'snake')) {
             $staticCall = $expectArg->left;
             if ($this->nodeComparator->areNodesEqual($this->getFirstStaticArg($staticCall), $expectArg->right)) {
+                if ($this->getType($expectArg->right)->isString()->no()) {
+                    return null;
+                }
+
                 $expectCall->args = [new Arg($expectArg->right)];
                 $node->name = new Identifier('toBeSnakeCase');
 
@@ -88,6 +92,10 @@ CODE_SAMPLE
         if ($this->isStrMethod($expectArg->right, 'snake')) {
             $staticCall = $expectArg->right;
             if ($this->nodeComparator->areNodesEqual($expectArg->left, $this->getFirstStaticArg($staticCall))) {
+                if ($this->getType($expectArg->left)->isString()->no()) {
+                    return null;
+                }
+
                 $expectCall->args = [new Arg($expectArg->left)];
                 $node->name = new Identifier('toBeSnakeCase');
 

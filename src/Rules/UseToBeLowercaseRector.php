@@ -77,6 +77,10 @@ CODE_SAMPLE
         if ($this->isStrtolower($expectArg->left)) {
             $strtoLowerCall = $expectArg->left;
             if ($this->nodeComparator->areNodesEqual($this->getFirstArg($strtoLowerCall), $expectArg->right)) {
+                if ($this->getType($expectArg->right)->isString()->no()) {
+                    return null;
+                }
+
                 $expectCall->args = [new Arg($expectArg->right)];
                 $node->name = new Identifier('toBeLowercase');
                 return $node;
@@ -87,6 +91,10 @@ CODE_SAMPLE
         if ($this->isStrtolower($expectArg->right)) {
             $strtoLowerCall = $expectArg->right;
             if ($this->nodeComparator->areNodesEqual($expectArg->left, $this->getFirstArg($strtoLowerCall))) {
+                if ($this->getType($expectArg->left)->isString()->no()) {
+                    return null;
+                }
+
                 $expectCall->args = [new Arg($expectArg->left)];
                 $node->name = new Identifier('toBeLowercase');
                 return $node;

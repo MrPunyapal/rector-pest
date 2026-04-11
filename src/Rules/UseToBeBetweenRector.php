@@ -92,6 +92,10 @@ CODE_SAMPLE
         $min = $left->right;
         $max = $right->right;
 
+        if ($this->getType($variable)->isInteger()->no() && $this->getType($variable)->isFloat()->no()) {
+            return null;
+        }
+
         // Replace expect($value >= $min && $value <= $max) with expect($value)
         $expectCall->args = [new Arg($variable)];
 

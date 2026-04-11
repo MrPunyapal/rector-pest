@@ -64,6 +64,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if (! $this->isExpectValueOfType($node, 'array')) {
+            return null;
+        }
+
         // Collect all toHaveKey calls in the chain
         $keys = [];
         $current = $node;

@@ -83,6 +83,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($ctypeArg->value)->isString()->no()) {
+            return null;
+        }
+
         // Replace expect(ctype_alpha($value)) with expect($value)
         $expectCall->args = [new Arg($ctypeArg->value)];
 

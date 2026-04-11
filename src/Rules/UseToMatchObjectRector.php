@@ -105,6 +105,14 @@ CODE_SAMPLE
                 continue;
             }
 
+            $firstSubjectType = $this->getType($firstSubject);
+            if ($firstSubjectType->isObject()->no()) {
+                $newStmts[] = $stmt;
+                $i++;
+
+                continue;
+            }
+
             $properties = [$firstProperty];
             $j = $i + 1;
 

@@ -94,6 +94,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($countArg->value)->isArray()->no() && $this->getType($countArg->value)->isIterable()->no()) {
+            return null;
+        }
+
         $expectCall->args = [new Arg($countArg->value)];
 
         $node->name = new Identifier('toHaveCount');

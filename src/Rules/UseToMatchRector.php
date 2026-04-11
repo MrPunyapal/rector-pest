@@ -101,6 +101,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($subjectArg->value)->isString()->no()) {
+            return null;
+        }
+
         $expectCall->args = [new Arg($subjectArg->value)];
         $node->name = new Identifier('toMatch');
         $node->args = [new Arg($patternArg->value)];
