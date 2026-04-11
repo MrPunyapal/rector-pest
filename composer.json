@@ -23,11 +23,11 @@
     ],
     "require": {
         "php": "^8.2",
-        "mrpunyapal/peststan": "^0.2.5",
         "rector/rector": "^2.0",
         "symplify/rule-doc-generator-contracts": "^11.2"
     },
     "require-dev": {
+        "mrpunyapal/peststan": "^0.2.5",
         "laravel/pint": "^1.18",
         "nunomaduro/pao": "^0.1.4",
         "pestphp/pest": "^3.0 || ^4.0",
