@@ -9,4 +9,5 @@ use Rector\Config\RectorConfig;
  * Import this in your set configurations
  */
 return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->phpstanConfig('vendor/mrpunyapal/peststan/extension.neon');
 };
