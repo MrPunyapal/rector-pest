@@ -75,6 +75,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($pathArg->value)->isArray()->no()) {
+            return null;
+        }
+
         $needsNot = $this->calculateNeedsNot($extracted['methodName'], $node);
 
         return $this->buildMatcherCall(

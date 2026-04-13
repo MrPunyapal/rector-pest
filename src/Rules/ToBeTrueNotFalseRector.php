@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RectorPest\Rules;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
@@ -75,6 +76,15 @@ CODE_SAMPLE
         }
 
         if (! isset(self::OPPOSITE_MATCHERS[$methodName])) {
+            return null;
+        }
+
+        $expectArgument = $this->getExpectArgument($node);
+        if (!$expectArgument instanceof Expr) {
+            return null;
+        }
+
+        if (! $this->isExpectValueOfType($node, 'boolean')) {
             return null;
         }
 

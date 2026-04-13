@@ -77,6 +77,10 @@ CODE_SAMPLE
                 return null;
             }
 
+            if ($this->getType($urlArg)->isString()->no()) {
+                return null;
+            }
+
             $expectCall->args = [new Arg($urlArg)];
             // Remove the 'not' from the chain
             $node->var = $this->removeNotFromChain($node->var);
@@ -88,6 +92,10 @@ CODE_SAMPLE
         if ($this->isName($node->name, 'toBeTrue') && $expectArg instanceof NotIdentical && ($this->isFilterVarValidateUrl($expectArg->left) && $this->isFalse($expectArg->right))) {
             $urlArg = $this->getUrlFromFilterVar($expectArg->left);
             if (!$urlArg instanceof Expr) {
+                return null;
+            }
+
+            if ($this->getType($urlArg)->isString()->no()) {
                 return null;
             }
 

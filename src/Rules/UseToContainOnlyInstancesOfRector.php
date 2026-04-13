@@ -62,6 +62,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if (! $this->isExpectValueOfType($node, 'iterable')) {
+            return null;
+        }
+
         if (count($node->args) !== 1) {
             return null;
         }

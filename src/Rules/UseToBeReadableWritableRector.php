@@ -84,6 +84,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($pathArg->value)->isString()->no()) {
+            return null;
+        }
+
         $funcName = $this->getName($funcCall);
         if ($funcName === null) {
             return null;

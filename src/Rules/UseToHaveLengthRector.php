@@ -126,6 +126,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($this->getType($stringArg->value)->isString()->no()) {
+            return null;
+        }
+
         // Update expect() to use the string directly
         $expectCall->args[0] = new Arg($stringArg->value);
 

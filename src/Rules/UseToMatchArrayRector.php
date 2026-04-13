@@ -97,6 +97,13 @@ CODE_SAMPLE
                 continue;
             }
 
+            $firstArrayType = $this->getType($firstArray);
+            if ($firstArrayType->isArray()->no()) {
+                $newStmts[] = $stmt;
+                $i++;
+                continue;
+            }
+
             // Collect all consecutive expectations on the same array
             $expectations = [
                 [

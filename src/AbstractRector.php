@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RectorPest;
 
+use Pest\Expectation;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
@@ -74,6 +75,36 @@ abstract class AbstractRector extends BaseAbstractRector implements DocumentedRu
         }
 
         return $arg->value;
+    }
+
+    /**
+     * Check if the expect() argument matches a specific type category.
+     * Unwraps the Expectation<T> generic (resolved by PestStan's PHPStan extension)
+     * to extract T, then checks the type against the given category.
+     */
+    protected function isExpectValueOfType(MethodCall $methodCall, string $typeCheck): bool
+    {
+        $expectCall = $this->getExpectFuncCall($methodCall);
+        if (! $expectCall instanceof FuncCall) {
+            return false;
+        }
+
+        $valueType = $this->getType($expectCall)->getTemplateType(Expectation::class, 'TValue');
+
+        return match ($typeCheck) {
+            'boolean' => ! $valueType->isBoolean()->no(),
+            'string' => ! $valueType->isString()->no(),
+            'integer' => ! $valueType->isInteger()->no(),
+            'float' => ! $valueType->isFloat()->no(),
+            'numeric' => ! $valueType->isInteger()->no() || ! $valueType->isFloat()->no(),
+            'array' => ! $valueType->isArray()->no(),
+            'object' => ! $valueType->isObject()->no(),
+            'iterable' => ! $valueType->isIterable()->no(),
+            'null' => ! $valueType->isNull()->no(),
+            'scalar' => ! $valueType->isScalar()->no(),
+            'callable' => ! $valueType->isCallable()->no(),
+            default => false,
+        };
     }
 
     /**

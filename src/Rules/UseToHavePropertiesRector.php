@@ -64,6 +64,10 @@ CODE_SAMPLE
             return null;
         }
 
+        if (! $this->isExpectValueOfType($node, 'object')) {
+            return null;
+        }
+
         // Collect all toHaveProperty calls in the chain
         $properties = [];
         $current = $node;
