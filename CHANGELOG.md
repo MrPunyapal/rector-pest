@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.11](https://github.com/MrPunyapal/rector-pest/compare/0.2.10...0.2.11) - 2026-04-14
+
+### What's Changed
+
+* Feat: add type intelligence by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/38
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.10...0.2.11
+
 ## [0.2.10](https://github.com/MrPunyapal/rector-pest/compare/0.2.9...0.2.10) - 2026-04-10
 
 ### What's Changed
