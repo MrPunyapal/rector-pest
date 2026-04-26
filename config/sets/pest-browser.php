@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use RectorPest\Rules\Browser\UseBrowserAttributeAssertionsRector;
-use RectorPest\Rules\Browser\UseBrowserScriptAssertionRector;
+use RectorPest\Rules\Browser\UseBrowserScriptAssertionsRector;
 use RectorPest\Rules\Browser\UseBrowserSourceAssertionsRector;
 use RectorPest\Rules\Browser\UseBrowserUrlAssertionsRector;
 use RectorPest\Rules\Browser\UseBrowserValueAssertionsRector;
@@ -19,6 +19,7 @@ use RectorPest\Rules\Browser\UseBrowserValueAssertionsRector;
  * more readable tests and clearer failure messages.
  */
 return static function (RectorConfig $rectorConfig): void {
+    // Import shared Rector configuration (PHP version, parallel settings, etc.)
     $rectorConfig->import(__DIR__ . '/../config.php');
 
     // Value assertions
@@ -31,7 +32,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(UseBrowserSourceAssertionsRector::class);
 
     // Script assertions
-    $rectorConfig->rule(UseBrowserScriptAssertionRector::class);
+    $rectorConfig->rule(UseBrowserScriptAssertionsRector::class);
 
     // URL assertions
     $rectorConfig->rule(UseBrowserUrlAssertionsRector::class);

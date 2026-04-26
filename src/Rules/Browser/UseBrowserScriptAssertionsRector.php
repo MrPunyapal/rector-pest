@@ -14,7 +14,7 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 /**
  * Converts expect($page->script($expression)) assertions to dedicated browser script assertion
  */
-final class UseBrowserScriptAssertionRector extends AbstractRector
+final class UseBrowserScriptAssertionsRector extends AbstractRector
 {
     // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition

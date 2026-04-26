@@ -101,6 +101,7 @@ CODE_SAMPLE
             return new MethodCall($pageVar, new Identifier('assertAttributeMissing'), $baseArgs);
         }
 
+        // not->toBe is intentionally not transformed: the plugin has no assertAttributeIsNot equivalent.
         return null;
     }
 }
