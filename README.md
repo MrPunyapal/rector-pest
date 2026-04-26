@@ -42,6 +42,7 @@ return RectorConfig::configure()
 | [`PestSetList::PEST_CHAIN`](config/sets/pest-chain.php) | Merges multiple expect() calls into chained expectations and optimizes their order. |
 | [`PestSetList::PEST_LARAVEL`](config/sets/pest-laravel.php) | Laravel-specific rules (requires `illuminate/support`): converts `Str::` equality checks to Pest string case matchers |
 | [`PestSetList::PEST_MIGRATION`](config/sets/pest-migration.php) | PHPUnit → Pest migration rules (opt-in): converts assertions, data providers, and test structure |
+| [`PestSetList::PEST_BROWSER`](config/sets/pest-browser.php) | Pest Browser code-quality rules (requires `pestphp/pest-plugin-browser`): converts `expect($page->getter())` patterns to dedicated browser assertion methods |
 
 ### Version Upgrade Sets
 
@@ -158,6 +159,62 @@ return RectorConfig::configure()
 | Rule | Description |
 |------|-------------|
 | `ConvertAssertToExpectRector` | Converts `$this->assert*()` calls to `expect()->` chains |
+
+## Pest Browser Testing
+
+The `PEST_BROWSER` set improves code quality of tests written with [`pestphp/pest-plugin-browser`](https://pestphp.com/docs/browser-testing). It converts verbose `expect($page->getter())` patterns into the plugin's dedicated browser assertion methods, producing clearer failure messages and more readable tests.
+
+> **Requirement:** The target project must have `pestphp/pest-plugin-browser` installed.
+
+```php
+// rector.php
+use RectorPest\Set\PestSetList;
+use Rector\Config\RectorConfig;
+
+return RectorConfig::configure()
+    ->withPaths([
+        __DIR__ . '/tests/Browser',
+    ])
+    ->withSets([
+        PestSetList::PEST_BROWSER,
+    ]);
+```
+
+**Included rules:**
+
+| Rule | Transforms |
+|------|------------|
+| `UseBrowserValueAssertionsRector` | `expect($page->value($sel))->toBe($v)` → `$page->assertValue($sel, $v)` and negated form → `assertValueIsNot` |
+| `UseBrowserAttributeAssertionsRector` | `expect($page->attribute($sel, $attr))->toBe/toContain/not->toContain/toBeNull` → `assertAttribute`, `assertAttributeContains`, `assertAttributeDoesntContain`, `assertAttributeMissing` |
+| `UseBrowserSourceAssertionsRector` | `expect($page->content())->toContain($html)` → `assertSourceHas` and negated form → `assertSourceMissing` |
+| `UseBrowserScriptAssertionRector` | `expect($page->script($expr))->toBe/toEqual($v)` → `$page->assertScript($expr, $v)` |
+| `UseBrowserUrlAssertionsRector` | `expect($page->url())->toBe($url)` → `$page->assertUrlIs($url)` |
+
+**Before:**
+```php
+expect($page->value('input[name=email]'))->toBe('test@example.com');
+expect($page->attribute('img', 'alt'))->toBe('Profile Picture');
+expect($page->attribute('div', 'class'))->toContain('container');
+expect($page->attribute('div', 'class'))->not->toContain('hidden');
+expect($page->attribute('button', 'disabled'))->toBeNull();
+expect($page->content())->toContain('<h1>Welcome</h1>');
+expect($page->content())->not->toContain('<div class="error">');
+expect($page->script('document.title'))->toBe('Home Page');
+expect($page->url())->toBe('https://example.com/home');
+```
+
+**After:**
+```php
+$page->assertValue('input[name=email]', 'test@example.com');
+$page->assertAttribute('img', 'alt', 'Profile Picture');
+$page->assertAttributeContains('div', 'class', 'container');
+$page->assertAttributeDoesntContain('div', 'class', 'hidden');
+$page->assertAttributeMissing('button', 'disabled');
+$page->assertSourceHas('<h1>Welcome</h1>');
+$page->assertSourceMissing('<div class="error">');
+$page->assertScript('document.title', 'Home Page');
+$page->assertUrlIs('https://example.com/home');
+```
 
 ## Using Individual Rules
 
