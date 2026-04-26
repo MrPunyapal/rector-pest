@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace RectorPest\Rules\Browser;
 
 use PhpParser\Node;
-use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use RectorPest\AbstractRector;
