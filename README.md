@@ -187,8 +187,12 @@ return RectorConfig::configure()
 | `UseBrowserValueAssertionsRector` | `expect($page->value($sel))->toBe($v)` → `$page->assertValue($sel, $v)` and negated form → `assertValueIsNot` |
 | `UseBrowserAttributeAssertionsRector` | `expect($page->attribute($sel, $attr))->toBe/toContain/not->toContain/toBeNull` → `assertAttribute`, `assertAttributeContains`, `assertAttributeDoesntContain`, `assertAttributeMissing` |
 | `UseBrowserSourceAssertionsRector` | `expect($page->content())->toContain($html)` → `assertSourceHas` and negated form → `assertSourceMissing` |
-| `UseBrowserScriptAssertionRector` | `expect($page->script($expr))->toBe/toEqual($v)` → `$page->assertScript($expr, $v)` |
+| `UseBrowserScriptAssertionsRector` | `expect($page->script($expr))->toBe/toEqual($v)` → `$page->assertScript($expr, $v)` |
 | `UseBrowserUrlAssertionsRector` | `expect($page->url())->toBe($url)` → `$page->assertUrlIs($url)` |
+
+> **URL assertions scope:** only `assertUrlIs` is covered because it is the only URL-related assertion that has a direct `expect($page->getter())->toBe()` equivalent. Path, scheme, host, port, query-string, and fragment assertions (`assertPathIs`, `assertSchemeIs`, `assertHostIs`, etc.) have no `expect()` counterparts in the plugin and are out of scope.
+
+> **Attribute assertions scope:** `assertAriaAttribute` and `assertDataAttribute` are not covered. Those methods accept the attribute name _without_ the `aria-`/`data-` prefix, making a safe automatic transformation ambiguous. Use them manually.
 
 **Before:**
 ```php
@@ -200,6 +204,7 @@ expect($page->attribute('button', 'disabled'))->toBeNull();
 expect($page->content())->toContain('<h1>Welcome</h1>');
 expect($page->content())->not->toContain('<div class="error">');
 expect($page->script('document.title'))->toBe('Home Page');
+expect($page->script('window.scrollY'))->toEqual(0);
 expect($page->url())->toBe('https://example.com/home');
 ```
 
@@ -213,6 +218,7 @@ $page->assertAttributeMissing('button', 'disabled');
 $page->assertSourceHas('<h1>Welcome</h1>');
 $page->assertSourceMissing('<div class="error">');
 $page->assertScript('document.title', 'Home Page');
+$page->assertScript('window.scrollY', 0);
 $page->assertUrlIs('https://example.com/home');
 ```
 
