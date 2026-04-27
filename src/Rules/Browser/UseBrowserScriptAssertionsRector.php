@@ -26,11 +26,13 @@ final class UseBrowserScriptAssertionsRector extends AbstractRector
                     <<<'CODE_SAMPLE'
 expect($page->script('document.title'))->toBe('Home Page');
 expect($page->script('document.querySelector(".btn").disabled'))->toBe(true);
+expect($page->script('1 + 1'))->toEqual(2);
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
 $page->assertScript('document.title', 'Home Page');
 $page->assertScript('document.querySelector(".btn").disabled', true);
+$page->assertScript('1 + 1', 2);
 CODE_SAMPLE
                 ),
             ]
