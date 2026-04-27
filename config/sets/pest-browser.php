@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use RectorPest\Rules\Browser\UseBrowserAriaAndDataAttributeAssertionsRector;
 use RectorPest\Rules\Browser\UseBrowserAttributeAssertionsRector;
 use RectorPest\Rules\Browser\UseBrowserScriptAssertionsRector;
 use RectorPest\Rules\Browser\UseBrowserSourceAssertionsRector;
@@ -24,6 +25,9 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Value assertions
     $rectorConfig->rule(UseBrowserValueAssertionsRector::class);
+
+    // Aria and data attribute assertions (more specific — must run before general attribute rule)
+    $rectorConfig->rule(UseBrowserAriaAndDataAttributeAssertionsRector::class);
 
     // Attribute assertions
     $rectorConfig->rule(UseBrowserAttributeAssertionsRector::class);

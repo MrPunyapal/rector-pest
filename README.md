@@ -185,6 +185,7 @@ return RectorConfig::configure()
 | Rule | Transforms |
 |------|------------|
 | `UseBrowserValueAssertionsRector` | `expect($page->value($sel))->toBe($v)` → `$page->assertValue($sel, $v)` and negated form → `assertValueIsNot` |
+| `UseBrowserAriaAndDataAttributeAssertionsRector` | `expect($page->attribute($sel, 'aria-*'))->toBe($v)` → `$page->assertAriaAttribute($sel, $attr, $v)` and `data-*` form → `assertDataAttribute` |
 | `UseBrowserAttributeAssertionsRector` | `expect($page->attribute($sel, $attr))->toBe/toContain/not->toContain/toBeNull` → `assertAttribute`, `assertAttributeContains`, `assertAttributeDoesntContain`, `assertAttributeMissing` |
 | `UseBrowserSourceAssertionsRector` | `expect($page->content())->toContain($html)` → `assertSourceHas` and negated form → `assertSourceMissing` |
 | `UseBrowserScriptAssertionsRector` | `expect($page->script($expr))->toBe/toEqual($v)` → `$page->assertScript($expr, $v)` |
@@ -192,11 +193,13 @@ return RectorConfig::configure()
 
 > **URL assertions scope:** only `assertUrlIs` is covered because it is the only URL-related assertion that has a direct `expect($page->getter())->toBe()` equivalent. Path, scheme, host, port, query-string, and fragment assertions (`assertPathIs`, `assertSchemeIs`, `assertHostIs`, etc.) have no `expect()` counterparts in the plugin and are out of scope.
 
-> **Attribute assertions scope:** `assertAriaAttribute` and `assertDataAttribute` are not covered. Those methods accept the attribute name _without_ the `aria-`/`data-` prefix, making a safe automatic transformation ambiguous. Use them manually.
+> **Aria/data attribute assertions scope:** `assertAriaAttribute` and `assertDataAttribute` are covered by `UseBrowserAriaAndDataAttributeAssertionsRector`. Note that the plugin methods accept the attribute name _without_ the `aria-`/`data-` prefix — the rule strips the prefix automatically.
 
 **Before:**
 ```php
 expect($page->value('input[name=email]'))->toBe('test@example.com');
+expect($page->attribute('button', 'aria-label'))->toBe('Close');
+expect($page->attribute('div', 'data-id'))->toBe('123');
 expect($page->attribute('img', 'alt'))->toBe('Profile Picture');
 expect($page->attribute('div', 'class'))->toContain('container');
 expect($page->attribute('div', 'class'))->not->toContain('hidden');
@@ -211,6 +214,8 @@ expect($page->url())->toBe('https://example.com/home');
 **After:**
 ```php
 $page->assertValue('input[name=email]', 'test@example.com');
+$page->assertAriaAttribute('button', 'label', 'Close');
+$page->assertDataAttribute('div', 'id', '123');
 $page->assertAttribute('img', 'alt', 'Profile Picture');
 $page->assertAttributeContains('div', 'class', 'container');
 $page->assertAttributeDoesntContain('div', 'class', 'hidden');
