@@ -1,4 +1,4 @@
-# 58 Rules Overview
+# 63 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -230,6 +230,83 @@ Changes `expect($object)->toHaveMethod()` to `expect($object::class)->toHaveMeth
 -expect($user)->toHaveMethods(['getName', 'getEmail']);
 +expect($user::class)->toHaveMethod('getName');
 +expect($user::class)->toHaveMethods(['getName', 'getEmail']);
+```
+
+<br>
+
+## UseBrowserAttributeAssertionsRector
+
+Converts expect($page->attribute($selector, `$attr))->toBe($value)` to `$page->assertAttribute($selector,` `$attr,` `$value)`
+
+- class: [`RectorPest\Rules\Browser\UseBrowserAttributeAssertionsRector`](../src/Rules/Browser/UseBrowserAttributeAssertionsRector.php)
+
+```diff
+-expect($page->attribute('img', 'alt'))->toBe('Profile Picture');
+-expect($page->attribute('div', 'class'))->toContain('container');
+-expect($page->attribute('div', 'class'))->not->toContain('hidden');
+-expect($page->attribute('button', 'disabled'))->toBeNull();
++$page->assertAttribute('img', 'alt', 'Profile Picture');
++$page->assertAttributeContains('div', 'class', 'container');
++$page->assertAttributeDoesntContain('div', 'class', 'hidden');
++$page->assertAttributeMissing('button', 'disabled');
+```
+
+<br>
+
+## UseBrowserScriptAssertionsRector
+
+Converts expect($page->script($expression))->toBe($value) to `$page->assertScript($expression,` `$value)`
+
+- class: [`RectorPest\Rules\Browser\UseBrowserScriptAssertionsRector`](../src/Rules/Browser/UseBrowserScriptAssertionsRector.php)
+
+```diff
+-expect($page->script('document.title'))->toBe('Home Page');
+-expect($page->script('document.querySelector(".btn").disabled'))->toBe(true);
++$page->assertScript('document.title', 'Home Page');
++$page->assertScript('document.querySelector(".btn").disabled', true);
+```
+
+<br>
+
+## UseBrowserSourceAssertionsRector
+
+Converts `expect($page->content())->toContain($html)` to `$page->assertSourceHas($html)`
+
+- class: [`RectorPest\Rules\Browser\UseBrowserSourceAssertionsRector`](../src/Rules/Browser/UseBrowserSourceAssertionsRector.php)
+
+```diff
+-expect($page->content())->toContain('<h1>Welcome</h1>');
+-expect($page->content())->not->toContain('<div class="error">');
++$page->assertSourceHas('<h1>Welcome</h1>');
++$page->assertSourceMissing('<div class="error">');
+```
+
+<br>
+
+## UseBrowserUrlAssertionsRector
+
+Converts `expect($page->url())->toBe($url)` to `$page->assertUrlIs($url)`
+
+- class: [`RectorPest\Rules\Browser\UseBrowserUrlAssertionsRector`](../src/Rules/Browser/UseBrowserUrlAssertionsRector.php)
+
+```diff
+-expect($page->url())->toBe('https://example.com/home');
++$page->assertUrlIs('https://example.com/home');
+```
+
+<br>
+
+## UseBrowserValueAssertionsRector
+
+Converts expect($page->value($selector))->toBe($value) to `$page->assertValue($selector,` `$value)`
+
+- class: [`RectorPest\Rules\Browser\UseBrowserValueAssertionsRector`](../src/Rules/Browser/UseBrowserValueAssertionsRector.php)
+
+```diff
+-expect($page->value('input[name=email]'))->toBe('test@example.com');
+-expect($page->value('input[name=email]'))->not->toBe('wrong@example.com');
++$page->assertValue('input[name=email]', 'test@example.com');
++$page->assertValueIsNot('input[name=email]', 'wrong@example.com');
 ```
 
 <br>
