@@ -35,6 +35,7 @@ final class ConvertAssertToExpectRector extends AbstractRector
         'assertEmpty' => ['matcher' => 'toBeEmpty', 'negated' => false],
         'assertNotEmpty' => ['matcher' => 'toBeEmpty', 'negated' => true],
         'assertIsArray' => ['matcher' => 'toBeArray', 'negated' => false],
+        'assertIsList' => ['matcher' => 'toBeList', 'negated' => false],
         'assertIsBool' => ['matcher' => 'toBeBool', 'negated' => false],
         'assertIsFloat' => ['matcher' => 'toBeFloat', 'negated' => false],
         'assertIsInt' => ['matcher' => 'toBeInt', 'negated' => false],
@@ -54,6 +55,17 @@ final class ConvertAssertToExpectRector extends AbstractRector
         'assertDirectoryIsReadable' => ['matcher' => 'toBeReadableDirectory', 'negated' => false],
         'assertDirectoryIsWritable' => ['matcher' => 'toBeWritableDirectory', 'negated' => false],
         'assertJson' => ['matcher' => 'toBeJson', 'negated' => false],
+        'assertIsNotArray' => ['matcher' => 'toBeArray', 'negated' => true],
+        'assertIsNotBool' => ['matcher' => 'toBeBool', 'negated' => true],
+        'assertIsNotFloat' => ['matcher' => 'toBeFloat', 'negated' => true],
+        'assertIsNotInt' => ['matcher' => 'toBeInt', 'negated' => true],
+        'assertIsNotString' => ['matcher' => 'toBeString', 'negated' => true],
+        'assertIsNotNumeric' => ['matcher' => 'toBeNumeric', 'negated' => true],
+        'assertIsNotObject' => ['matcher' => 'toBeObject', 'negated' => true],
+        'assertIsNotCallable' => ['matcher' => 'toBeCallable', 'negated' => true],
+        'assertIsNotIterable' => ['matcher' => 'toBeIterable', 'negated' => true],
+        'assertIsNotScalar' => ['matcher' => 'toBeScalar', 'negated' => true],
+        'assertIsNotResource' => ['matcher' => 'toBeResource', 'negated' => true],
         'assertNotTrue' => ['matcher' => 'toBeTrue', 'negated' => true],
         'assertNotFalse' => ['matcher' => 'toBeFalse', 'negated' => true],
     ];
@@ -65,16 +77,21 @@ final class ConvertAssertToExpectRector extends AbstractRector
      */
     private const TWO_ARG_ASSERTIONS = [
         'assertEquals' => ['matcher' => 'toEqual', 'negated' => false],
+        'assertEqualsCanonicalizing' => ['matcher' => 'toEqualCanonicalizing', 'negated' => false],
         'assertNotEquals' => ['matcher' => 'toEqual', 'negated' => true],
         'assertSame' => ['matcher' => 'toBe', 'negated' => false],
         'assertNotSame' => ['matcher' => 'toBe', 'negated' => true],
         'assertCount' => ['matcher' => 'toHaveCount', 'negated' => false],
+        'assertSameSize' => ['matcher' => 'toHaveSameSize', 'negated' => false],
         'assertInstanceOf' => ['matcher' => 'toBeInstanceOf', 'negated' => false],
         'assertNotInstanceOf' => ['matcher' => 'toBeInstanceOf', 'negated' => true],
         'assertContains' => ['matcher' => 'toContain', 'negated' => false],
         'assertNotContains' => ['matcher' => 'toContain', 'negated' => true],
+        'assertContainsOnlyInstancesOf' => ['matcher' => 'toContainOnlyInstancesOf', 'negated' => false],
         'assertArrayHasKey' => ['matcher' => 'toHaveKey', 'negated' => false],
         'assertArrayNotHasKey' => ['matcher' => 'toHaveKey', 'negated' => true],
+        'assertObjectHasProperty' => ['matcher' => 'toHaveProperty', 'negated' => false],
+        'assertObjectNotHasProperty' => ['matcher' => 'toHaveProperty', 'negated' => true],
         'assertStringContainsString' => ['matcher' => 'toContain', 'negated' => false],
         'assertStringNotContainsString' => ['matcher' => 'toContain', 'negated' => true],
         'assertStringStartsWith' => ['matcher' => 'toStartWith', 'negated' => false],
@@ -84,6 +101,15 @@ final class ConvertAssertToExpectRector extends AbstractRector
         'assertGreaterThanOrEqual' => ['matcher' => 'toBeGreaterThanOrEqual', 'negated' => false],
         'assertLessThan' => ['matcher' => 'toBeLessThan', 'negated' => false],
         'assertLessThanOrEqual' => ['matcher' => 'toBeLessThanOrEqual', 'negated' => false],
+    ];
+
+    /**
+     * Assertions with (expected, actual, extra) → expect(actual)->matcher(expected, extra)
+     *
+     * @var array<string, array{matcher: string, negated: bool}>
+     */
+    private const THREE_ARG_ASSERTIONS = [
+        'assertEqualsWithDelta' => ['matcher' => 'toEqualWithDelta', 'negated' => false],
     ];
 
     // @codeCoverageIgnoreStart
@@ -144,6 +170,10 @@ CODE_SAMPLE
             return $this->convertTwoArgAssertion($node, $assertionName);
         }
 
+        if (isset(self::THREE_ARG_ASSERTIONS[$assertionName])) {
+            return $this->convertThreeArgAssertion($node, $assertionName);
+        }
+
         return null;
     }
 
@@ -187,6 +217,28 @@ CODE_SAMPLE
 
         $expectCall = $this->createExpectCall($secondArg->value);
         $matcherArgs = [new Arg($firstArg->value)];
+
+        return $this->buildResult($expectCall, $config['matcher'], $matcherArgs, $config['negated']);
+    }
+
+    private function convertThreeArgAssertion(MethodCall $node, string $assertionName): ?MethodCall
+    {
+        $config = self::THREE_ARG_ASSERTIONS[$assertionName];
+
+        if (count($node->args) < 3) {
+            return null;
+        }
+
+        $firstArg = $node->args[0];
+        $secondArg = $node->args[1];
+        $thirdArg = $node->args[2];
+
+        if (! $firstArg instanceof Arg || ! $secondArg instanceof Arg || ! $thirdArg instanceof Arg) {
+            return null;
+        }
+
+        $expectCall = $this->createExpectCall($secondArg->value);
+        $matcherArgs = [new Arg($firstArg->value), new Arg($thirdArg->value)];
 
         return $this->buildResult($expectCall, $config['matcher'], $matcherArgs, $config['negated']);
     }
