@@ -159,6 +159,7 @@ return RectorConfig::configure()
 | Rule | Description |
 |------|-------------|
 | `ConvertAssertToExpectRector` | Converts `$this->assert*()` calls to `expect()->` chains |
+| `ConvertExpectExceptionToThrowRector` | Converts `$this->expectException*()` plus the throwing call to `expect(fn() => ...)->toThrow()` |
 
 ## Pest Browser Testing
 

@@ -1,4 +1,4 @@
-# 63 Rules Overview
+# 66 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -52,6 +52,21 @@ Converts PHPUnit assertion method calls to Pest `expect()` chains
 +expect($value)->toBeTrue();
 +expect($items)->toHaveCount(3);
 +expect($user)->not->toBeNull();
+```
+
+<br>
+
+## ConvertExpectExceptionToThrowRector
+
+Converts `expectException()` and `expectExceptionMessage()` patterns to `expect()->toThrow()`
+
+- class: [`RectorPest\Rules\ConvertExpectExceptionToThrowRector`](../src/Rules/ConvertExpectExceptionToThrowRector.php)
+
+```diff
+-$this->expectException(RuntimeException::class);
+-$this->expectExceptionMessage('error');
+-doSomething();
++expect(fn () => doSomething())->toThrow(RuntimeException::class, 'error');
 ```
 
 <br>
@@ -234,6 +249,21 @@ Changes `expect($object)->toHaveMethod()` to `expect($object::class)->toHaveMeth
 
 <br>
 
+## UseBrowserAriaAndDataAttributeAssertionsRector
+
+Converts expect($page->attribute($selector, "aria-*"))->toBe($value) to `$page->assertAriaAttribute($selector,` `$attr,` `$value)` and the data-* equivalent
+
+- class: [`RectorPest\Rules\Browser\UseBrowserAriaAndDataAttributeAssertionsRector`](../src/Rules/Browser/UseBrowserAriaAndDataAttributeAssertionsRector.php)
+
+```diff
+-expect($page->attribute('button', 'aria-label'))->toBe('Close');
+-expect($page->attribute('div', 'data-id'))->toBe('123');
++$page->assertAriaAttribute('button', 'label', 'Close');
++$page->assertDataAttribute('div', 'id', '123');
+```
+
+<br>
+
 ## UseBrowserAttributeAssertionsRector
 
 Converts expect($page->attribute($selector, `$attr))->toBe($value)` to `$page->assertAttribute($selector,` `$attr,` `$value)`
@@ -262,8 +292,10 @@ Converts expect($page->script($expression))->toBe($value) to `$page->assertScrip
 ```diff
 -expect($page->script('document.title'))->toBe('Home Page');
 -expect($page->script('document.querySelector(".btn").disabled'))->toBe(true);
+-expect($page->script('1 + 1'))->toEqual(2);
 +$page->assertScript('document.title', 'Home Page');
 +$page->assertScript('document.querySelector(".btn").disabled', true);
++$page->assertScript('1 + 1', 2);
 ```
 
 <br>
@@ -679,6 +711,21 @@ Converts UUID regex validation to `toBeUuid()` matcher
 -expect(preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid))->toBeGreaterThan(0);
 +expect($value)->toBeUuid();
 +expect($uuid)->toBeUuid();
+```
+
+<br>
+
+## UseToContainEqualRector
+
+Converts in_array(..., false) checks to `toContainEqual()` matcher
+
+- class: [`RectorPest\Rules\UseToContainEqualRector`](../src/Rules/UseToContainEqualRector.php)
+
+```diff
+-expect(in_array($item, $array, false))->toBeTrue();
+-expect(in_array($item, $array, false))->toBeFalse();
++expect($array)->toContainEqual($item);
++expect($array)->not->toContainEqual($item);
 ```
 
 <br>
