@@ -14,34 +14,31 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 /**
- * Converts in_array() checks to Pest's toContain() matcher.
- *
- * Before: expect(in_array($item, $array))->toBeTrue()
- * After:  expect($array)->toContain($item)
+ * Converts explicit loose in_array() checks to Pest's toContainEqual() matcher.
  */
-final class UseToContainRector extends AbstractRector
+final class UseToContainEqualRector extends AbstractRector
 {
     use ExpectChainValidation;
 
     private const FUNCTION_NAME = 'in_array';
 
-    private const MATCHER_NAME = 'toContain';
+    private const MATCHER_NAME = 'toContainEqual';
 
     // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
-            'Converts in_array() checks to toContain() matcher',
+            'Converts in_array(..., false) checks to toContainEqual() matcher',
             [
                 new CodeSample(
                     <<<'CODE_SAMPLE'
-expect(in_array($item, $array))->toBeTrue();
-expect(in_array($item, $array, true))->toBeTrue();
+expect(in_array($item, $array, false))->toBeTrue();
+expect(in_array($item, $array, false))->toBeFalse();
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-expect($array)->toContain($item);
-expect($array)->toContain($item);
+expect($array)->toContainEqual($item);
+expect($array)->not->toContainEqual($item);
 CODE_SAMPLE
                 ),
             ]
@@ -70,19 +67,19 @@ CODE_SAMPLE
 
         $funcCall = $extracted['funcCall'];
 
-        // in_array requires at least 2 arguments: needle, haystack
-        if (count($funcCall->args) < 2) {
+        if (count($funcCall->args) < 3) {
             return null;
         }
 
         $needleArg = $funcCall->args[0];
         $haystackArg = $funcCall->args[1];
+        $strictArg = $funcCall->args[2];
 
-        if (! $needleArg instanceof Arg || ! $haystackArg instanceof Arg) {
+        if (! $needleArg instanceof Arg || ! $haystackArg instanceof Arg || ! $strictArg instanceof Arg) {
             return null;
         }
 
-        if (isset($funcCall->args[2]) && $funcCall->args[2] instanceof Arg && $this->isFalse($funcCall->args[2]->value)) {
+        if (! $this->isFalse($strictArg->value)) {
             return null;
         }
 

@@ -31,6 +31,7 @@ use RectorPest\Rules\UseToBeReadableWritableRector;
 use RectorPest\Rules\UseToBeUppercaseRector;
 use RectorPest\Rules\UseToBeUrlRector;
 use RectorPest\Rules\UseToBeUuidRector;
+use RectorPest\Rules\UseToContainEqualRector;
 use RectorPest\Rules\UseToContainOnlyInstancesOfRector;
 use RectorPest\Rules\UseToContainRector;
 use RectorPest\Rules\UseToEndWithRector;
@@ -95,6 +96,7 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Array matchers
     $rectorConfig->rule(UseToContainRector::class);
+    $rectorConfig->rule(UseToContainEqualRector::class);
     $rectorConfig->rule(UseToContainOnlyInstancesOfRector::class);
     $rectorConfig->rule(UseToHaveKeyRector::class);
     $rectorConfig->rule(UseToHaveKeysRector::class);
