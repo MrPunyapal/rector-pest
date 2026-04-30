@@ -1,4 +1,4 @@
-# 63 Rules Overview
+# 66 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -52,6 +52,66 @@ Converts PHPUnit assertion method calls to Pest `expect()` chains
 +expect($value)->toBeTrue();
 +expect($items)->toHaveCount(3);
 +expect($user)->not->toBeNull();
+```
+
+<br>
+
+```diff
+-$this->assertIsList($values);
+-$this->assertIsNotArray($value);
+-$this->assertIsNotBool($value);
+-$this->assertIsNotFloat($value);
+-$this->assertIsNotInt($value);
+-$this->assertIsNotString($value);
+-$this->assertIsNotNumeric($value);
+-$this->assertIsNotObject($value);
+-$this->assertIsNotCallable($value);
+-$this->assertIsNotIterable($value);
+-$this->assertIsNotScalar($value);
+-$this->assertIsNotResource($value);
+-$this->assertContainsOnlyInstancesOf(User::class, $users);
+-$this->assertSameSize($expected, $actual);
+-$this->assertObjectHasProperty('name', $user);
+-$this->assertObjectNotHasProperty('password', $user);
+-$this->assertEqualsCanonicalizing(['b', 'a'], $letters);
+-$this->assertEqualsWithDelta(10.5, $score, 0.1);
+-$this->assertContainsEquals(['id' => 1], $items);
+-$this->assertNotContainsEquals(['id' => 2], $items);
++expect($values)->toBeList();
++expect($value)->not->toBeArray();
++expect($value)->not->toBeBool();
++expect($value)->not->toBeFloat();
++expect($value)->not->toBeInt();
++expect($value)->not->toBeString();
++expect($value)->not->toBeNumeric();
++expect($value)->not->toBeObject();
++expect($value)->not->toBeCallable();
++expect($value)->not->toBeIterable();
++expect($value)->not->toBeScalar();
++expect($value)->not->toBeResource();
++expect($users)->toContainOnlyInstancesOf(User::class);
++expect($actual)->toHaveSameSize($expected);
++expect($user)->toHaveProperty('name');
++expect($user)->not->toHaveProperty('password');
++expect($letters)->toEqualCanonicalizing(['b', 'a']);
++expect($score)->toEqualWithDelta(10.5, 0.1);
++expect($items)->toContainEqual(['id' => 1]);
++expect($items)->not->toContainEqual(['id' => 2]);
+```
+
+<br>
+
+## ConvertExpectExceptionToThrowRector
+
+Converts `expectException()` and `expectExceptionMessage()` patterns to `expect()->toThrow()`
+
+- class: [`RectorPest\Rules\ConvertExpectExceptionToThrowRector`](../src/Rules/ConvertExpectExceptionToThrowRector.php)
+
+```diff
+-$this->expectException(RuntimeException::class);
+-$this->expectExceptionMessage('error');
+-doSomething();
++expect(fn () => doSomething())->toThrow(RuntimeException::class, 'error');
 ```
 
 <br>
@@ -234,6 +294,21 @@ Changes `expect($object)->toHaveMethod()` to `expect($object::class)->toHaveMeth
 
 <br>
 
+## UseBrowserAriaAndDataAttributeAssertionsRector
+
+Converts expect($page->attribute($selector, "aria-*"))->toBe($value) to `$page->assertAriaAttribute($selector,` `$attr,` `$value)` and the data-* equivalent
+
+- class: [`RectorPest\Rules\Browser\UseBrowserAriaAndDataAttributeAssertionsRector`](../src/Rules/Browser/UseBrowserAriaAndDataAttributeAssertionsRector.php)
+
+```diff
+-expect($page->attribute('button', 'aria-label'))->toBe('Close');
+-expect($page->attribute('div', 'data-id'))->toBe('123');
++$page->assertAriaAttribute('button', 'label', 'Close');
++$page->assertDataAttribute('div', 'id', '123');
+```
+
+<br>
+
 ## UseBrowserAttributeAssertionsRector
 
 Converts expect($page->attribute($selector, `$attr))->toBe($value)` to `$page->assertAttribute($selector,` `$attr,` `$value)`
@@ -262,8 +337,10 @@ Converts expect($page->script($expression))->toBe($value) to `$page->assertScrip
 ```diff
 -expect($page->script('document.title'))->toBe('Home Page');
 -expect($page->script('document.querySelector(".btn").disabled'))->toBe(true);
+-expect($page->script('1 + 1'))->toEqual(2);
 +$page->assertScript('document.title', 'Home Page');
 +$page->assertScript('document.querySelector(".btn").disabled', true);
++$page->assertScript('1 + 1', 2);
 ```
 
 <br>
@@ -679,6 +756,21 @@ Converts UUID regex validation to `toBeUuid()` matcher
 -expect(preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid))->toBeGreaterThan(0);
 +expect($value)->toBeUuid();
 +expect($uuid)->toBeUuid();
+```
+
+<br>
+
+## UseToContainEqualRector
+
+Converts in_array(..., false) checks to `toContainEqual()` matcher
+
+- class: [`RectorPest\Rules\UseToContainEqualRector`](../src/Rules/UseToContainEqualRector.php)
+
+```diff
+-expect(in_array($item, $array, false))->toBeTrue();
+-expect(in_array($item, $array, false))->toBeFalse();
++expect($array)->toContainEqual($item);
++expect($array)->not->toContainEqual($item);
 ```
 
 <br>

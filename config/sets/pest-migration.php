@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use RectorPest\Rules\ConvertAssertToExpectRector;
+use RectorPest\Rules\ConvertExpectExceptionToThrowRector;
 
 /**
  * PHPUnit to Pest migration rules
@@ -16,4 +17,5 @@ return static function (RectorConfig $rectorConfig): void {
 
     // PHPUnit assertion to Pest expect() conversion
     $rectorConfig->rule(ConvertAssertToExpectRector::class);
+    $rectorConfig->rule(ConvertExpectExceptionToThrowRector::class);
 };
