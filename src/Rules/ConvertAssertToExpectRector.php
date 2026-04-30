@@ -86,6 +86,8 @@ final class ConvertAssertToExpectRector extends AbstractRector
         'assertInstanceOf' => ['matcher' => 'toBeInstanceOf', 'negated' => false],
         'assertNotInstanceOf' => ['matcher' => 'toBeInstanceOf', 'negated' => true],
         'assertContains' => ['matcher' => 'toContain', 'negated' => false],
+        // PHPUnit's assertContainsEquals() uses loose-comparison semantics, so it maps to
+        // Pest's toContainEqual() instead of the stricter toContain() used by UseToContainRector.
         'assertContainsEquals' => ['matcher' => 'toContainEqual', 'negated' => false],
         'assertNotContains' => ['matcher' => 'toContain', 'negated' => true],
         'assertNotContainsEquals' => ['matcher' => 'toContainEqual', 'negated' => true],
@@ -133,6 +135,37 @@ expect($result)->toEqual('expected');
 expect($value)->toBeTrue();
 expect($items)->toHaveCount(3);
 expect($user)->not->toBeNull();
+CODE_SAMPLE
+                ),
+                new CodeSample(
+                    <<<'CODE_SAMPLE'
+$this->assertIsList($values);
+$this->assertIsNotArray($value);
+$this->assertIsNotString($value);
+$this->assertIsNotIterable($value);
+$this->assertContainsOnlyInstancesOf(User::class, $users);
+$this->assertSameSize($expected, $actual);
+$this->assertObjectHasProperty('name', $user);
+$this->assertObjectNotHasProperty('password', $user);
+$this->assertEqualsCanonicalizing(['b', 'a'], $letters);
+$this->assertEqualsWithDelta(10.5, $score, 0.1);
+$this->assertContainsEquals(['id' => 1], $items);
+$this->assertNotContainsEquals(['id' => 2], $items);
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+expect($values)->toBeList();
+expect($value)->not->toBeArray();
+expect($value)->not->toBeString();
+expect($value)->not->toBeIterable();
+expect($users)->toContainOnlyInstancesOf(User::class);
+expect($actual)->toHaveSameSize($expected);
+expect($user)->toHaveProperty('name');
+expect($user)->not->toHaveProperty('password');
+expect($letters)->toEqualCanonicalizing(['b', 'a']);
+expect($score)->toEqualWithDelta(10.5, 0.1);
+expect($items)->toContainEqual(['id' => 1]);
+expect($items)->not->toContainEqual(['id' => 2]);
 CODE_SAMPLE
                 ),
             ]

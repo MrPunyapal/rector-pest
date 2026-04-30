@@ -119,6 +119,8 @@ CODE_SAMPLE
 
     /**
      * @param array<Node\Stmt> $stmts
+        * Supports both `expectException()`-then-message and message-first ordering when the
+        * pattern stays local to consecutive expectation setup calls followed by one action.
      * @return array{action: Expr, consumed: int, exception: Expr, message: Expr|null}|null
      */
     private function collectConversion(array $stmts, int $startPos): ?array
@@ -153,10 +155,6 @@ CODE_SAMPLE
             }
 
             if ($methodName === 'expectExceptionMessage') {
-                if ($exceptionMethod === 'expectExceptionObject') {
-                    return null;
-                }
-
                 if ($message instanceof Expr) {
                     return null;
                 }
@@ -167,7 +165,7 @@ CODE_SAMPLE
                 continue;
             }
 
-            if ($exception instanceof Expr || ($methodName === 'expectExceptionObject' && $message instanceof Expr)) {
+            if ($exception instanceof Expr) {
                 return null;
             }
 

@@ -56,6 +56,35 @@ Converts PHPUnit assertion method calls to Pest `expect()` chains
 
 <br>
 
+```diff
+-$this->assertIsList($values);
+-$this->assertIsNotArray($value);
+-$this->assertIsNotString($value);
+-$this->assertIsNotIterable($value);
+-$this->assertContainsOnlyInstancesOf(User::class, $users);
+-$this->assertSameSize($expected, $actual);
+-$this->assertObjectHasProperty('name', $user);
+-$this->assertObjectNotHasProperty('password', $user);
+-$this->assertEqualsCanonicalizing(['b', 'a'], $letters);
+-$this->assertEqualsWithDelta(10.5, $score, 0.1);
+-$this->assertContainsEquals(['id' => 1], $items);
+-$this->assertNotContainsEquals(['id' => 2], $items);
++expect($values)->toBeList();
++expect($value)->not->toBeArray();
++expect($value)->not->toBeString();
++expect($value)->not->toBeIterable();
++expect($users)->toContainOnlyInstancesOf(User::class);
++expect($actual)->toHaveSameSize($expected);
++expect($user)->toHaveProperty('name');
++expect($user)->not->toHaveProperty('password');
++expect($letters)->toEqualCanonicalizing(['b', 'a']);
++expect($score)->toEqualWithDelta(10.5, 0.1);
++expect($items)->toContainEqual(['id' => 1]);
++expect($items)->not->toContainEqual(['id' => 2]);
+```
+
+<br>
+
 ## ConvertExpectExceptionToThrowRector
 
 Converts `expectException()` and `expectExceptionMessage()` patterns to `expect()->toThrow()`

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace RectorPest\Concerns;
 
+use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
@@ -115,5 +117,10 @@ trait ExpectChainValidation
         }
 
         return new MethodCall($expectCall, $matcherMethod, $matcherArgs);
+    }
+
+    protected function isFalse(Node $node): bool
+    {
+        return $node instanceof ConstFetch && $this->isName($node, 'false');
     }
 }

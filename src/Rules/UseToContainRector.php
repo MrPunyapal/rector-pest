@@ -6,7 +6,6 @@ namespace RectorPest\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\MethodCall;
 use RectorPest\AbstractRector;
 use RectorPest\Concerns\ExpectChainValidation;
@@ -99,10 +98,5 @@ CODE_SAMPLE
             [new Arg($needleArg->value)],
             $needsNot
         );
-    }
-
-    private function isFalse(Node $node): bool
-    {
-        return $node instanceof ConstFetch && $this->isName($node, 'false');
     }
 }
