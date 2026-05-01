@@ -2,14 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased](https://github.com/MrPunyapal/rector-pest/compare/0.2.11...HEAD)
-
-### What's Changed
-
-* Feat: add explicit `toContainEqual()` conversion for `in_array(..., false)` checks
-* Feat: convert PHPUnit `expectException*()` patterns to `expect()->toThrow()` in the migration set
-* Feat: map PHPUnit `assertContainsEquals()` assertions to Pest `toContainEqual()`
-
 ## [0.2.11](https://github.com/MrPunyapal/rector-pest/compare/0.2.10...0.2.11) - 2026-04-14
 
 ### What's Changed
