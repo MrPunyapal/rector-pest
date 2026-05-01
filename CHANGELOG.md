@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.12](https://github.com/MrPunyapal/rector-pest/compare/0.2.11...0.2.12) - 2026-05-01
+
+### What's Changed
+
+* Feat: pest browser plugin rules by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/39
+* Feat: something new by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/40
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.11...0.2.12
+
 ## [0.2.11](https://github.com/MrPunyapal/rector-pest/compare/0.2.10...0.2.11) - 2026-04-14
 
 ### What's Changed
