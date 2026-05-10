@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RectorPest\Support;
 
 use PhpParser\Node;
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
@@ -114,6 +115,11 @@ final class PestFunctionDetector
 
     public static function closureUsesThis(Closure|ArrowFunction $closure): bool
     {
+        return self::closureRequiresInstanceBinding($closure);
+    }
+
+    public static function closureRequiresInstanceBinding(Closure|ArrowFunction $closure): bool
+    {
         foreach ($closure->getSubNodeNames() as $subNodeName) {
             if (self::subNodeUsesThis($closure->{$subNodeName})) {
                 return true;
@@ -129,12 +135,16 @@ final class PestFunctionDetector
             return true;
         }
 
+        if ($subNode instanceof FuncCall) {
+            return self::funcCallUsesThis($subNode);
+        }
+
         if ($subNode instanceof Closure) {
-            return false;
+            return ! $subNode->static && self::closureRequiresInstanceBinding($subNode);
         }
 
         if ($subNode instanceof ArrowFunction) {
-            return self::closureUsesThis($subNode);
+            return self::closureRequiresInstanceBinding($subNode);
         }
 
         if ($subNode instanceof Node) {
@@ -153,6 +163,27 @@ final class PestFunctionDetector
 
         foreach ($subNode as $item) {
             if (self::subNodeUsesThis($item)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function funcCallUsesThis(FuncCall $funcCall): bool
+    {
+        $pestCallback = self::extractClosure($funcCall);
+
+        foreach ($funcCall->args as $arg) {
+            if (! $arg instanceof Arg) {
+                continue;
+            }
+
+            if ($pestCallback !== null && $arg->value === $pestCallback) {
+                continue;
+            }
+
+            if (self::subNodeUsesThis($arg)) {
                 return true;
             }
         }

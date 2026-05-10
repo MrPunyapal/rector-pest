@@ -4,34 +4,34 @@ declare(strict_types=1);
 
 namespace RectorPest\ValueObject;
 
-use RectorPest\Registry\PestSemanticIssues;
-
 final readonly class ExpectationSemanticAnalysis
 {
     public function __construct(
-        public string $issueIdentifier,
         public string $matcher,
+        public string $expectedCategory,
+        public string $literalCategory,
         public bool $negated,
+        public bool $matches,
     ) {
     }
 
-    public static function redundant(string $matcher, bool $negated): self
-    {
-        return new self(PestSemanticIssues::REDUNDANT_EXPECTATION, $matcher, $negated);
-    }
-
-    public static function impossible(string $matcher, bool $negated): self
-    {
-        return new self(PestSemanticIssues::IMPOSSIBLE_EXPECTATION, $matcher, $negated);
+    public static function forDeterministicLiteralTypeCheck(
+        string $matcher,
+        string $expectedCategory,
+        string $literalCategory,
+        bool $negated,
+        bool $matches,
+    ): self {
+        return new self($matcher, $expectedCategory, $literalCategory, $negated, $matches);
     }
 
     public function isRedundant(): bool
     {
-        return $this->issueIdentifier === PestSemanticIssues::REDUNDANT_EXPECTATION;
+        return $this->matches !== $this->negated;
     }
 
     public function isImpossible(): bool
     {
-        return $this->issueIdentifier === PestSemanticIssues::IMPOSSIBLE_EXPECTATION;
+        return $this->matches === $this->negated;
     }
 }

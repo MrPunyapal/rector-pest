@@ -1,7 +1,6 @@
 {
     "name": "mrpunyapal/rector-pest",
     "description": "Rector upgrade rules for Pest - refactoring and best practices for Pest testing framework",
-    "type": "rector-extension",
     "license": "MIT",
     "keywords": [
         "rector",

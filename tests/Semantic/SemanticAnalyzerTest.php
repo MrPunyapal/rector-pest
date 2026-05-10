@@ -13,7 +13,6 @@ use PhpParser\ParserFactory;
 use RectorPest\Analyzer\HookSemanticAnalyzer;
 use RectorPest\Analyzer\PestChainAnalyzer;
 use RectorPest\Analyzer\SemanticExpectationAnalyzer;
-use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\Support\PestFunctionDetector;
 
 it('finds invalid describe hooks recursively', function (): void {
@@ -98,18 +97,92 @@ PHP,
         static fn (Node $node): bool => $node instanceof MethodCall && $node->name instanceof Identifier && $node->name->toString() === 'toBeArray',
     );
 
-    expect(SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($redundantMatcher)?->issueIdentifier)
-        ->toBe(PestSemanticIssues::REDUNDANT_EXPECTATION);
+    $classStringMatcher = findFirstNode(
+        <<<'PHP'
+expect(ExampleAttribute::class)->toBeString();
+PHP,
+        static fn (Node $node): bool => $node instanceof MethodCall && $node->name instanceof Identifier && $node->name->toString() === 'toBeString',
+    );
 
-    expect(SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($impossibleMatcher)?->issueIdentifier)
-        ->toBe(PestSemanticIssues::IMPOSSIBLE_EXPECTATION);
+    $redundantAnalysis = SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($redundantMatcher);
+    $impossibleAnalysis = SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($impossibleMatcher);
+    $negatedRedundantAnalysis = SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($negatedRedundantMatcher);
+    $classStringAnalysis = SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($classStringMatcher);
 
-    expect(SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($negatedRedundantMatcher)?->issueIdentifier)
-        ->toBe(PestSemanticIssues::REDUNDANT_EXPECTATION);
+    expect($redundantAnalysis?->expectedCategory)->toBe('string');
+    expect($redundantAnalysis?->literalCategory)->toBe('string');
+    expect($redundantAnalysis?->isRedundant())->toBeTrue();
+
+    expect($impossibleAnalysis?->expectedCategory)->toBe('int');
+    expect($impossibleAnalysis?->literalCategory)->toBe('string');
+    expect($impossibleAnalysis?->isImpossible())->toBeTrue();
+
+    expect($negatedRedundantAnalysis?->negated)->toBeTrue();
+    expect($negatedRedundantAnalysis?->isRedundant())->toBeTrue();
+
+    expect($classStringAnalysis?->literalCategory)->toBe('string');
+    expect($classStringAnalysis?->isRedundant())->toBeTrue();
 
     expect(SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($indirectMatcher))
         ->toBeNull();
 });
+
+it('distinguishes callback trees that require instance binding', function (): void {
+    $testCallback = findFirstNode(
+        <<<'PHP'
+it('uses nested closures', static function (): void {
+    $factory = function (): Closure {
+        return function (): string {
+            return $this->app->getLocale();
+        };
+    };
+
+    expect($factory()())->toBeString();
+});
+PHP,
+        static fn (Node $node): bool => $node instanceof FuncCall && PestFunctionDetector::isTestFunction($node),
+    );
+
+    $describeCallback = findFirstNode(
+        <<<'PHP'
+describe('hooks', static function (): void {
+    beforeEach(static function (): void {
+        $resolver = fn (): string => $this->app->getLocale();
+
+        expect($resolver())->toBeString();
+    });
+});
+PHP,
+        static fn (Node $node): bool => $node instanceof FuncCall && PestFunctionDetector::isDescribeFunction($node),
+    );
+
+    $beforeEachCallback = findFirstNode(
+        <<<'PHP'
+describe('hooks', static function (): void {
+    beforeEach(static function (): void {
+        $resolver = fn (): string => $this->app->getLocale();
+
+        expect($resolver())->toBeString();
+    });
+});
+PHP,
+        static fn (Node $node): bool => $node instanceof FuncCall && PestFunctionDetector::getFunctionName($node) === 'beforeEach',
+    );
+
+    expect(PestFunctionDetector::closureRequiresInstanceBinding(PestFunctionDetector::extractClosure($testCallback)))
+        ->toBeTrue();
+
+    expect(PestFunctionDetector::closureRequiresInstanceBinding(PestFunctionDetector::extractClosure($describeCallback)))
+        ->toBeFalse();
+
+    expect(PestFunctionDetector::closureRequiresInstanceBinding(PestFunctionDetector::extractClosure($beforeEachCallback)))
+        ->toBeTrue();
+});
+
+#[Attribute]
+final class ExampleAttribute
+{
+}
 
 /**
  * @param callable(Node): bool $filter

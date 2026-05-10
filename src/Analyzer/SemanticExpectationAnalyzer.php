@@ -21,7 +21,7 @@ use RectorPest\ValueObject\ExpectationSemanticAnalysis;
 final class SemanticExpectationAnalyzer
 {
     /** @var array<string, string> */
-    private const TYPE_MATCHERS = [
+    private const TYPE_MATCHER_CATEGORIES = [
         'toBeArray' => 'array',
         'toBeBool' => 'bool',
         'toBeCallable' => 'callable',
@@ -42,9 +42,9 @@ final class SemanticExpectationAnalyzer
         }
 
         $matcher = $methodCall->name->toString();
-        $category = self::TYPE_MATCHERS[$matcher] ?? null;
+        $expectedCategory = self::matcherCategory($matcher);
 
-        if ($category === null) {
+        if ($expectedCategory === null) {
             return null;
         }
 
@@ -54,19 +54,45 @@ final class SemanticExpectationAnalyzer
             return null;
         }
 
-        $matches = self::matchesLiteralCategory($expectArg, $category);
+        $literalCategory = self::deterministicLiteralCategory($expectArg);
+
+        if ($literalCategory === null) {
+            return null;
+        }
+
+        $matches = self::matchesLiteralCategory($expectArg, $expectedCategory);
 
         if ($matches === null) {
             return null;
         }
 
-        $hasNotModifier = PestChainAnalyzer::hasNotModifier($methodCall);
+        return ExpectationSemanticAnalysis::forDeterministicLiteralTypeCheck(
+            $matcher,
+            $expectedCategory,
+            $literalCategory,
+            PestChainAnalyzer::hasNotModifier($methodCall),
+            $matches,
+        );
+    }
 
-        if ($matches === $hasNotModifier) {
-            return ExpectationSemanticAnalysis::impossible($matcher, $hasNotModifier);
-        }
+    public static function matcherCategory(string $matcher): ?string
+    {
+        return self::TYPE_MATCHER_CATEGORIES[$matcher] ?? null;
+    }
 
-        return ExpectationSemanticAnalysis::redundant($matcher, $hasNotModifier);
+    public static function deterministicLiteralCategory(Expr $expr): ?string
+    {
+        return match (true) {
+            $expr instanceof String_ => 'string',
+            $expr instanceof Int_ => 'int',
+            $expr instanceof Float_ => 'float',
+            $expr instanceof Array_ => 'array',
+            $expr instanceof Closure, $expr instanceof ArrowFunction => 'callable',
+            $expr instanceof New_ => 'object',
+            $expr instanceof ClassConstFetch => $expr->name instanceof Identifier && $expr->name->toString() === 'class' ? 'string' : null,
+            $expr instanceof ConstFetch => self::literalCategoryFromConstFetch($expr),
+            default => null,
+        };
     }
 
     private static function matchesLiteralCategory(Expr $expr, string $category): ?bool
@@ -84,6 +110,15 @@ final class SemanticExpectationAnalyzer
             $expr instanceof New_ => $category === 'object',
             $expr instanceof ClassConstFetch => in_array($category, ['string', 'scalar'], true) && $expr->name instanceof Identifier && $expr->name->toString() === 'class',
             $expr instanceof ConstFetch => self::matchesConstFetch($expr, $category),
+            default => null,
+        };
+    }
+
+    private static function literalCategoryFromConstFetch(ConstFetch $expr): ?string
+    {
+        return match ($expr->name->toLowerString()) {
+            'true', 'false' => 'bool',
+            'null' => 'null',
             default => null,
         };
     }

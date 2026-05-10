@@ -23,6 +23,24 @@ describe('nested hooks', static function (): void {
     });
 });
 
+it('tracks nested non-pest closure trees', static function (): void {
+    $factory = function (): Closure {
+        return function (): string {
+            return $this->app->getLocale();
+        };
+    };
+
+    expect($factory()())->toBeString();
+});
+
+describe('callback trees', static function (): void {
+    beforeEach(static function (): void {
+        $resolver = fn (): string => $this->app->getLocale();
+
+        expect($resolver())->toBeString();
+    });
+});
+
 test('already valid callback stays the same', function (): void {
     expect(true)->toBeTrue();
 });
@@ -55,6 +73,24 @@ describe('nested hooks', static function (): void {
             ->toBeString()
             ->and('rector')
             ->toBeString();
+    });
+});
+
+it('tracks nested non-pest closure trees', function (): void {
+    $factory = function (): Closure {
+        return function (): string {
+            return $this->app->getLocale();
+        };
+    };
+
+    expect($factory()())->toBeString();
+});
+
+describe('callback trees', static function (): void {
+    beforeEach(function (): void {
+        $resolver = fn (): string => $this->app->getLocale();
+
+        expect($resolver())->toBeString();
     });
 });
 

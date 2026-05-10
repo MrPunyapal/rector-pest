@@ -1,5 +1,10 @@
 <?php
 
+#[Attribute]
+final class ExampleAttribute
+{
+}
+
 it('removes redundant literal type checks inside assertion chains', function (): void {
     expect('pest')
         ->toBeString()
@@ -12,6 +17,10 @@ it('removes redundant literal type checks inside assertion chains', function ():
     expect(['first', 'second'])
         ->toBeArray()
         ->toHaveCount(2);
+
+    expect(ExampleAttribute::class)
+        ->toBeString()
+        ->toContain('Attribute');
 });
 
 it('keeps unsupported expectation shapes', function () use ($value): void {
@@ -34,11 +43,25 @@ it('keeps unsupported expectation shapes', function () use ($value): void {
         // keep this explanation
         ->toBeString()
         ->toStartWith('p');
+
+    expect('["pest"]')
+        ->toBeString()
+        ->json()
+        ->toBeArray();
+
+    expect(ExampleAttribute::TARGET_CLASS)
+        ->toBeString()
+        ->toBeInt();
 });
 
 ?>
 -----
 <?php
+
+#[Attribute]
+final class ExampleAttribute
+{
+}
 
 it('removes redundant literal type checks inside assertion chains', function (): void {
     expect('pest')
@@ -49,6 +72,9 @@ it('removes redundant literal type checks inside assertion chains', function ():
 
     expect(['first', 'second'])
         ->toHaveCount(2);
+
+    expect(ExampleAttribute::class)
+        ->toContain('Attribute');
 });
 
 it('keeps unsupported expectation shapes', function () use ($value): void {
@@ -71,6 +97,15 @@ it('keeps unsupported expectation shapes', function () use ($value): void {
         // keep this explanation
         ->toBeString()
         ->toStartWith('p');
+
+    expect('["pest"]')
+        ->toBeString()
+        ->json()
+        ->toBeArray();
+
+    expect(ExampleAttribute::TARGET_CLASS)
+        ->toBeString()
+        ->toBeInt();
 });
 
 ?>

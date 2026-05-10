@@ -17,6 +17,21 @@ final class PestChainAnalyzer
     /** @var list<string> */
     private const PEST_TEST_FUNCTIONS = ['it', 'test', 'todo'];
 
+    public static function hasMethodNamedBetween(MethodCall $outerMethodCall, MethodCall $innerMethodCall, string $methodName): bool
+    {
+        $current = $outerMethodCall;
+
+        while ($current !== $innerMethodCall && $current->var instanceof MethodCall) {
+            if ($current->name instanceof Identifier && $current->name->toString() === $methodName) {
+                return true;
+            }
+
+            $current = $current->var;
+        }
+
+        return false;
+    }
+
     public static function getRootFuncCall(MethodCall $methodCall): ?FuncCall
     {
         $current = $methodCall->var;

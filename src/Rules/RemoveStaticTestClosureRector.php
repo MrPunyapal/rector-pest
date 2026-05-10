@@ -70,7 +70,7 @@ CODE_SAMPLE
             return null;
         }
 
-        if (! PestFunctionDetector::closureUsesThis($closure)) {
+        if (! PestFunctionDetector::closureRequiresInstanceBinding($closure)) {
             return null;
         }
 

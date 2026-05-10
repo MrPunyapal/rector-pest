@@ -10,6 +10,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Identifier;
 use RectorPest\AbstractSemanticPestRector;
+use RectorPest\Analyzer\PestChainAnalyzer;
 use RectorPest\Analyzer\SemanticExpectationAnalyzer;
 use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\ValueObject\ExpectationSemanticAnalysis;
@@ -19,6 +20,9 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 final class RemoveRedundantLiteralTypeExpectationRector extends AbstractSemanticPestRector
 {
+    /** @var list<string> */
+    private const SUBJECT_TRANSFORMING_METHODS = ['and', 'json', 'each', 'match', 'sequence', 'unless', 'when'];
+
     private ?string $currentFileContents = null;
 
     // @codeCoverageIgnoreStart
@@ -94,7 +98,21 @@ CODE_SAMPLE
 
     private function canRemoveFromChain(MethodCall $current, MethodCall $inner, ExpectationSemanticAnalysis $analysis): bool
     {
-        if (! $current->name instanceof Identifier || $current->name->toString() === 'and') {
+        if (! $current->name instanceof Identifier) {
+            return false;
+        }
+
+        if (in_array($current->name->toString(), self::SUBJECT_TRANSFORMING_METHODS, true)) {
+            return false;
+        }
+
+        foreach (self::SUBJECT_TRANSFORMING_METHODS as $methodName) {
+            if (PestChainAnalyzer::hasMethodNamedBetween($current, $inner, $methodName)) {
+                return false;
+            }
+        }
+
+        if ($analysis->isImpossible()) {
             return false;
         }
 
