@@ -12,20 +12,39 @@ use RectorPest\ValueObject\PestSemanticIssue;
  */
 final class PestDiagnosticResolver
 {
+    /** @var array<string, PestSemanticIssue>|null */
+    private ?array $identifierMap = null;
+
+    /** @var array<string, string>|null */
+    private ?array $canonicalIdentifierMap = null;
+
+    /** @var list<string>|null */
+    private ?array $supportedDiagnosticIdentifiers = null;
+
     /**
      * @return array<string, PestSemanticIssue>
      */
     private function identifierMap(): array
     {
+        if (is_array($this->identifierMap)) {
+            return $this->identifierMap;
+        }
+
         $identifierMap = [];
+        $canonicalIdentifierMap = [];
 
         foreach (PestSemanticIssues::all() as $issue) {
             foreach ($issue->allDiagnosticIdentifiers() as $identifier) {
                 $identifierMap[$identifier] = $issue;
+                $canonicalIdentifierMap[$identifier] = $issue->identifier;
             }
         }
 
-        return $identifierMap;
+        $this->identifierMap = $identifierMap;
+        $this->canonicalIdentifierMap = $canonicalIdentifierMap;
+        $this->supportedDiagnosticIdentifiers = array_keys($identifierMap);
+
+        return $this->identifierMap;
     }
 
     public function resolve(string $diagnosticIdentifier): ?PestSemanticIssue
@@ -35,7 +54,9 @@ final class PestDiagnosticResolver
 
     public function canonicalize(string $diagnosticIdentifier): ?string
     {
-        return $this->resolve($diagnosticIdentifier)?->identifier;
+        $this->identifierMap();
+
+        return $this->canonicalIdentifierMap[$diagnosticIdentifier] ?? null;
     }
 
     public function supports(string $diagnosticIdentifier): bool
@@ -69,6 +90,8 @@ final class PestDiagnosticResolver
      */
     public function supportedDiagnosticIdentifiers(): array
     {
-        return array_keys($this->identifierMap());
+        $this->identifierMap();
+
+        return $this->supportedDiagnosticIdentifiers ?? [];
     }
 }

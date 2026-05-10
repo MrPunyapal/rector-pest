@@ -44,7 +44,12 @@ final readonly class PestSemanticIssue
      */
     public function allDiagnosticIdentifiers(): array
     {
-        return array_values(array_unique([$this->identifier, ...$this->diagnosticIdentifiers]));
+        $diagnosticIdentifiers = array_values(array_filter(
+            array_unique($this->diagnosticIdentifiers),
+            fn (string $diagnosticIdentifier): bool => $diagnosticIdentifier !== $this->identifier,
+        ));
+
+        return [$this->identifier, ...$diagnosticIdentifiers];
     }
 
     public function matchesDiagnosticIdentifier(string $diagnosticIdentifier): bool
