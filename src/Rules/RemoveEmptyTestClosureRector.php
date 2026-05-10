@@ -10,8 +10,8 @@ use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Stmt\Nop;
 use RectorPest\AbstractSemanticPestRector;
+use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\Support\PestFunctionDetector;
-use RectorPest\ValueObject\PestSemanticCategory;
 use RectorPest\ValueObject\PestSemanticIssue;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
@@ -44,11 +44,7 @@ CODE_SAMPLE
 
     public function getSemanticIssue(): PestSemanticIssue
     {
-        return new PestSemanticIssue(
-            ['pest.emptyTestClosure'],
-            PestSemanticCategory::TEST_DEFINITION,
-            'Empty Pest test closures should use a pending placeholder form instead of a no-op callback.',
-        );
+        return PestSemanticIssues::emptyTestClosure();
     }
 
     /**

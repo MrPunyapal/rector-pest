@@ -12,7 +12,7 @@ use PhpParser\Node\Expr\UnaryMinus;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Scalar\Int_;
 use RectorPest\AbstractSemanticPestRector;
-use RectorPest\ValueObject\PestSemanticCategory;
+use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\ValueObject\PestSemanticIssue;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
@@ -49,11 +49,7 @@ CODE_SAMPLE
 
     public function getSemanticIssue(): PestSemanticIssue
     {
-        return new PestSemanticIssue(
-            ['pest.repeatInvalidValue'],
-            PestSemanticCategory::EXECUTION,
-            "Invalid literal repeat counts should be normalized to Pest's minimum supported value.",
-        );
+        return PestSemanticIssues::invalidRepeatValue();
     }
 
     /**

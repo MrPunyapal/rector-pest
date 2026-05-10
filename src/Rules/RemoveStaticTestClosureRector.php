@@ -7,8 +7,8 @@ namespace RectorPest\Rules;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use RectorPest\AbstractSemanticPestRector;
+use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\Support\PestFunctionDetector;
-use RectorPest\ValueObject\PestSemanticCategory;
 use RectorPest\ValueObject\PestSemanticIssue;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
@@ -45,11 +45,7 @@ CODE_SAMPLE
 
     public function getSemanticIssue(): PestSemanticIssue
     {
-        return new PestSemanticIssue(
-            ['pest.staticTestClosure'],
-            PestSemanticCategory::TEST_DEFINITION,
-            'Static Pest closures should be converted to instance-aware callbacks.',
-        );
+        return PestSemanticIssues::staticTestClosure();
     }
 
     /**
