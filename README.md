@@ -6,9 +6,12 @@
 
 Rector rules for [PestPHP](https://pestphp.com/) to improve code quality and help with version upgrades.
 
+Rector Pest now also exposes a semantic remediation layer for safe Pest-specific diagnostics. Canonical issue identifiers, semantic metadata, and diagnostic-to-fix mapping live inside this package so Rector rules can stay independent from any single analyzer while still remaining ready for future PestStan interoperability.
+
 ## Available Rules
 
 See all available Pest rules [here](/docs/rules.md).
+See the semantic architecture and interoperability contract [here](/docs/semantic-architecture.md).
 
 ## Installation
 
@@ -21,6 +24,10 @@ composer require --dev mrpunyapal/rector-pest
 ### Code Quality
 
 Improve your Pest tests with better readability and expressiveness.
+
+The code-quality set also fixes a small set of PestStan-aligned anti-patterns, including static Pest callbacks that actually require instance binding, invalid `beforeAll()`/`afterAll()` usage inside `describe()` blocks, invalid literal `repeat()` counts, and redundant literal type expectations when another matcher keeps the chain meaningful. Empty test closures and impossible literal/type combinations remain modeled in the semantic registry, but they are not auto-fixed when the runtime semantics would change or the intent would become ambiguous.
+
+These semantic fixes do not require PestStan at runtime for package consumers. This repository still keeps PestStan as a development-only dependency for its own PHPStan configuration, while Rector Pest itself owns the canonical issue registry and consumes analyzer diagnostics through stable identifiers instead of direct analyzer coupling.
 
 ```php
 // rector.php
@@ -255,6 +262,18 @@ vendor/bin/rector process --dry-run
 # Apply changes
 vendor/bin/rector process
 ```
+
+## Semantic Interoperability
+
+Rector Pest separates three concerns:
+
+- deterministic semantic analyzers that only return local facts needed for a safe transformation
+- a canonical issue registry with stable identifiers and metadata for interoperability
+- an interop layer that maps external diagnostics onto canonical issues and safe Rector fixes
+
+That split keeps the transformation layer conservative. For example, redundant literal type cleanup only removes checks when the literal value is deterministic and the surrounding chain does not branch or transform the expectation subject. Static callback cleanup also distinguishes nested Pest callbacks from nested non-Pest closure trees so outer `describe()` callbacks are not rewritten just because an inner hook needs instance binding.
+
+The current semantic contract is documented in [docs/semantic-architecture.md](/docs/semantic-architecture.md).
 
 ## Requirements
 

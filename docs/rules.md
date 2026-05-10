@@ -1,4 +1,4 @@
-# 66 Rules Overview
+# 70 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -101,6 +101,23 @@ Converts PHPUnit assertion method calls to Pest `expect()` chains
 
 <br>
 
+## ConvertBeforeAllInDescribeRector
+
+Replaces invalid `beforeAll()` and `afterAll()` hooks inside `describe()` with `beforeEach()` and `afterEach()`
+
+- class: [`RectorPest\Rules\ConvertBeforeAllInDescribeRector`](../src/Rules/ConvertBeforeAllInDescribeRector.php)
+
+```diff
+ describe('users', function (): void {
+-    beforeAll(function (): void {
++    beforeEach(function (): void {
+         refreshDatabase();
+     });
+ });
+```
+
+<br>
+
 ## ConvertExpectExceptionToThrowRector
 
 Converts `expectException()` and `expectExceptionMessage()` patterns to `expect()->toThrow()`
@@ -138,6 +155,21 @@ Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value as
 
 <br>
 
+## FixInvalidRepeatValueRector
+
+Normalizes invalid literal `repeat()` counts to 1
+
+- class: [`RectorPest\Rules\FixInvalidRepeatValueRector`](../src/Rules/FixInvalidRepeatValueRector.php)
+
+```diff
+ it('retries once', function (): void {
+     expect(true)->toBeTrue();
+-})->repeat(0);
++})->repeat(1);
+```
+
+<br>
+
 ## RemoveDebugExpectationsRector
 
 Removes debug method calls (dump, dd, ray) from expect chains
@@ -162,6 +194,35 @@ Removes `only()` from all tests
 ```diff
 -test()->only();
 +test();
+```
+
+<br>
+
+## RemoveRedundantLiteralTypeExpectationRector
+
+Removes redundant literal type expectations when a later matcher keeps the chain meaningful
+
+- class: [`RectorPest\Rules\RemoveRedundantLiteralTypeExpectationRector`](../src/Rules/RemoveRedundantLiteralTypeExpectationRector.php)
+
+```diff
+ expect('pest')
+-    ->toBeString()
+     ->toStartWith('p');
+```
+
+<br>
+
+## RemoveStaticTestClosureRector
+
+Removes static from Pest test and hook callbacks that use the test case instance
+
+- class: [`RectorPest\Rules\RemoveStaticTestClosureRector`](../src/Rules/RemoveStaticTestClosureRector.php)
+
+```diff
+-it('uses the test case instance', static function (): void {
++it('uses the test case instance', function (): void {
+     expect($this)->not->toBeNull();
+ });
 ```
 
 <br>

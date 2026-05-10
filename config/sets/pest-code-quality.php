@@ -3,8 +3,12 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use RectorPest\Rules\ConvertBeforeAllInDescribeRector;
+use RectorPest\Rules\FixInvalidRepeatValueRector;
 use RectorPest\Rules\RemoveDebugExpectationsRector;
 use RectorPest\Rules\RemoveOnlyRector;
+use RectorPest\Rules\RemoveRedundantLiteralTypeExpectationRector;
+use RectorPest\Rules\RemoveStaticTestClosureRector;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
 use RectorPest\Rules\SimplifyExpectNotRector;
 use RectorPest\Rules\SimplifyFilesystemMatchersRector;
@@ -66,10 +70,14 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Iteration
     $rectorConfig->rule(UseEachModifierRector::class);
+    $rectorConfig->rule(ConvertBeforeAllInDescribeRector::class);
 
     // Test cleanup
     $rectorConfig->rule(RemoveOnlyRector::class);
     $rectorConfig->rule(RemoveDebugExpectationsRector::class);
+    $rectorConfig->rule(RemoveRedundantLiteralTypeExpectationRector::class);
+    $rectorConfig->rule(RemoveStaticTestClosureRector::class);
+    $rectorConfig->rule(FixInvalidRepeatValueRector::class);
 
     // Boolean and negation simplification
     $rectorConfig->rule(SimplifyExpectNotRector::class);
