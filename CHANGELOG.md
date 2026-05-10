@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.13](https://github.com/MrPunyapal/rector-pest/compare/0.2.12...0.2.13) - 2026-05-10
+
+### What's Changed
+
+* Feat: static analysis driven refactors by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/41
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.12...0.2.13
+
 ## [0.2.12](https://github.com/MrPunyapal/rector-pest/compare/0.2.11...0.2.12) - 2026-05-01
 
 ### What's Changed
