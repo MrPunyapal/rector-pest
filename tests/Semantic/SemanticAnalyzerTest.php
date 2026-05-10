@@ -91,6 +91,13 @@ PHP,
         static fn (Node $node): bool => $node instanceof MethodCall && $node->name instanceof Identifier && $node->name->toString() === 'toBeString',
     );
 
+    $indirectMatcher = findFirstNode(
+        <<<'PHP'
+expect('["pest"]')->json()->toBeArray();
+PHP,
+        static fn (Node $node): bool => $node instanceof MethodCall && $node->name instanceof Identifier && $node->name->toString() === 'toBeArray',
+    );
+
     expect(SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($redundantMatcher)?->issueIdentifier)
         ->toBe(PestSemanticIssues::REDUNDANT_EXPECTATION);
 
@@ -99,6 +106,9 @@ PHP,
 
     expect(SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($negatedRedundantMatcher)?->issueIdentifier)
         ->toBe(PestSemanticIssues::REDUNDANT_EXPECTATION);
+
+    expect(SemanticExpectationAnalyzer::analyzeLiteralTypeMatcher($indirectMatcher))
+        ->toBeNull();
 });
 
 /**

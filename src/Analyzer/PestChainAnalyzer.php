@@ -50,6 +50,20 @@ final class PestChainAnalyzer
         return $root instanceof FuncCall && $root->name instanceof Name && $root->name->toString() === 'expect';
     }
 
+    public static function isDirectExpectMethod(MethodCall $methodCall): bool
+    {
+        if ($methodCall->var instanceof FuncCall) {
+            return $methodCall->var->name instanceof Name && $methodCall->var->name->toString() === 'expect';
+        }
+
+        return $methodCall->var instanceof PropertyFetch
+            && $methodCall->var->name instanceof Identifier
+            && $methodCall->var->name->toString() === 'not'
+            && $methodCall->var->var instanceof FuncCall
+            && $methodCall->var->var->name instanceof Name
+            && $methodCall->var->var->name->toString() === 'expect';
+    }
+
     public static function getExpectArgument(MethodCall $methodCall): ?Expr
     {
         if (! self::isExpectChain($methodCall)) {

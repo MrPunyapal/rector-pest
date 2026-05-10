@@ -1,4 +1,4 @@
-# 69 Rules Overview
+# 70 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -194,6 +194,20 @@ Removes `only()` from all tests
 ```diff
 -test()->only();
 +test();
+```
+
+<br>
+
+## RemoveRedundantLiteralTypeExpectationRector
+
+Removes redundant literal type expectations when a later matcher keeps the chain meaningful
+
+- class: [`RectorPest\Rules\RemoveRedundantLiteralTypeExpectationRector`](../src/Rules/RemoveRedundantLiteralTypeExpectationRector.php)
+
+```diff
+ expect('pest')
+-    ->toBeString()
+     ->toStartWith('p');
 ```
 
 <br>

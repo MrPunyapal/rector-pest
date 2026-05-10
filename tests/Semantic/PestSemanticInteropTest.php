@@ -7,6 +7,7 @@ use RectorPest\Interop\SemanticIssueMapper;
 use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\Rules\ConvertBeforeAllInDescribeRector;
 use RectorPest\Rules\FixInvalidRepeatValueRector;
+use RectorPest\Rules\RemoveRedundantLiteralTypeExpectationRector;
 use RectorPest\ValueObject\PestSemanticFixability;
 use RectorPest\ValueObject\PestSemanticSafetyLevel;
 use RectorPest\ValueObject\PestSemanticSeverity;
@@ -36,7 +37,9 @@ it('maps diagnostics to semantic fix candidates', function (): void {
 
     $describeCandidates = $mapper->resolveCandidatesForDiagnostic(PestSemanticIssues::BEFORE_ALL_IN_DESCRIBE);
     $repeatCandidates = $mapper->resolveCandidatesForDiagnostic(PestSemanticIssues::INVALID_REPEAT_VALUE);
+    $redundantCandidates = $mapper->resolveCandidatesForDiagnostic(PestSemanticIssues::REDUNDANT_EXPECTATION);
     $emptyCandidates = $mapper->resolveCandidatesForDiagnostic(PestSemanticIssues::EMPTY_TEST_CLOSURE);
+    $impossibleCandidates = $mapper->resolveCandidatesForDiagnostic(PestSemanticIssues::IMPOSSIBLE_EXPECTATION);
 
     expect($describeCandidates)->toHaveCount(1);
     expect($describeCandidates[0]->rectorClass)->toBe(ConvertBeforeAllInDescribeRector::class);
@@ -46,7 +49,12 @@ it('maps diagnostics to semantic fix candidates', function (): void {
     expect($repeatCandidates[0]->rectorClass)->toBe(FixInvalidRepeatValueRector::class);
     expect($repeatCandidates[0]->issue->identifier)->toBe(PestSemanticIssues::INVALID_REPEAT_VALUE);
 
+    expect($redundantCandidates)->toHaveCount(1);
+    expect($redundantCandidates[0]->rectorClass)->toBe(RemoveRedundantLiteralTypeExpectationRector::class);
+    expect($redundantCandidates[0]->issue->fixability)->toBe(PestSemanticFixability::ASSISTED);
+
     expect($emptyCandidates)->toBe([]);
+    expect($impossibleCandidates)->toBe([]);
 });
 
 it('keeps empty test closures as informational diagnostics only', function (): void {

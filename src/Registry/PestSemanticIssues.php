@@ -135,7 +135,7 @@ final class PestSemanticIssues
             [self::REDUNDANT_EXPECTATION],
             PestSemanticCategory::EXPECTATION,
             PestSemanticFixCategory::CLEANUP,
-            PestSemanticFixability::PLANNED,
+            PestSemanticFixability::ASSISTED,
             PestSemanticSeverity::INFO,
             PestSemanticSafetyLevel::CONSERVATIVE,
             PestSemanticConfidence::MEDIUM,

@@ -37,7 +37,7 @@ final class SemanticExpectationAnalyzer
 
     public static function analyzeLiteralTypeMatcher(MethodCall $methodCall): ?ExpectationSemanticAnalysis
     {
-        if (! PestChainAnalyzer::isExpectChain($methodCall) || ! $methodCall->name instanceof Identifier) {
+        if (! PestChainAnalyzer::isDirectExpectMethod($methodCall) || ! $methodCall->name instanceof Identifier) {
             return null;
         }
 

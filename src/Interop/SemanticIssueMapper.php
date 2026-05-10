@@ -8,6 +8,7 @@ use RectorPest\AbstractSemanticPestRector;
 use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\Rules\ConvertBeforeAllInDescribeRector;
 use RectorPest\Rules\FixInvalidRepeatValueRector;
+use RectorPest\Rules\RemoveRedundantLiteralTypeExpectationRector;
 use RectorPest\Rules\RemoveStaticTestClosureRector;
 use RectorPest\ValueObject\PestSemanticIssue;
 use RectorPest\ValueObject\SemanticFixCandidate;
@@ -25,6 +26,7 @@ final readonly class SemanticIssueMapper
         PestSemanticIssues::BEFORE_ALL_IN_DESCRIBE => [ConvertBeforeAllInDescribeRector::class],
         PestSemanticIssues::AFTER_ALL_IN_DESCRIBE => [ConvertBeforeAllInDescribeRector::class],
         PestSemanticIssues::INVALID_REPEAT_VALUE => [FixInvalidRepeatValueRector::class],
+        PestSemanticIssues::REDUNDANT_EXPECTATION => [RemoveRedundantLiteralTypeExpectationRector::class],
     ];
 
     public function __construct(

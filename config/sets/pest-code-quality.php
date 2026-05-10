@@ -7,6 +7,7 @@ use RectorPest\Rules\ConvertBeforeAllInDescribeRector;
 use RectorPest\Rules\FixInvalidRepeatValueRector;
 use RectorPest\Rules\RemoveDebugExpectationsRector;
 use RectorPest\Rules\RemoveOnlyRector;
+use RectorPest\Rules\RemoveRedundantLiteralTypeExpectationRector;
 use RectorPest\Rules\RemoveStaticTestClosureRector;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
 use RectorPest\Rules\SimplifyExpectNotRector;
@@ -74,6 +75,7 @@ return static function (RectorConfig $rectorConfig): void {
     // Test cleanup
     $rectorConfig->rule(RemoveOnlyRector::class);
     $rectorConfig->rule(RemoveDebugExpectationsRector::class);
+    $rectorConfig->rule(RemoveRedundantLiteralTypeExpectationRector::class);
     $rectorConfig->rule(RemoveStaticTestClosureRector::class);
     $rectorConfig->rule(FixInvalidRepeatValueRector::class);
 
