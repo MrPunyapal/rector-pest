@@ -13,6 +13,7 @@ use RectorPest\Rules\SimplifyToBeTruthyFalsyRector;
 use RectorPest\Rules\SimplifyToLiteralBooleanRector;
 use RectorPest\Rules\ToBeTrueNotFalseRector;
 use RectorPest\Rules\UseEachModifierRector;
+use RectorPest\Rules\UseEachHooksInDescribeRector;
 use RectorPest\Rules\UseInstanceOfMatcherRector;
 use RectorPest\Rules\UseStrictEqualityMatchersRector;
 use RectorPest\Rules\UseToBeAlphaNumericRector;
@@ -67,6 +68,7 @@ return static function (RectorConfig $rectorConfig): void {
 
     // Iteration
     $rectorConfig->rule(UseEachModifierRector::class);
+    $rectorConfig->rule(UseEachHooksInDescribeRector::class);
 
     // Test cleanup
     $rectorConfig->rule(RemoveOnlyRector::class);
