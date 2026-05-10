@@ -27,7 +27,7 @@ Improve your Pest tests with better readability and expressiveness.
 
 The code-quality set also fixes a small set of PestStan-aligned anti-patterns, including static Pest callbacks that actually require instance binding, invalid `beforeAll()`/`afterAll()` usage inside `describe()` blocks, invalid literal `repeat()` counts, and redundant literal type expectations when another matcher keeps the chain meaningful. Empty test closures and impossible literal/type combinations remain modeled in the semantic registry, but they are not auto-fixed when the runtime semantics would change or the intent would become ambiguous.
 
-These semantic fixes do not require PestStan at runtime. Rector Pest owns the canonical issue registry and can consume analyzer diagnostics through stable identifiers instead of direct analyzer coupling.
+These semantic fixes do not require PestStan at runtime for package consumers. This repository still keeps PestStan as a development-only dependency for its own PHPStan configuration, while Rector Pest itself owns the canonical issue registry and consumes analyzer diagnostics through stable identifiers instead of direct analyzer coupling.
 
 ```php
 // rector.php
