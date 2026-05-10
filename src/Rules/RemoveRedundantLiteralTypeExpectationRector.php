@@ -23,7 +23,8 @@ final class RemoveRedundantLiteralTypeExpectationRector extends AbstractSemantic
     /** @var list<string> */
     private const SUBJECT_TRANSFORMING_METHODS = ['and', 'json', 'each', 'match', 'sequence', 'unless', 'when'];
 
-    private ?string $currentFileContents = null;
+    /** @var array<string, string> */
+    private array $fileContentsByPath = [];
 
     // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition
@@ -185,7 +186,9 @@ CODE_SAMPLE
 
     private function getCurrentFileContents(): string
     {
-        return $this->currentFileContents ??= (string) file_get_contents($this->file->getFilePath());
+        $filePath = $this->file->getFilePath();
+
+        return $this->fileContentsByPath[$filePath] ??= (string) file_get_contents($filePath);
     }
 
     private function unwrapRedundantExpectation(MethodCall $methodCall, ExpectationSemanticAnalysis $analysis): Expr
