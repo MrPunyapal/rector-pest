@@ -4,6 +4,14 @@ it('uses the test case instance', static function (): void {
     expect($this->app)->not->toBeNull();
 });
 
+beforeAll(static function (): void {
+    expect($this->app)->not->toBeNull();
+});
+
+afterAll(static function (): void {
+    expect($this->app)->not->toBeNull();
+});
+
 describe('nested hooks', static function (): void {
     beforeEach(static function (): void {
         expect($this->app)->not->toBeNull();
@@ -54,6 +62,14 @@ array_map(static function (string $value): string {
 <?php
 
 it('uses the test case instance', function (): void {
+    expect($this->app)->not->toBeNull();
+});
+
+beforeAll(static function (): void {
+    expect($this->app)->not->toBeNull();
+});
+
+afterAll(static function (): void {
     expect($this->app)->not->toBeNull();
 });
 
