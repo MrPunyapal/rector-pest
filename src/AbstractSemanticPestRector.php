@@ -47,4 +47,37 @@ abstract class AbstractSemanticPestRector extends AbstractRector
     {
         return $this->getSemanticIssue()->confidence;
     }
+
+    /**
+     * @return list<string>
+     */
+    final public function getSemanticTags(): array
+    {
+        return $this->getSemanticIssue()->tags;
+    }
+
+    final public function getSemanticMatcherCategory(): ?string
+    {
+        return $this->getSemanticIssue()->matcherCategory;
+    }
+
+    final public function getSemanticAutofixStrategy(): string
+    {
+        return $this->getSemanticIssue()->autofixStrategy;
+    }
+
+    final public function getSemanticInteroperabilityVersion(): string
+    {
+        return $this->getSemanticIssue()->interoperabilityVersion;
+    }
+
+    final public function getSemanticIssueFamily(): ?string
+    {
+        return $this->getSemanticIssue()->issueFamily;
+    }
+
+    final public function getSemanticGroup(): ?string
+    {
+        return $this->getSemanticIssue()->semanticGroup;
+    }
 }

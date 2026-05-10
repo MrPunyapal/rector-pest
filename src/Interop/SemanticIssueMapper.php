@@ -34,6 +34,16 @@ final readonly class SemanticIssueMapper
     ) {
     }
 
+    public function supportsDiagnostic(string $diagnosticIdentifier): bool
+    {
+        return $this->diagnosticResolver->supports($diagnosticIdentifier);
+    }
+
+    public function supportsIssue(string $issueIdentifier): bool
+    {
+        return PestSemanticIssues::get($issueIdentifier) instanceof PestSemanticIssue;
+    }
+
     /**
      * @return list<SemanticFixCandidate>
      */
@@ -44,25 +54,25 @@ final readonly class SemanticIssueMapper
             return [];
         }
 
-        return $this->resolveCandidatesForIssue($issue->identifier, $diagnosticIdentifier);
+        return $this->resolveCandidatesForIssue($issue, $diagnosticIdentifier);
     }
 
     /**
      * @return list<SemanticFixCandidate>
      */
-    public function resolveCandidatesForIssue(string $issueIdentifier, ?string $matchedDiagnosticIdentifier = null): array
+    public function resolveCandidatesForIssue(PestSemanticIssue|string $issue, ?string $matchedDiagnosticIdentifier = null): array
     {
-        $issue = PestSemanticIssues::get($issueIdentifier);
-        if (!$issue instanceof PestSemanticIssue) {
+        $semanticIssue = is_string($issue) ? PestSemanticIssues::get($issue) : $issue;
+        if (! $semanticIssue instanceof PestSemanticIssue) {
             return [];
         }
 
-        $rectorClasses = self::RULE_MAP[$issueIdentifier] ?? [];
-        $diagnosticIdentifier = $matchedDiagnosticIdentifier ?? $issue->identifier;
+        $rectorClasses = self::RULE_MAP[$semanticIssue->identifier] ?? [];
+        $diagnosticIdentifier = $matchedDiagnosticIdentifier ?? $semanticIssue->canonicalDiagnosticIdentifier();
 
         return array_map(
-            static fn (string $rectorClass): SemanticFixCandidate => new SemanticFixCandidate(
-                $issue,
+            static fn (string $rectorClass): SemanticFixCandidate => SemanticFixCandidate::fromIssue(
+                $semanticIssue,
                 $rectorClass,
                 $diagnosticIdentifier,
             ),

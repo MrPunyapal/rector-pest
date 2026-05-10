@@ -8,7 +8,9 @@ use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\Rules\ConvertBeforeAllInDescribeRector;
 use RectorPest\Rules\FixInvalidRepeatValueRector;
 use RectorPest\Rules\RemoveRedundantLiteralTypeExpectationRector;
+use RectorPest\ValueObject\PestSemanticAutofixStrategy;
 use RectorPest\ValueObject\PestSemanticFixability;
+use RectorPest\ValueObject\PestSemanticIssue;
 use RectorPest\ValueObject\PestSemanticSafetyLevel;
 use RectorPest\ValueObject\PestSemanticSeverity;
 
@@ -16,20 +18,28 @@ it('exposes canonical metadata for invalid repeat values', function (): void {
     $issue = PestSemanticIssues::invalidRepeatValue();
 
     expect($issue->identifier)->toBe(PestSemanticIssues::INVALID_REPEAT_VALUE);
+    expect($issue->allDiagnosticIdentifiers())->toContain('pest.execution.invalidRepeatValue');
+    expect($issue->allDiagnosticIdentifiers())->toContain('pest.repeatInvalidValue');
     expect($issue->defaultMessage)->toContain('greater than 0');
     expect($issue->severity)->toBe(PestSemanticSeverity::ERROR);
     expect($issue->fixability)->toBe(PestSemanticFixability::AUTO_FIXABLE);
     expect($issue->safetyLevel)->toBe(PestSemanticSafetyLevel::SAFE);
+    expect($issue->autofixStrategy)->toBe(PestSemanticAutofixStrategy::LITERAL_NORMALIZATION);
+    expect($issue->issueFamily)->toBe('execution');
+    expect($issue->semanticGroup)->toBe('repeat');
+    expect($issue->interoperabilityVersion)->toBe('1.0.0');
     expect($issue->isAutoFixable())->toBeTrue();
 });
 
 it('resolves machine-readable diagnostics to canonical semantic issues', function (): void {
     $resolver = new PestDiagnosticResolver();
 
-    $issue = $resolver->resolve(PestSemanticIssues::AFTER_ALL_IN_DESCRIBE);
+    $issue = $resolver->resolve('pest.afterAllInDescribe');
 
     expect($issue)->not->toBeNull();
     expect($issue?->identifier)->toBe(PestSemanticIssues::AFTER_ALL_IN_DESCRIBE);
+    expect($resolver->canonicalize('pest.afterAllInDescribe'))->toBe(PestSemanticIssues::AFTER_ALL_IN_DESCRIBE);
+    expect($resolver->supports(PestSemanticIssues::AFTER_ALL_IN_DESCRIBE))->toBeTrue();
 });
 
 it('maps diagnostics to semantic fix candidates', function (): void {
@@ -48,10 +58,17 @@ it('maps diagnostics to semantic fix candidates', function (): void {
     expect($repeatCandidates)->toHaveCount(1);
     expect($repeatCandidates[0]->rectorClass)->toBe(FixInvalidRepeatValueRector::class);
     expect($repeatCandidates[0]->issue->identifier)->toBe(PestSemanticIssues::INVALID_REPEAT_VALUE);
+    expect($repeatCandidates[0]->toArray())->toMatchArray([
+        'issueIdentifier' => PestSemanticIssues::INVALID_REPEAT_VALUE,
+        'matchedDiagnosticIdentifier' => PestSemanticIssues::INVALID_REPEAT_VALUE,
+        'autofixStrategy' => PestSemanticAutofixStrategy::LITERAL_NORMALIZATION,
+        'interoperabilityVersion' => '1.0.0',
+    ]);
 
     expect($redundantCandidates)->toHaveCount(1);
     expect($redundantCandidates[0]->rectorClass)->toBe(RemoveRedundantLiteralTypeExpectationRector::class);
     expect($redundantCandidates[0]->issue->fixability)->toBe(PestSemanticFixability::ASSISTED);
+    expect($redundantCandidates[0]->isAutoFixable())->toBeFalse();
 
     expect($emptyCandidates)->toBe([]);
     expect($impossibleCandidates)->toBe([]);
@@ -63,4 +80,33 @@ it('keeps empty test closures as informational diagnostics only', function (): v
     expect($issue->fixability)->toBe(PestSemanticFixability::INFORMATIONAL);
     expect($issue->safetyLevel)->toBe(PestSemanticSafetyLevel::REVIEW_REQUIRED);
     expect($issue->isAutoFixable())->toBeFalse();
+    expect($issue->toArray())->toMatchArray([
+        'identifier' => PestSemanticIssues::EMPTY_TEST_CLOSURE,
+        'autofixStrategy' => PestSemanticAutofixStrategy::NONE,
+        'issueFamily' => 'test-definition',
+        'semanticGroup' => 'empty-closure',
+    ]);
+});
+
+it('keeps resolver and mapper stable across canonical and legacy identifiers', function (): void {
+    $resolver = new PestDiagnosticResolver();
+    $mapper = new SemanticIssueMapper();
+
+    $resolvedIssues = $resolver->resolveAll([
+        PestSemanticIssues::STATIC_TEST_CLOSURE,
+        'pest.staticTestClosure',
+        PestSemanticIssues::REDUNDANT_EXPECTATION,
+        'pest.redundantExpectation',
+    ]);
+
+    expect(array_map(static fn (PestSemanticIssue $issue): string => $issue->identifier, $resolvedIssues))
+        ->toBe([
+            PestSemanticIssues::STATIC_TEST_CLOSURE,
+            PestSemanticIssues::REDUNDANT_EXPECTATION,
+        ]);
+
+    expect($mapper->supportsDiagnostic('pest.staticTestClosure'))->toBeTrue();
+    expect($mapper->supportsIssue(PestSemanticIssues::REDUNDANT_EXPECTATION))->toBeTrue();
+    expect($resolver->supportedDiagnosticIdentifiers())->toContain('pest.afterAllInDescribe');
+    expect($resolver->supportedDiagnosticIdentifiers())->toContain(PestSemanticIssues::AFTER_ALL_IN_DESCRIBE);
 });
