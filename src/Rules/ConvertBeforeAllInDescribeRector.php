@@ -8,8 +8,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
-use PhpParser\Node\Stmt\Expression;
 use RectorPest\AbstractSemanticPestRector;
+use RectorPest\Analyzer\HookSemanticAnalyzer;
 use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\Support\PestFunctionDetector;
 use RectorPest\ValueObject\PestSemanticIssue;
@@ -86,51 +86,22 @@ CODE_SAMPLE
             return null;
         }
 
-        return $this->refactorDescribeClosure($closure) ? $node : null;
-    }
+        $invalidHooks = HookSemanticAnalyzer::findInvalidDescribeHooks($closure, self::HOOK_REPLACEMENTS);
 
-    private function refactorDescribeClosure(Closure $closure): bool
-    {
-        $hasChanged = false;
-
-        foreach ($closure->stmts as $stmt) {
-            if (! $stmt instanceof Expression) {
-                continue;
-            }
-
-            if (! $stmt->expr instanceof FuncCall) {
-                continue;
-            }
-
-            $call = $stmt->expr;
-            if (! $call->name instanceof Name) {
-                continue;
-            }
-
-            $name = $call->name->toString();
-
-            if (isset(self::HOOK_REPLACEMENTS[$name])) {
-                $call->name = new Name(self::HOOK_REPLACEMENTS[$name]);
-                $hasChanged = true;
-
-                continue;
-            }
-
-            if ($name !== 'describe') {
-                continue;
-            }
-
-            $nestedClosure = PestFunctionDetector::extractClosure($call);
-
-            if (! $nestedClosure instanceof Closure) {
-                continue;
-            }
-
-            if ($this->refactorDescribeClosure($nestedClosure)) {
-                $hasChanged = true;
-            }
+        if ($invalidHooks === []) {
+            return null;
         }
 
-        return $hasChanged;
+        foreach ($invalidHooks as $invalidHook) {
+            $name = PestFunctionDetector::getFunctionName($invalidHook);
+
+            if ($name === null) {
+                continue;
+            }
+
+            $invalidHook->name = new Name(self::HOOK_REPLACEMENTS[$name]);
+        }
+
+        return $node;
     }
 }

@@ -14,7 +14,7 @@ use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 /**
- * Removes unnecessary static modifiers from Pest callbacks.
+ * Removes static modifiers from Pest callbacks when instance binding is required.
  */
 final class RemoveStaticTestClosureRector extends AbstractSemanticPestRector
 {
@@ -22,7 +22,7 @@ final class RemoveStaticTestClosureRector extends AbstractSemanticPestRector
     public function getRuleDefinition(): RuleDefinition
     {
         return new RuleDefinition(
-            'Removes static from Pest test and hook callbacks',
+            'Removes static from Pest test and hook callbacks that use the test case instance',
             [
                 new CodeSample(
                     <<<'CODE_SAMPLE'
@@ -67,6 +67,10 @@ CODE_SAMPLE
 
         $closure = PestFunctionDetector::extractClosure($node);
         if ($closure === null || ! $closure->static) {
+            return null;
+        }
+
+        if (! PestFunctionDetector::closureUsesThis($closure)) {
             return null;
         }
 

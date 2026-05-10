@@ -6,6 +6,8 @@ it('uses the test case instance', static function (): void {
 
 describe('nested hooks', static function (): void {
     beforeEach(static function (): void {
+        expect($this->app)->not->toBeNull();
+
         expect(['first', 'second'])
             ->sequence(
                 static fn ($value) => $value->toBe('first'),
@@ -37,8 +39,10 @@ it('uses the test case instance', function (): void {
     expect($this->app)->not->toBeNull();
 });
 
-describe('nested hooks', function (): void {
+describe('nested hooks', static function (): void {
     beforeEach(function (): void {
+        expect($this->app)->not->toBeNull();
+
         expect(['first', 'second'])
             ->sequence(
                 static fn ($value) => $value->toBe('first'),
@@ -46,7 +50,7 @@ describe('nested hooks', function (): void {
             );
     });
 
-    it('keeps chained expectations intact', function (): void {
+    it('keeps chained expectations intact', static function (): void {
         expect('pest')
             ->toBeString()
             ->and('rector')

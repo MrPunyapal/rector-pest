@@ -8,7 +8,6 @@ use RectorPest\AbstractSemanticPestRector;
 use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\Rules\ConvertBeforeAllInDescribeRector;
 use RectorPest\Rules\FixInvalidRepeatValueRector;
-use RectorPest\Rules\RemoveEmptyTestClosureRector;
 use RectorPest\Rules\RemoveStaticTestClosureRector;
 use RectorPest\ValueObject\PestSemanticIssue;
 use RectorPest\ValueObject\SemanticFixCandidate;
@@ -25,7 +24,6 @@ final readonly class SemanticIssueMapper
         PestSemanticIssues::STATIC_TEST_CLOSURE => [RemoveStaticTestClosureRector::class],
         PestSemanticIssues::BEFORE_ALL_IN_DESCRIBE => [ConvertBeforeAllInDescribeRector::class],
         PestSemanticIssues::AFTER_ALL_IN_DESCRIBE => [ConvertBeforeAllInDescribeRector::class],
-        PestSemanticIssues::EMPTY_TEST_CLOSURE => [RemoveEmptyTestClosureRector::class],
         PestSemanticIssues::INVALID_REPEAT_VALUE => [FixInvalidRepeatValueRector::class],
     ];
 

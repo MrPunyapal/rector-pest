@@ -116,14 +116,14 @@ final class PestSemanticIssues
     {
         return new PestSemanticIssue(
             self::EMPTY_TEST_CLOSURE,
-            'Test closure has an empty body.',
+            'Test closure has an empty body and may indicate an unfinished test.',
             [self::EMPTY_TEST_CLOSURE],
             PestSemanticCategory::TEST_DEFINITION,
-            PestSemanticFixCategory::CLEANUP,
-            PestSemanticFixability::AUTO_FIXABLE,
+            PestSemanticFixCategory::ASSISTANCE,
+            PestSemanticFixability::INFORMATIONAL,
             PestSemanticSeverity::WARNING,
             PestSemanticSafetyLevel::REVIEW_REQUIRED,
-            PestSemanticConfidence::LOW,
+            PestSemanticConfidence::HIGH,
         );
     }
 

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace RectorPest\Support;
 
+use PhpParser\Node;
 use PhpParser\Node\Expr\ArrowFunction;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
 
@@ -108,5 +110,53 @@ final class PestFunctionDetector
         }
 
         return null;
+    }
+
+    public static function closureUsesThis(Closure|ArrowFunction $closure): bool
+    {
+        foreach ($closure->getSubNodeNames() as $subNodeName) {
+            if (self::subNodeUsesThis($closure->{$subNodeName})) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function subNodeUsesThis(mixed $subNode): bool
+    {
+        if ($subNode instanceof Variable && $subNode->name === 'this') {
+            return true;
+        }
+
+        if ($subNode instanceof Closure) {
+            return false;
+        }
+
+        if ($subNode instanceof ArrowFunction) {
+            return self::closureUsesThis($subNode);
+        }
+
+        if ($subNode instanceof Node) {
+            foreach ($subNode->getSubNodeNames() as $subNodeName) {
+                if (self::subNodeUsesThis($subNode->{$subNodeName})) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        if (! is_array($subNode)) {
+            return false;
+        }
+
+        foreach ($subNode as $item) {
+            if (self::subNodeUsesThis($item)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

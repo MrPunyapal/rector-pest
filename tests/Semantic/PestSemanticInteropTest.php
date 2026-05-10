@@ -36,6 +36,7 @@ it('maps diagnostics to semantic fix candidates', function (): void {
 
     $describeCandidates = $mapper->resolveCandidatesForDiagnostic(PestSemanticIssues::BEFORE_ALL_IN_DESCRIBE);
     $repeatCandidates = $mapper->resolveCandidatesForDiagnostic(PestSemanticIssues::INVALID_REPEAT_VALUE);
+    $emptyCandidates = $mapper->resolveCandidatesForDiagnostic(PestSemanticIssues::EMPTY_TEST_CLOSURE);
 
     expect($describeCandidates)->toHaveCount(1);
     expect($describeCandidates[0]->rectorClass)->toBe(ConvertBeforeAllInDescribeRector::class);
@@ -44,4 +45,14 @@ it('maps diagnostics to semantic fix candidates', function (): void {
     expect($repeatCandidates)->toHaveCount(1);
     expect($repeatCandidates[0]->rectorClass)->toBe(FixInvalidRepeatValueRector::class);
     expect($repeatCandidates[0]->issue->identifier)->toBe(PestSemanticIssues::INVALID_REPEAT_VALUE);
+
+    expect($emptyCandidates)->toBe([]);
+});
+
+it('keeps empty test closures as informational diagnostics only', function (): void {
+    $issue = PestSemanticIssues::emptyTestClosure();
+
+    expect($issue->fixability)->toBe(PestSemanticFixability::INFORMATIONAL);
+    expect($issue->safetyLevel)->toBe(PestSemanticSafetyLevel::REVIEW_REQUIRED);
+    expect($issue->isAutoFixable())->toBeFalse();
 });

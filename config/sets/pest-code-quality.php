@@ -6,7 +6,6 @@ use Rector\Config\RectorConfig;
 use RectorPest\Rules\ConvertBeforeAllInDescribeRector;
 use RectorPest\Rules\FixInvalidRepeatValueRector;
 use RectorPest\Rules\RemoveDebugExpectationsRector;
-use RectorPest\Rules\RemoveEmptyTestClosureRector;
 use RectorPest\Rules\RemoveOnlyRector;
 use RectorPest\Rules\RemoveStaticTestClosureRector;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
@@ -76,7 +75,6 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rule(RemoveOnlyRector::class);
     $rectorConfig->rule(RemoveDebugExpectationsRector::class);
     $rectorConfig->rule(RemoveStaticTestClosureRector::class);
-    $rectorConfig->rule(RemoveEmptyTestClosureRector::class);
     $rectorConfig->rule(FixInvalidRepeatValueRector::class);
 
     // Boolean and negation simplification

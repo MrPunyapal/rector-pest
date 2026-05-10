@@ -1,4 +1,4 @@
-# 70 Rules Overview
+# 69 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -185,19 +185,6 @@ Removes debug method calls (dump, dd, ray) from expect chains
 
 <br>
 
-## RemoveEmptyTestClosureRector
-
-Replaces empty Pest test closures with the shorter pending-style test form
-
-- class: [`RectorPest\Rules\RemoveEmptyTestClosureRector`](../src/Rules/RemoveEmptyTestClosureRector.php)
-
-```diff
--it('works', function (): void {});
-+it('works');
-```
-
-<br>
-
 ## RemoveOnlyRector
 
 Removes `only()` from all tests
@@ -213,7 +200,7 @@ Removes `only()` from all tests
 
 ## RemoveStaticTestClosureRector
 
-Removes static from Pest test and hook callbacks
+Removes static from Pest test and hook callbacks that use the test case instance
 
 - class: [`RectorPest\Rules\RemoveStaticTestClosureRector`](../src/Rules/RemoveStaticTestClosureRector.php)
 

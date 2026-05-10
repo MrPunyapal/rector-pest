@@ -6,12 +6,12 @@ namespace RectorPest\Rules;
 
 use PhpParser\Node;
 use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\UnaryMinus;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Scalar\Int_;
 use RectorPest\AbstractSemanticPestRector;
+use RectorPest\Analyzer\PestChainAnalyzer;
 use RectorPest\Registry\PestSemanticIssues;
 use RectorPest\ValueObject\PestSemanticIssue;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
@@ -69,7 +69,7 @@ CODE_SAMPLE
             return null;
         }
 
-        if (! $this->isPestTestChain($node)) {
+        if (! PestChainAnalyzer::isPestTestChain($node)) {
             return null;
         }
 
@@ -104,20 +104,5 @@ CODE_SAMPLE
         $arg->value = new Int_(1);
 
         return true;
-    }
-
-    private function isPestTestChain(MethodCall $methodCall): bool
-    {
-        $current = $methodCall->var;
-
-        while ($current instanceof MethodCall) {
-            $current = $current->var;
-        }
-
-        if (! $current instanceof FuncCall) {
-            return false;
-        }
-
-        return $this->isNames($current, ['test', 'it', 'todo']);
     }
 }

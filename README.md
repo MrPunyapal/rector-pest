@@ -22,7 +22,7 @@ composer require --dev mrpunyapal/rector-pest
 
 Improve your Pest tests with better readability and expressiveness.
 
-The code-quality set also fixes a small set of PestStan-aligned anti-patterns, including static Pest callbacks, invalid `beforeAll()`/`afterAll()` usage inside `describe()` blocks, empty test closures, and invalid literal `repeat()` counts.
+The code-quality set also fixes a small set of PestStan-aligned anti-patterns, including static Pest callbacks that actually require instance binding, invalid `beforeAll()`/`afterAll()` usage inside `describe()` blocks, and invalid literal `repeat()` counts. Empty test closures remain modeled in the semantic registry, but they are not auto-fixed because Pest reports omitted callbacks differently from explicit empty closures.
 
 ```php
 // rector.php
