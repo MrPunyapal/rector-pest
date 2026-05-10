@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 use RectorPest\Rules\RemoveDebugExpectationsRector;
 use RectorPest\Rules\RemoveOnlyRector;
+use RectorPest\Rules\RemoveStaticFromPestClosuresRector;
 use RectorPest\Rules\SimplifyComparisonExpectationsRector;
 use RectorPest\Rules\SimplifyExpectNotRector;
 use RectorPest\Rules\SimplifyFilesystemMatchersRector;
@@ -70,6 +71,7 @@ return static function (RectorConfig $rectorConfig): void {
     // Test cleanup
     $rectorConfig->rule(RemoveOnlyRector::class);
     $rectorConfig->rule(RemoveDebugExpectationsRector::class);
+    $rectorConfig->rule(RemoveStaticFromPestClosuresRector::class);
 
     // Boolean and negation simplification
     $rectorConfig->rule(SimplifyExpectNotRector::class);
