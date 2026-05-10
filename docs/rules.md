@@ -1,4 +1,4 @@
-# 68 Rules Overview
+# 70 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -101,6 +101,23 @@ Converts PHPUnit assertion method calls to Pest `expect()` chains
 
 <br>
 
+## ConvertBeforeAllInDescribeRector
+
+Replaces invalid `beforeAll()` and `afterAll()` hooks inside `describe()` with `beforeEach()` and `afterEach()`
+
+- class: [`RectorPest\Rules\ConvertBeforeAllInDescribeRector`](../src/Rules/ConvertBeforeAllInDescribeRector.php)
+
+```diff
+ describe('users', function (): void {
+-    beforeAll(function (): void {
++    beforeEach(function (): void {
+         refreshDatabase();
+     });
+ });
+```
+
+<br>
+
 ## ConvertExpectExceptionToThrowRector
 
 Converts `expectException()` and `expectExceptionMessage()` patterns to `expect()->toThrow()`
@@ -138,6 +155,21 @@ Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value as
 
 <br>
 
+## FixInvalidRepeatValueRector
+
+Normalizes invalid literal `repeat()` counts to 1
+
+- class: [`RectorPest\Rules\FixInvalidRepeatValueRector`](../src/Rules/FixInvalidRepeatValueRector.php)
+
+```diff
+ it('retries once', function (): void {
+     expect(true)->toBeTrue();
+-})->repeat(0);
++})->repeat(1);
+```
+
+<br>
+
 ## RemoveDebugExpectationsRector
 
 Removes debug method calls (dump, dd, ray) from expect chains
@@ -149,6 +181,19 @@ Removes debug method calls (dump, dd, ray) from expect chains
 -expect($value)->ray()->toBe(42);
 +expect($user)->toBeInstanceOf(User::class);
 +expect($value)->toBe(42);
+```
+
+<br>
+
+## RemoveEmptyTestClosureRector
+
+Replaces empty Pest test closures with the shorter pending-style test form
+
+- class: [`RectorPest\Rules\RemoveEmptyTestClosureRector`](../src/Rules/RemoveEmptyTestClosureRector.php)
+
+```diff
+-it('works', function (): void {});
++it('works');
 ```
 
 <br>
@@ -166,11 +211,11 @@ Removes `only()` from all tests
 
 <br>
 
-## RemoveStaticFromPestClosuresRector
+## RemoveStaticTestClosureRector
 
 Removes static from Pest test and hook callbacks
 
-- class: [`RectorPest\Rules\RemoveStaticFromPestClosuresRector`](../src/Rules/RemoveStaticFromPestClosuresRector.php)
+- class: [`RectorPest\Rules\RemoveStaticTestClosureRector`](../src/Rules/RemoveStaticTestClosureRector.php)
 
 ```diff
 -it('uses the test case instance', static function (): void {
@@ -399,23 +444,6 @@ Converts expect($page->value($selector))->toBe($value) to `$page->assertValue($s
 -expect($page->value('input[name=email]'))->not->toBe('wrong@example.com');
 +$page->assertValue('input[name=email]', 'test@example.com');
 +$page->assertValueIsNot('input[name=email]', 'wrong@example.com');
-```
-
-<br>
-
-## UseEachHooksInDescribeRector
-
-Replaces invalid `beforeAll()` and `afterAll()` hooks inside `describe()` with `beforeEach()` and `afterEach()`
-
-- class: [`RectorPest\Rules\UseEachHooksInDescribeRector`](../src/Rules/UseEachHooksInDescribeRector.php)
-
-```diff
- describe('users', function (): void {
--    beforeAll(function (): void {
-+    beforeEach(function (): void {
-         refreshDatabase();
-     });
- });
 ```
 
 <br>

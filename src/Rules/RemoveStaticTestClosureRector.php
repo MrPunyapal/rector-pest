@@ -5,33 +5,19 @@ declare(strict_types=1);
 namespace RectorPest\Rules;
 
 use PhpParser\Node;
-use PhpParser\Node\Arg;
-use PhpParser\Node\Expr\ArrowFunction;
-use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
-use RectorPest\AbstractRector;
+use RectorPest\AbstractSemanticPestRector;
+use RectorPest\Support\PestFunctionDetector;
+use RectorPest\ValueObject\PestSemanticCategory;
+use RectorPest\ValueObject\PestSemanticIssue;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 /**
  * Removes unnecessary static modifiers from Pest callbacks.
  */
-final class RemoveStaticFromPestClosuresRector extends AbstractRector
+final class RemoveStaticTestClosureRector extends AbstractSemanticPestRector
 {
-    /**
-     * @var string[]
-     */
-    private const PEST_CALLBACK_FUNCTIONS = [
-        'test',
-        'it',
-        'describe',
-        'todo',
-        'beforeEach',
-        'afterEach',
-        'beforeAll',
-        'afterAll',
-    ];
-
     // @codeCoverageIgnoreStart
     public function getRuleDefinition(): RuleDefinition
     {
@@ -57,6 +43,15 @@ CODE_SAMPLE
 
     // @codeCoverageIgnoreEnd
 
+    public function getSemanticIssue(): PestSemanticIssue
+    {
+        return new PestSemanticIssue(
+            ['pest.staticTestClosure'],
+            PestSemanticCategory::TEST_DEFINITION,
+            'Static Pest closures should be converted to instance-aware callbacks.',
+        );
+    }
+
     /**
      * @return array<class-string<Node>>
      */
@@ -70,37 +65,17 @@ CODE_SAMPLE
      */
     public function refactor(Node $node): ?Node
     {
-        if (! $this->isNames($node, self::PEST_CALLBACK_FUNCTIONS)) {
+        if (PestFunctionDetector::getFunctionName($node) === null) {
             return null;
         }
 
-        $hasChanged = false;
-
-        foreach ($node->args as $arg) {
-            if (! $arg instanceof Arg) {
-                continue;
-            }
-
-            if ($this->removeStaticModifier($arg->value)) {
-                $hasChanged = true;
-            }
+        $closure = PestFunctionDetector::extractClosure($node);
+        if ($closure === null || ! $closure->static) {
+            return null;
         }
 
-        return $hasChanged ? $node : null;
-    }
+        $closure->static = false;
 
-    private function removeStaticModifier(Node $node): bool
-    {
-        if (! $node instanceof Closure && ! $node instanceof ArrowFunction) {
-            return false;
-        }
-
-        if (! $node->static) {
-            return false;
-        }
-
-        $node->static = false;
-
-        return true;
+        return $node;
     }
 }

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use RectorPest\Rules\UseEachHooksInDescribeRector;
+use RectorPest\Rules\RemoveEmptyTestClosureRector;
 
 return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->rule(UseEachHooksInDescribeRector::class);
+    $rectorConfig->rule(RemoveEmptyTestClosureRector::class);
 };

@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace RectorPest\Rules;
 
-use PestStan\PestFunctionDetector;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Expression;
-use RectorPest\AbstractRector;
+use RectorPest\AbstractSemanticPestRector;
+use RectorPest\Support\PestFunctionDetector;
+use RectorPest\ValueObject\PestSemanticCategory;
+use RectorPest\ValueObject\PestSemanticIssue;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
 use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 
 /**
  * Replaces invalid describe-scoped beforeAll/afterAll hooks with supported per-test hooks.
  */
-final class UseEachHooksInDescribeRector extends AbstractRector
+final class ConvertBeforeAllInDescribeRector extends AbstractSemanticPestRector
 {
     /**
      * @var array<string, string>
@@ -55,6 +57,15 @@ CODE_SAMPLE
     }
 
     // @codeCoverageIgnoreEnd
+
+    public function getSemanticIssue(): PestSemanticIssue
+    {
+        return new PestSemanticIssue(
+            ['pest.beforeAllInDescribe', 'pest.afterAllInDescribe'],
+            PestSemanticCategory::LIFECYCLE,
+            'Describe-scoped all-hooks should be converted to each-hooks.',
+        );
+    }
 
     /**
      * @return array<class-string<Node>>
