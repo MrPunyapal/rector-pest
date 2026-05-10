@@ -22,6 +22,8 @@ composer require --dev mrpunyapal/rector-pest
 
 Improve your Pest tests with better readability and expressiveness.
 
+The code-quality set also fixes a small set of PestStan-detected anti-patterns, including static Pest callbacks and invalid `beforeAll()`/`afterAll()` usage inside `describe()` blocks. Invalid `repeat()` counts remain detection-only in PestStan for now because there is no deterministic auto-fix that preserves intent.
+
 ```php
 // rector.php
 use RectorPest\Set\PestSetList;

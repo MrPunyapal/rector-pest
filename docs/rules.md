@@ -1,4 +1,4 @@
-# 66 Rules Overview
+# 68 Rules Overview
 
 ## ChainExpectCallsRector
 
@@ -162,6 +162,21 @@ Removes `only()` from all tests
 ```diff
 -test()->only();
 +test();
+```
+
+<br>
+
+## RemoveStaticFromPestClosuresRector
+
+Removes static from Pest test and hook callbacks
+
+- class: [`RectorPest\Rules\RemoveStaticFromPestClosuresRector`](../src/Rules/RemoveStaticFromPestClosuresRector.php)
+
+```diff
+-it('uses the test case instance', static function (): void {
++it('uses the test case instance', function (): void {
+     expect($this)->not->toBeNull();
+ });
 ```
 
 <br>
@@ -384,6 +399,23 @@ Converts expect($page->value($selector))->toBe($value) to `$page->assertValue($s
 -expect($page->value('input[name=email]'))->not->toBe('wrong@example.com');
 +$page->assertValue('input[name=email]', 'test@example.com');
 +$page->assertValueIsNot('input[name=email]', 'wrong@example.com');
+```
+
+<br>
+
+## UseEachHooksInDescribeRector
+
+Replaces invalid `beforeAll()` and `afterAll()` hooks inside `describe()` with `beforeEach()` and `afterEach()`
+
+- class: [`RectorPest\Rules\UseEachHooksInDescribeRector`](../src/Rules/UseEachHooksInDescribeRector.php)
+
+```diff
+ describe('users', function (): void {
+-    beforeAll(function (): void {
++    beforeEach(function (): void {
+         refreshDatabase();
+     });
+ });
 ```
 
 <br>
