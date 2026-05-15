@@ -9,7 +9,7 @@ use Rector\Config\RectorConfig;
  * Import this in your set configurations
  */
 return static function (RectorConfig $rectorConfig): void {
-    $configPath= "vendor".DIRECTORY_SEPARATOR."mrpunyapal".DIRECTORY_SEPARATOR."peststan".DIRECTORY_SEPARATOR."extension.neon";
+    $configPath = "vendor" . DIRECTORY_SEPARATOR . "mrpunyapal" . DIRECTORY_SEPARATOR . "peststan" . DIRECTORY_SEPARATOR . "extension.neon";
 
     if (file_exists($configPath)) {
         $rectorConfig->phpstanConfig($configPath);
