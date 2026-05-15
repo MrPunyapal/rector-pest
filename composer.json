@@ -64,6 +64,7 @@
         "test:types": "phpstan analyse --ansi",
         "test:unit": "pest --parallel",
         "test": [
+            "Composer\\Config::disableProcessTimeout",
             "@test:lint",
             "@test:types",
             "@test:unit"

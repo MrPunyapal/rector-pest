@@ -18,7 +18,6 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Param;
 use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Stmt\Expression;
-use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\PhpParser\Enum\NodeGroup;
 use RectorPest\AbstractRector;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
@@ -62,17 +61,13 @@ CODE_SAMPLE
         return NodeGroup::STMTS_AWARE;
     }
 
-    /**
-     * @param StmtsAwareInterface&Node $node
-     */
     public function refactor(Node $node): ?Node
     {
-        if (! property_exists($node, 'stmts') || $node->stmts === null) {
+        $stmts = $this->getStatements($node);
+        if ($stmts === null) {
             return null;
         }
 
-        /** @var array<Node\Stmt> $stmts */
-        $stmts = $node->stmts;
         $hasChanged = false;
         $newStmts = [];
         $count = count($stmts);
@@ -105,7 +100,7 @@ CODE_SAMPLE
             return null;
         }
 
-        $node->stmts = $newStmts;
+        $this->setStatements($node, $newStmts);
 
         return $node;
     }

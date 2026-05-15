@@ -5,19 +5,41 @@ declare(strict_types=1);
 namespace RectorPest;
 
 use Pest\Expectation;
+use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Stmt\Block;
+use PhpParser\Node\Stmt\Case_;
+use PhpParser\Node\Stmt\Catch_;
+use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Declare_;
+use PhpParser\Node\Stmt\Do_;
+use PhpParser\Node\Stmt\Else_;
+use PhpParser\Node\Stmt\ElseIf_;
+use PhpParser\Node\Stmt\Finally_;
+use PhpParser\Node\Stmt\For_;
+use PhpParser\Node\Stmt\Foreach_;
+use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Stmt\If_;
+use PhpParser\Node\Stmt\Namespace_;
+use PhpParser\Node\Stmt\TryCatch;
+use PhpParser\Node\Stmt\While_;
 use PhpParser\Node\VariadicPlaceholder;
+use Rector\PhpParser\Enum\NodeGroup;
+use Rector\PhpParser\Node\FileNode;
 use Rector\Rector\AbstractRector as BaseAbstractRector;
 use Symplify\RuleDocGenerator\Contract\DocumentedRuleInterface;
 
 /**
  * Base abstract class for all Pest rectors
  * Provides common helper methods for working with Pest's expect() chains
+ *
+ * @phpstan-type StmtsAwareNode Block|Closure|Case_|Catch_|ClassMethod|Declare_|Do_|Else_|ElseIf_|Finally_|For_|Foreach_|Function_|If_|Namespace_|TryCatch|While_|FileNode
  */
 abstract class AbstractRector extends BaseAbstractRector implements DocumentedRuleInterface
 {
@@ -216,5 +238,31 @@ abstract class AbstractRector extends BaseAbstractRector implements DocumentedRu
         }
 
         return $result;
+    }
+
+    /**
+     * @return array<Node\Stmt>|null
+     */
+    protected function getStatements(Node $node): ?array
+    {
+        if (! NodeGroup::isStmtAwareNode($node)) {
+            return null;
+        }
+
+        /** @var StmtsAwareNode $node */
+        return $node->stmts;
+    }
+
+    /**
+     * @param array<Node\Stmt> $stmts
+     */
+    protected function setStatements(Node $node, array $stmts): void
+    {
+        if (! NodeGroup::isStmtAwareNode($node)) {
+            return;
+        }
+
+        /** @var StmtsAwareNode $node */
+        $node->stmts = $stmts;
     }
 }

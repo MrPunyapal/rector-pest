@@ -11,7 +11,6 @@ use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Stmt\Expression;
-use Rector\Contract\PhpParser\Node\StmtsAwareInterface;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 use Rector\PhpParser\Enum\NodeGroup;
 use RectorPest\AbstractRector;
@@ -77,17 +76,13 @@ CODE_SAMPLE
         return NodeGroup::STMTS_AWARE;
     }
 
-    /**
-     * @param StmtsAwareInterface $node
-     */
     public function refactor(Node $node): ?Node
     {
-        if (! property_exists($node, 'stmts') || $node->stmts === null) {
+        $stmts = $this->getStatements($node);
+        if ($stmts === null) {
             return null;
         }
 
-        /** @var array<Node\Stmt> $stmts */
-        $stmts = $node->stmts;
         $hasChanged = false;
 
         do {
@@ -198,7 +193,7 @@ CODE_SAMPLE
             return null;
         }
 
-        $node->stmts = $stmts;
+        $this->setStatements($node, $stmts);
 
         return $node;
     }
