@@ -27,8 +27,8 @@
         "symplify/rule-doc-generator-contracts": "^11.2"
     },
     "require-dev": {
+        "laravel/pao": "^1.0",
         "laravel/pint": "^1.18",
-        "nunomaduro/pao": "^0.1.4",
         "pestphp/pest": "^3.0 || ^4.0",
         "phpstan/phpstan": "^2.1",
         "symplify/rule-doc-generator": "^12.2"
