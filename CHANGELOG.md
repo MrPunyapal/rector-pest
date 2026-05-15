@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.15](https://github.com/MrPunyapal/rector-pest/compare/0.2.14...0.2.15) - 2026-05-15
+
+### What's Changed
+
+* Feat: make peststan optional by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/42
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.14...0.2.15
+
 ## [0.2.14](https://github.com/MrPunyapal/rector-pest/compare/0.2.13...0.2.14) - 2026-05-10
 
 **Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.13...0.2.14
