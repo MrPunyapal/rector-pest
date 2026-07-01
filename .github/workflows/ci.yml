@@ -93,19 +93,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: vendor
-          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-
+          key: ${{ runner.os }}-php-${{ matrix.php }}-pest-${{ matrix.pest }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-pest-${{ matrix.pest }}-
 
       - name: Prepare dependencies
-        run: |
-          if [ "${{ matrix.php }}" == "8.2" ]; then
-            composer remove laravel/pao --dev --no-interaction --no-update
-          fi
+        if: matrix.pest == '3.0'
+        run: composer remove laravel/pao --dev --no-interaction --no-update
 
       - name: Install dependencies
         run: |
-            composer require "pestphp/pest:^${{ matrix.pest }}" --dev --no-interaction --no-update
-            composer install --no-interaction --prefer-dist
+          composer require "pestphp/pest:^${{ matrix.pest }}" --dev --no-interaction --no-update
+          composer install --no-interaction --prefer-dist
 
       - name: Run tests
         run: vendor/bin/pest
