@@ -1,0 +1,6 @@
+<?php
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Fixture\SampleTrait;
+
+pest()->use(RefreshDatabase::class, SampleTrait::class)->in('Feature');
