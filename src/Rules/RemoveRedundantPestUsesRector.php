@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\NodeTraverser;
@@ -102,9 +103,9 @@ CODE_SAMPLE
     }
 
     /**
-     * @param array<int, Node> $statements
+     * @param array<Stmt> $statements
      * @param array<string, true> $globallyAppliedClassMap
-     * @return array{0: array<int, Node>, 1: bool}
+     * @return array{0: array<Stmt>, 1: bool}
      */
     private function refactorStatements(array $statements, array $globallyAppliedClassMap): array
     {
@@ -112,7 +113,7 @@ CODE_SAMPLE
         $updatedStatements = [];
 
         foreach ($statements as $statement) {
-            if ($statement instanceof Namespace_ && is_array($statement->stmts)) {
+            if ($statement instanceof Namespace_) {
                 [$statement->stmts, $hasNamespaceChanged] = $this->refactorStatements($statement->stmts, $globallyAppliedClassMap);
                 $hasChanged = $hasChanged || $hasNamespaceChanged;
                 $updatedStatements[] = $statement;
@@ -127,7 +128,7 @@ CODE_SAMPLE
             }
 
             $updatedStatement = $this->refactorLocalUseStatement($statement, $globallyAppliedClassMap);
-            if ($updatedStatement === null) {
+            if (! $updatedStatement instanceof Expression) {
                 $hasChanged = true;
 
                 continue;
@@ -404,18 +405,13 @@ CODE_SAMPLE
                 return [];
             }
 
-            $className = $this->resolveClassName($classConstFetch->class);
-            if ($className === null) {
-                return [];
-            }
-
-            $classNames[] = $className;
+            $classNames[] = $this->resolveClassName($classConstFetch->class);
         }
 
         return $classNames;
     }
 
-    private function resolveClassName(Name $name): ?string
+    private function resolveClassName(Name $name): string
     {
         $resolvedName = $name->getAttribute('resolvedName');
         if ($resolvedName instanceof Name) {
