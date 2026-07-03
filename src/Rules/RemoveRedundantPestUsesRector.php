@@ -31,6 +31,12 @@ final class RemoveRedundantPestUsesRector extends AbstractRector
     /** @var array<string, list<array{classNames: list<string>, paths: list<string>}>> */
     private array $globalUsesByPestFile = [];
 
+    /** @var array<string, true> */
+    private const SUPPORTED_GLOBAL_CHAIN_METHODS = [
+        'extend' => true,
+        'use' => true,
+    ];
+
     public function __construct(
         private readonly SimplePhpParser $simplePhpParser
     ) {
@@ -80,6 +86,8 @@ CODE_SAMPLE
             return null;
         }
 
+        $globallyAppliedClassMap = array_fill_keys($globallyAppliedClasses, true);
+
         $hasChanged = false;
         $statements = [];
 
@@ -108,7 +116,7 @@ CODE_SAMPLE
                 }
 
                 $className = $this->resolveLocalClassName($arg->value);
-                if ($className === null || ! in_array($className, $globallyAppliedClasses, true)) {
+                if ($className === null || ! isset($globallyAppliedClassMap[$className])) {
                     $remainingArgs[] = $arg;
 
                     continue;
@@ -193,7 +201,7 @@ CODE_SAMPLE
         }
 
         $globalUses = $this->globalUsesByPestFile[$pestFile] ??= $this->parseGlobalUses($pestFile);
-        $classNames = [];
+        $classNameMap = [];
 
         foreach ($globalUses as $globalUse) {
             foreach ($globalUse['paths'] as $path) {
@@ -201,12 +209,15 @@ CODE_SAMPLE
                     continue;
                 }
 
-                $classNames = array_merge($classNames, $globalUse['classNames']);
+                foreach ($globalUse['classNames'] as $className) {
+                    $classNameMap[$className] = true;
+                }
+
                 break;
             }
         }
 
-        return array_values(array_unique($classNames));
+        return array_keys($classNameMap);
     }
 
     private function findTestDirectory(string $currentFilePath): ?string
@@ -273,7 +284,7 @@ CODE_SAMPLE
             return null;
         }
 
-        $classNames = [];
+        $classNameMap = [];
         $current = $outerCall->var;
 
         while ($current instanceof MethodCall) {
@@ -282,7 +293,7 @@ CODE_SAMPLE
             }
 
             $methodName = strtolower($current->name->toString());
-            if (! in_array($methodName, ['extend', 'use'], true)) {
+            if (! isset(self::SUPPORTED_GLOBAL_CHAIN_METHODS[$methodName])) {
                 return null;
             }
 
@@ -292,7 +303,9 @@ CODE_SAMPLE
             }
 
             if ($methodName === 'use') {
-                $classNames = array_merge($classNames, $configuredClassNames);
+                foreach ($configuredClassNames as $configuredClassName) {
+                    $classNameMap[$configuredClassName] = true;
+                }
             }
 
             $current = $current->var;
@@ -302,12 +315,12 @@ CODE_SAMPLE
             return null;
         }
 
-        if ($classNames === []) {
+        if ($classNameMap === []) {
             return null;
         }
 
         return [
-            'classNames' => array_values(array_unique($classNames)),
+            'classNames' => array_keys($classNameMap),
             'paths' => $paths,
         ];
     }
