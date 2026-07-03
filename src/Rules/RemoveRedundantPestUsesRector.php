@@ -14,6 +14,7 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use Rector\PhpParser\Node\FileNode;
@@ -35,6 +36,7 @@ final class RemoveRedundantPestUsesRector extends AbstractRector
     private const SUPPORTED_GLOBAL_CHAIN_METHODS = [
         'extend' => true,
         'use' => true,
+        'uses' => true,
     ];
 
     public function __construct(
@@ -86,61 +88,10 @@ CODE_SAMPLE
             return null;
         }
 
-        $globallyAppliedClassMap = array_fill_keys($globallyAppliedClasses, true);
-
-        $hasChanged = false;
-        $statements = [];
-
-        foreach ($node->stmts as $statement) {
-            if (! $statement instanceof Expression) {
-                $statements[] = $statement;
-
-                continue;
-            }
-
-            $localUse = $this->matchLocalUse($statement->expr);
-            if (! $localUse instanceof FuncCall && ! $localUse instanceof MethodCall) {
-                $statements[] = $statement;
-
-                continue;
-            }
-
-            $remainingArgs = [];
-            $hasRemovedArgument = false;
-
-            foreach ($localUse->args as $arg) {
-                if (! $arg instanceof Arg) {
-                    $remainingArgs[] = $arg;
-
-                    continue;
-                }
-
-                $className = $this->resolveLocalClassName($arg->value);
-                if ($className === null || ! isset($globallyAppliedClassMap[$className])) {
-                    $remainingArgs[] = $arg;
-
-                    continue;
-                }
-
-                $hasRemovedArgument = true;
-            }
-
-            if (! $hasRemovedArgument) {
-                $statements[] = $statement;
-
-                continue;
-            }
-
-            $hasChanged = true;
-
-            if ($remainingArgs === []) {
-                continue;
-            }
-
-            $localUse->args = $remainingArgs;
-            $statements[] = $statement;
-        }
-
+        [$statements, $hasChanged] = $this->refactorStatements(
+            $node->stmts,
+            array_fill_keys($globallyAppliedClasses, true)
+        );
         if (! $hasChanged) {
             return null;
         }
@@ -150,13 +101,103 @@ CODE_SAMPLE
         return $node;
     }
 
+    /**
+     * @param array<int, Node> $statements
+     * @param array<string, true> $globallyAppliedClassMap
+     * @return array{0: array<int, Node>, 1: bool}
+     */
+    private function refactorStatements(array $statements, array $globallyAppliedClassMap): array
+    {
+        $hasChanged = false;
+        $updatedStatements = [];
+
+        foreach ($statements as $statement) {
+            if ($statement instanceof Namespace_ && is_array($statement->stmts)) {
+                [$statement->stmts, $hasNamespaceChanged] = $this->refactorStatements($statement->stmts, $globallyAppliedClassMap);
+                $hasChanged = $hasChanged || $hasNamespaceChanged;
+                $updatedStatements[] = $statement;
+
+                continue;
+            }
+
+            if (! $statement instanceof Expression) {
+                $updatedStatements[] = $statement;
+
+                continue;
+            }
+
+            $updatedStatement = $this->refactorLocalUseStatement($statement, $globallyAppliedClassMap);
+            if ($updatedStatement === null) {
+                $hasChanged = true;
+
+                continue;
+            }
+
+            if ($updatedStatement !== $statement) {
+                $hasChanged = true;
+            }
+
+            $updatedStatements[] = $updatedStatement;
+        }
+
+        return [$updatedStatements, $hasChanged];
+    }
+
+    /**
+     * @param array<string, true> $globallyAppliedClassMap
+     */
+    private function refactorLocalUseStatement(Expression $statement, array $globallyAppliedClassMap): ?Expression
+    {
+        $localUse = $this->matchLocalUse($statement->expr);
+        if (! $localUse instanceof FuncCall && ! $localUse instanceof MethodCall) {
+            return $statement;
+        }
+
+        $remainingArgs = [];
+        $hasRemovedArgument = false;
+
+        foreach ($localUse->args as $arg) {
+            if (! $arg instanceof Arg) {
+                $remainingArgs[] = $arg;
+
+                continue;
+            }
+
+            $className = $this->resolveLocalClassName($arg->value);
+            if ($className === null || ! isset($globallyAppliedClassMap[$className])) {
+                $remainingArgs[] = $arg;
+
+                continue;
+            }
+
+            $hasRemovedArgument = true;
+        }
+
+        if (! $hasRemovedArgument) {
+            return $statement;
+        }
+
+        if ($remainingArgs === []) {
+            return null;
+        }
+
+        $localUse->args = $remainingArgs;
+
+        return $statement;
+    }
+
     private function matchLocalUse(Expr $expr): FuncCall|MethodCall|null
     {
         if ($expr instanceof FuncCall && $this->isName($expr, 'uses')) {
             return $expr;
         }
 
-        if (! $expr instanceof MethodCall || ! $this->isName($expr->name, 'use')) {
+        if (! $expr instanceof MethodCall || ! $expr->name instanceof Identifier) {
+            return null;
+        }
+
+        $methodName = strtolower($expr->name->toString());
+        if (! in_array($methodName, ['use', 'uses'], true)) {
             return null;
         }
 
@@ -177,7 +218,7 @@ CODE_SAMPLE
             return null;
         }
 
-        return $this->getName($expr->class);
+        return $this->resolveClassName($expr->class);
     }
 
     /**
@@ -284,6 +325,18 @@ CODE_SAMPLE
             return null;
         }
 
+        if ($outerCall->var instanceof FuncCall && $this->isName($outerCall->var, 'uses')) {
+            $classNames = $this->resolveStaticClassNames($outerCall->var->args);
+            if ($classNames === []) {
+                return null;
+            }
+
+            return [
+                'classNames' => $classNames,
+                'paths' => $paths,
+            ];
+        }
+
         $classNameMap = [];
         $current = $outerCall->var;
 
@@ -302,7 +355,7 @@ CODE_SAMPLE
                 return null;
             }
 
-            if ($methodName === 'use') {
+            if (in_array($methodName, ['use', 'uses'], true)) {
                 foreach ($configuredClassNames as $configuredClassName) {
                     $classNameMap[$configuredClassName] = true;
                 }
@@ -351,10 +404,25 @@ CODE_SAMPLE
                 return [];
             }
 
-            $classNames[] = ltrim($classConstFetch->class->toString(), '\\');
+            $className = $this->resolveClassName($classConstFetch->class);
+            if ($className === null) {
+                return [];
+            }
+
+            $classNames[] = $className;
         }
 
         return $classNames;
+    }
+
+    private function resolveClassName(Name $name): ?string
+    {
+        $resolvedName = $name->getAttribute('resolvedName');
+        if ($resolvedName instanceof Name) {
+            return ltrim($resolvedName->toString(), '\\');
+        }
+
+        return $this->getName($name);
     }
 
     /**
