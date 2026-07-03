@@ -48,12 +48,12 @@ final class RemoveRedundantPestUsesRector extends AbstractRector
 // pest()->use(RefreshDatabase::class)->in('Feature');
 
 // tests/Feature/UserTest.php
-uses(RefreshDatabase::class, SomeOtherTrait::class);
+pest()->use(RefreshDatabase::class, SomeOtherTrait::class);
 CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
 // tests/Feature/UserTest.php
-uses(SomeOtherTrait::class);
+pest()->use(SomeOtherTrait::class);
 CODE_SAMPLE
                 ),
             ]
