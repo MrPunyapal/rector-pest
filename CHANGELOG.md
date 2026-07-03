@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.16](https://github.com/MrPunyapal/rector-pest/compare/0.2.15...0.2.16) - 2026-07-03
+
+### What's Changed
+
+* Test supported pest versions by @faissaloux in https://github.com/MrPunyapal/rector-pest/pull/43
+* feat: remove-redundant-pest-uses by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/45
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.15...0.2.16
+
 ## [0.2.15](https://github.com/MrPunyapal/rector-pest/compare/0.2.14...0.2.15) - 2026-05-15
 
 ### What's Changed
