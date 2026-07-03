@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.17](https://github.com/MrPunyapal/rector-pest/compare/0.2.16...0.2.17) - 2026-07-03
+
+### What's Changed
+
+* fix: issue-with-redundant-use-call by @MrPunyapal in https://github.com/MrPunyapal/rector-pest/pull/46
+
+**Full Changelog**: https://github.com/MrPunyapal/rector-pest/compare/0.2.16...0.2.17
+
 ## [0.2.16](https://github.com/MrPunyapal/rector-pest/compare/0.2.15...0.2.16) - 2026-07-03
 
 ### What's Changed
