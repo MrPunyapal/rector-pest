@@ -34,7 +34,7 @@ final class RemoveRedundantPestUsesRector extends AbstractRector
     private array $globalUsesByPestFile = [];
 
     /** @var array<string, true> */
-    private const SUPPORTED_GLOBAL_CHAIN_METHODS = [
+    private const GLOBAL_CHAIN_TOLERATED_METHODS = [
         'extend' => true,
         'use' => true,
         'uses' => true,
@@ -347,16 +347,18 @@ CODE_SAMPLE
             }
 
             $methodName = strtolower($current->name->toString());
-            if (! isset(self::SUPPORTED_GLOBAL_CHAIN_METHODS[$methodName])) {
-                return null;
-            }
+            if (! isset(self::GLOBAL_CHAIN_TOLERATED_METHODS[$methodName])) {
+                $current = $current->var;
 
-            $configuredClassNames = $this->resolveStaticClassNames($current->args);
-            if ($configuredClassNames === []) {
-                return null;
+                continue;
             }
 
             if (in_array($methodName, ['use', 'uses'], true)) {
+                $configuredClassNames = $this->resolveStaticClassNames($current->args);
+                if ($configuredClassNames === []) {
+                    return null;
+                }
+
                 foreach ($configuredClassNames as $configuredClassName) {
                     $classNameMap[$configuredClassName] = true;
                 }
